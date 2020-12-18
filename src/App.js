@@ -1,23 +1,58 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import './stylesheets/App.css';
+
+import Home from './pages/Home'
+
+import { useTheme } from '@material-ui/core/styles';
+import { Container, useMediaQuery} from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
+
+/// ##### pages should be called /authorise /playlists /playlist
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect
+} from 'react-router-dom';
 
 function App() {
+  // const theme = useTheme();
+  // const [token, setToken] = useState(undefined);
+  // const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Router>
+          <Container maxWidth='md' id='main'>
+            <h1>Playlist Sorter</h1>
+            <Paper variant='outlined' className='main-paper' style={{}}>
+              <Switch>
+                {/* <Route
+                  exact path='/'
+                  render={(props) => (
+                    <Home
+                      token={token, set}
+                    />
+                  )}
+                /> */}
+
+                <Route
+                  exact path='/'
+                  render={(props) => (
+                    <Home
+                      location={props.location}
+                    />
+                  )}
+                />
+
+                <Route exact path='/' component={Home} />
+
+                <Redirect to='/' />
+              </Switch>
+            </Paper>
+          </Container>
+      </Router>
     </div>
   );
 }
