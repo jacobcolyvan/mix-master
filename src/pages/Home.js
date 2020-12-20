@@ -9,6 +9,7 @@ import styled from 'styled-components'
 
 const Main = styled.div`
   padding: 10px;
+  margin-bottom: 30px;
 `
 
 const Info = styled.div`
@@ -33,7 +34,7 @@ const Info = styled.div`
 const Home = ({ location }) => {
   const history = useHistory();
   const [ token, setToken ] = useState(false)
-  const [ playlistId, setPlaylistId] = useState(false)
+  const [ playlist, setPlaylist] = useState(false)
 
   useEffect(() => {
     if (location.hash.split('=')[1]) {
@@ -42,6 +43,14 @@ const Home = ({ location }) => {
       history.push('/');
     }
   }, [setToken, token, history, location.hash]);
+
+  // const setPlaylist = (id) => {
+  //   setPlaylistId(is)
+  // }
+
+
+
+
 
   return (
     <Main>
@@ -54,24 +63,11 @@ const Home = ({ location }) => {
           or mixes.</p>
       </Info>
 
-
+      <br/>
       {!token && <SpotifyAuth />}
 
-      {(token) &&  (
-        <>
-          <h3>Playlists</h3>
-          <Playlists token={token} setPlaylistId={setPlaylistId} />
-        </>
-
-
-      )}
-      {(token && playlistId) &&  (
-        <>
-          <h3>Playlist Name</h3>
-          <Playlist token={token} />
-        </>
-      )}
-
+      {(token && playlist) && <Playlist token={token} playlist={playlist} />}
+      {(token && !playlist) && <Playlists token={token} setPlaylist={setPlaylist} />}
 
     </Main>
   );
