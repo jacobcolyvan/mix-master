@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './stylesheets/App.css';
+
 
 import Home from './pages/Home'
 
-import { useTheme } from '@material-ui/core/styles';
+// import { useTheme } from '@material-ui/core/styles';
 import { Container, useMediaQuery} from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 

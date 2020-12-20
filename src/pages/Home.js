@@ -5,6 +5,28 @@ import SpotifyAuth from '../components/SpotifyAuth';
 
 import Playlists from '../components/Playlists'
 import Playlist from '../components/Playlist'
+import styled from 'styled-components'
+
+const Main = styled.div`
+  padding: 10px;
+`
+
+const Info = styled.div`
+  margin-bottom: 32px;
+
+  p {
+    margin: 0px;
+  }
+
+  #info-header {
+    margin-bottom: 16px;
+    margin-top: 16px;
+  }
+
+  #info-points {
+    margin-left: 32px;
+  }
+`
 
 // import UserContext from '../context/UserContext';
 
@@ -22,13 +44,18 @@ const Home = ({ location }) => {
   }, [setToken, token, history, location.hash]);
 
   return (
-    <div>
-      <p>This is a website to:</p>
-      <p>
-        Compare and sort your playlists by their genre or bpm.
-        Intended to help a user make better flowing playlists,
-        or mixes.
-      </p>
+    <Main>
+      <Info>
+        <p id='info-header'>This is a website to:</p>
+        <p id='info-points'>
+          – Compare and sort your playlists by their genre or bpm.
+        </p>
+        <p id="info-points">* Intended to help a user make better flowing playlists,
+          or mixes.</p>
+      </Info>
+
+
+      {!token && <SpotifyAuth />}
 
       {(token) &&  (
         <>
@@ -45,10 +72,8 @@ const Home = ({ location }) => {
         </>
       )}
 
-      <br/>
-      <p><i>Authorise Spotify to start: </i></p>
-      <SpotifyAuth />
-    </div>
+
+    </Main>
   );
 };
 

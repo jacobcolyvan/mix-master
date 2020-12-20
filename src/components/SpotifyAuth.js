@@ -11,6 +11,7 @@ const SpotifyAuth = () => {
 
   return (
     <div>
+      <p><i>Authorise Spotify to start: </i></p>
       <a
         href={`https://accounts.spotify.com/authorize?response_type=token&client_id=${
           process.env.REACT_APP_SPOTIFY_CLIENT_ID2
