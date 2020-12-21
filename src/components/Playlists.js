@@ -18,6 +18,10 @@ const PlaylistLi = styled.li`
     justify-content: space-between;
     align-items: center;
   }
+
+  .playlist-name {
+    padding-left: 4px;
+  }
 `
 
 const PlaylistsTitle = styled.h3`

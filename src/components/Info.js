@@ -24,7 +24,7 @@ const Info = () => {
     <InfoCont>
       <p id='info-header'>This is a website to:</p>
       <p id='info-points'>
-        – Compare and sort your playlists by their genre or bpm.
+        – Compare and sort your Spotify playlists by their genre, bpm, or both.
       </p>
       <p id="info-points">* Intended to help a user make better flowing playlists,
         or mixes.</p>
