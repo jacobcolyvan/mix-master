@@ -13,8 +13,6 @@ const Main = styled.div`
 `
 
 const Info = styled.div`
-  margin-bottom: 32px;
-
   p {
     margin: 0px;
   }

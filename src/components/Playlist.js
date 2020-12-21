@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components'
 
-// import sortBy from './components/SortBy'
+import SortBy from './SortBy'
 
 const keyDict = {
   "0": "C",
@@ -54,7 +54,8 @@ const PlaylistName = styled.h3`
 
 const Playlist = ({ token, playlist }) => {
   const [tracks, setTracks] = useState(false);
-  const [audioFeatures, setAudioFeatures] = useState(false);
+  const [sortedTracks, setSortedTracks] = useState(false);
+  const [sortOption, setSortOption] = useState('default')
 
   useEffect(() => {
     const getTracks = async () => {
@@ -80,8 +81,18 @@ const Playlist = ({ token, playlist }) => {
           }
         })
 
-        setAudioFeatures(featuresResponse.data.audio_features)
-        setTracks(tracklist.map((track) => track.track));
+        const splicedTracks = tracklist.map((track, index) => {
+          return {
+            "name": track.track.name,
+            "artist": track.track.artists[0].name,
+            "tempo": Math.round(featuresResponse.data.audio_features[index].tempo),
+            "key": featuresResponse.data.audio_features[index].key,
+            "mode": featuresResponse.data.audio_features[index].mode
+          }
+        })
+
+        setTracks([...splicedTracks]);
+        setSortedTracks([...splicedTracks]);
       } catch (err) {
         console.log(err.message);
       }
@@ -90,22 +101,41 @@ const Playlist = ({ token, playlist }) => {
     getTracks();
   }, [token, playlist]);
 
+  const sorter = (sort) => {
+    if (sort === 'key') {
+      let temp = tracks.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
+      temp = tracks.sort((a, b) => parseInt(a.key) - parseInt(b.key));
+
+      setSortedTracks(temp);
+
+    } else if (sort === 'tempo') {
+      const temp = tracks.sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo))
+      setSortedTracks(temp)
+    } else {
+      setSortedTracks(tracks)
+    }
+  }
+
+
   return (
     <div>
       <PlaylistName>{playlist.name}</PlaylistName>
-      <p>{playlist.description}</p>
+      {/* <p>{playlist.description}</p> */}
+
+      <SortBy sortOption={sortOption} setSortOption={setSortOption} sorter={sorter}/>
+
       <ul>
         <TracksLi>
-          <p  id="track-name" class="table-headers">Track Name</p>
+          <p  id="track-name" className="table-headers">Track Name</p>
           <p className="table-headers track-data">Key</p>
-          <p className="table-headers track-data">Tempo</p>
+          <p className="table-headers track-data">BPM</p>
         </TracksLi>
 
-        {(tracks && audioFeatures) && tracks.map((track, index) => (
+        {(sortedTracks) && sortedTracks.map((track, index) => (
           <TracksLi key={`track${index}`}>
-            <p id="track-name">{track.name} – <i>{track.artists[0].name}</i></p>
-            <p className="track-data">{keyDict[audioFeatures[index].key]}{audioFeatures[index].mode === 1 ? "" : "m"}</p>
-            <p className="track-data">{Math.round(audioFeatures[index].tempo)}</p>
+            <p id="track-name">{track.name} – <i>{track.artist}</i></p>
+            <p className="track-data">{keyDict[track.key]}{track.mode === 1 ? "" : "m"}</p>
+            <p className="track-data">{track.tempo}</p>
           </TracksLi>
 
         ))}
