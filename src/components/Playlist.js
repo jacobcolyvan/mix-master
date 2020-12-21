@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import styled from 'styled-components'
+import styled from 'styled-components';
+import UserContext from '../context/UserContext';
 
 import SortBy from './SortBy'
 
@@ -52,10 +53,12 @@ const PlaylistName = styled.h3`
 `
 
 
-const Playlist = ({ token, playlist }) => {
+const Playlist = () => {
+  const {token, playlist} = useContext(UserContext);
   const [tracks, setTracks] = useState(false);
   const [sortedTracks, setSortedTracks] = useState(false);
   const [sortOption, setSortOption] = useState('default')
+
 
   useEffect(() => {
     const getTracks = async () => {
@@ -70,7 +73,7 @@ const Playlist = ({ token, playlist }) => {
         });
 
         const tracklist = tracksResponse.data.tracks.items;
-        const trackIds = tracklist.map((track) => track.track.id);
+        const trackIds = tracklist.map((item) => item.track.id);
 
         const featuresResponse = await axios({
           method: 'get',
@@ -81,10 +84,11 @@ const Playlist = ({ token, playlist }) => {
           }
         })
 
-        const splicedTracks = tracklist.map((track, index) => {
+        const splicedTracks = tracklist.map((item, index) => {
           return {
-            "name": track.track.name,
-            "artist": track.track.artists[0].name,
+            "name": item.track.name,
+            "artist": item.track.artists[0].name,
+            "id": item.track.id,
             "tempo": Math.round(featuresResponse.data.audio_features[index].tempo),
             "key": featuresResponse.data.audio_features[index].key,
             "mode": featuresResponse.data.audio_features[index].mode
@@ -103,16 +107,16 @@ const Playlist = ({ token, playlist }) => {
 
   const sorter = (sort) => {
     if (sort === 'key') {
-      let temp = tracks.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
+      let temp = [...tracks].sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
       temp = tracks.sort((a, b) => parseInt(a.key) - parseInt(b.key));
 
       setSortedTracks(temp);
 
     } else if (sort === 'tempo') {
-      const temp = tracks.sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo))
+      const temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo))
       setSortedTracks(temp)
     } else {
-      setSortedTracks(tracks)
+      setSortedTracks([...tracks])
     }
   }
 

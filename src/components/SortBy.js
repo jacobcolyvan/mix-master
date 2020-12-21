@@ -18,9 +18,9 @@ const SortBy = ({sortOption, setSortOption, sorter}) => {
         fullWidth
         variant='outlined'
       >
-        <MenuItem value={'default'}>Default</MenuItem>
-        <MenuItem value={'key'}>Key</MenuItem>
-        <MenuItem value={'tempo'}>Tempo</MenuItem>
+        <MenuItem value={'default'}>Don't Sort</MenuItem>
+        <MenuItem value={'key'}>Sort by Key</MenuItem>
+        <MenuItem value={'tempo'}>Sort by Tempo</MenuItem>
       </Select>
     </div>
   )

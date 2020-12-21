@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import axios from 'axios';
 import styled from 'styled-components'
+import UserContext from '../context/UserContext';
 
 const PlaylistLi = styled.li`
   border: 1px solid #c4c4c4;
@@ -19,31 +20,49 @@ const PlaylistLi = styled.li`
   }
 `
 
+const PlaylistsTitle = styled.h3`
+  text-decoration: underline;
+  font-style: italic;
+`
 
-const Playlists = ({token, setPlaylist}) => {
-  const [playlists, setPlaylists] = useState(false);
+
+const Playlists = () => {
+  const {token, setPlaylist, playlists, setPlaylists} = useContext(UserContext);
 
   useEffect(() => {
-    const getPlaylists = async () => {
-      try {
-        const response = await axios({
-          method: 'get',
-          url: `https://api.spotify.com/v1/me/playlists?limit=50&offset=${0}`,
-          headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          }
-        });
+    let playlistTotalAmount = 0;
+    let allPlaylists = false;
+    let tempPlaylistArray = []
+    let offset = 0;
 
-        // setPlaylistTotalAmount(response.data.total)
-        setPlaylists(response.data.items);
+
+    const getAllPlaylists = async () => {
+      try {
+        while (!allPlaylists) {
+          const response = await axios({
+            method: 'get',
+            url: `https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`,
+            headers: {
+              Authorization: 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          playlistTotalAmount = response.data.total;
+          playlistTotalAmount > tempPlaylistArray.length ? offset += 50 : allPlaylists = true;
+
+          tempPlaylistArray = [...tempPlaylistArray, ...response.data.items];
+        }
+
+
+        setPlaylists(tempPlaylistArray);
       } catch (err) {
         console.log(err.message);
       }
     };
 
-    getPlaylists();
-  }, [token]);
+    getAllPlaylists();
+  }, [token, setPlaylists]);
 
   const savePlaylist = (index) => {
     setPlaylist(playlists[index]);
@@ -51,10 +70,10 @@ const Playlists = ({token, setPlaylist}) => {
   };
 
 
-  if (playlists) {
+  if (playlists.length > 0) {
     return (
       <div>
-        <h3>Playlists</h3>
+        <PlaylistsTitle>Playlists</PlaylistsTitle>
         {playlists.length > 0 && (
           <ul>
             {playlists.map((playlist, index) => (
@@ -76,7 +95,7 @@ const Playlists = ({token, setPlaylist}) => {
   } else {
     return (
       <div>
-        <p>Loading.</p>
+        <p><i>Loading.</i></p>
       </div>
     );
   }

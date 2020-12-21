@@ -1,37 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components'
+import styled from 'styled-components';
+import UserContext from '../context/UserContext';
 
 import SpotifyAuth from '../components/SpotifyAuth';
 import Playlists from '../components/Playlists'
 import Playlist from '../components/Playlist'
+import Info from '../components/Info'
 
 
 const Main = styled.div`
   padding: 10px;
-  margin-bottom: 30px;
-`
-
-const Info = styled.div`
-  p {
-    margin: 0px;
-  }
-
-  #info-header {
-    margin-bottom: 16px;
-    margin-top: 16px;
-  }
-
-  #info-points {
-    margin-left: 32px;
-  }
+  margin-bottom: 10px;
 `
 
 
 const Home = ({ location }) => {
   const history = useHistory();
-  const [ token, setToken ] = useState(false)
-  const [ playlist, setPlaylist] = useState(false)
+  const { token, setToken, playlist } = useContext(UserContext);
 
   useEffect(() => {
     if (location.hash.split('=')[1]) {
@@ -40,23 +26,15 @@ const Home = ({ location }) => {
     }
   }, [setToken, token, history, location.hash]);
 
-
   return (
     <Main>
-      <Info>
-        <p id='info-header'>This is a website to:</p>
-        <p id='info-points'>
-          – Compare and sort your playlists by their genre or bpm.
-        </p>
-        <p id="info-points">* Intended to help a user make better flowing playlists,
-          or mixes.</p>
-      </Info>
+      {!playlist && <Info />}
 
-      <br/>
+      {/* <br/> */}
       {!token && <SpotifyAuth />}
 
-      {(token && playlist) && <Playlist token={token} playlist={playlist} />}
-      {(token && !playlist) && <Playlists token={token} setPlaylist={setPlaylist} />}
+      {(token && playlist) && <Playlist />}
+      {(token && !playlist) && <Playlists />}
 
     </Main>
   );
