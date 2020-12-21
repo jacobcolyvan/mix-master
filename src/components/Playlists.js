@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-
 import styled from 'styled-components'
 
 const PlaylistLi = styled.li`
   border: 1px solid #c4c4c4;
-  /* padding: 6px 4px; */
   border-radius: 4px;
-
-  padding: 10px 5px;
+  padding: 10px 4px;
 
   &:hover {
     color: #2882e9;
@@ -20,15 +16,9 @@ const PlaylistLi = styled.li`
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-
   }
 `
 
-
-// import Playlist from './Playlist'
-
-// import sortBy from './components/SortBy'
 
 const Playlists = ({token, setPlaylist}) => {
   const [playlists, setPlaylists] = useState(false);
@@ -45,7 +35,6 @@ const Playlists = ({token, setPlaylist}) => {
           }
         });
 
-        console.log(response.data.items)
         // setPlaylistTotalAmount(response.data.total)
         setPlaylists(response.data.items);
       } catch (err) {
@@ -54,16 +43,10 @@ const Playlists = ({token, setPlaylist}) => {
     };
 
     getPlaylists();
-    // if (!token) {
-    //   history.push('/');
-    // } else {
-    //   getPlaylists();
-    // }
   }, [token]);
 
   const savePlaylist = (index) => {
     setPlaylist(playlists[index]);
-    console.log(playlists[index]);
     // history.push(`/playlists/${index}`)
   };
 
@@ -93,7 +76,7 @@ const Playlists = ({token, setPlaylist}) => {
   } else {
     return (
       <div>
-        <p>Put playlists here / LOADING.</p>
+        <p>Loading.</p>
       </div>
     );
   }

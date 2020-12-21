@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import styled from 'styled-components'
 
 import SpotifyAuth from '../components/SpotifyAuth';
-
 import Playlists from '../components/Playlists'
 import Playlist from '../components/Playlist'
-import styled from 'styled-components'
+
 
 const Main = styled.div`
   padding: 10px;
@@ -29,7 +29,6 @@ const Info = styled.div`
   }
 `
 
-// import UserContext from '../context/UserContext';
 
 const Home = ({ location }) => {
   const history = useHistory();
@@ -39,17 +38,9 @@ const Home = ({ location }) => {
   useEffect(() => {
     if (location.hash.split('=')[1]) {
       setToken(location.hash.split('=')[1].split('&token')[0]);
-      console.log(location.hash.split('=')[1].split('&token')[0]);
       history.push('/');
     }
   }, [setToken, token, history, location.hash]);
-
-  // const setPlaylist = (id) => {
-  //   setPlaylistId(is)
-  // }
-
-
-
 
 
   return (
