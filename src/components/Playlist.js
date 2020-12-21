@@ -25,6 +25,8 @@ const TracksLi = styled.li`
   padding: 0;
   width: 100%;
 
+  display: flex;
+
   p {
     display: inline-block;
     border: 1px solid #c4c4c4;
@@ -33,11 +35,12 @@ const TracksLi = styled.li`
   }
 
   #track-name {
-    width: 70%
+    flex-basis: 70%;
   }
 
   .track-data {
-    width: 13.3%;
+
+    flex-basis: 15%;
     text-align: center;
   }
 
@@ -108,13 +111,19 @@ const Playlist = () => {
   const sorter = (sort) => {
     if (sort === 'key') {
       let temp = [...tracks].sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
-      temp = tracks.sort((a, b) => parseInt(a.key) - parseInt(b.key));
+      temp = temp.sort((a, b) => parseInt(a.key) - parseInt(b.key));
 
       setSortedTracks(temp);
-
     } else if (sort === 'tempo') {
       const temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo))
+
       setSortedTracks(temp)
+    } else if (sort === 'tempoThenKey') {
+      let temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo))
+      temp = temp.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
+      temp = temp.sort((a, b) => parseInt(a.key) - parseInt(b.key));
+
+      setSortedTracks(temp);
     } else {
       setSortedTracks([...tracks])
     }

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const InfoCont = styled.div`
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 
   p {
     margin: 0px;

@@ -27,7 +27,7 @@ function App() {
     <div>
       <Router>
         <UserContext.Provider value={{ token, setToken, playlist, setPlaylist, playlists, setPlaylists }}>
-          <Container maxWidth='md' id='main' style={{marginBottom: "30px"}}>
+          <Container maxWidth='md' id='main' style={{margin: '30px 0'}}>
             <Navbar clearPlaylist={clearPlaylist} />
             <Paper variant='outlined' className='main-paper' style={{}}>
               <Switch>
