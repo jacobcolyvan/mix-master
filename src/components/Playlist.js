@@ -3,7 +3,8 @@ import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
-import SortBy from './SortBy'
+import SortBy from './SortBy';
+import KeySelect from './KeySelect';
 
 const keyDict = {
   "0": "C",
@@ -90,7 +91,8 @@ const Playlist = () => {
   const {token, playlist} = useContext(UserContext);
   const [tracks, setTracks] = useState(false);
   const [sortedTracks, setSortedTracks] = useState(false);
-  const [sortOption, setSortOption] = useState('tempoThenKey')
+  const [sortOption, setSortOption] = useState('tempoThenKey');
+  const [keyOption, setKeyOption] = useState('camelot');
 
 
   useEffect(() => {
@@ -153,18 +155,18 @@ const Playlist = () => {
       return temp;
     }
 
-    // // This is a function for standard non-camelot key sort
-    // const keySort = () => {
-    //   let temp = [...tracks].sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
-    //   temp = temp.sort((a, b) => parseInt(a.key) - parseInt(b.key));
+    // This is a function for standard non-camelot key sort
+    const keySort = () => {
+      let temp = [...tracks].sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
+      temp = temp.sort((a, b) => parseInt(a.key) - parseInt(b.key));
 
-    //   return temp;
-    // }
+      return temp;
+    }
 
     const sorter = (sort) => {
       if (tracks) {
         if (sort === 'key') {
-          setSortedTracks(camelotSort([...tracks]));
+          setSortedTracks(keyOption === 'camelot' ? camelotSort([...tracks]) : keySort([...tracks]));
         } else if (sort === 'tempo') {
           const temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo))
 
@@ -172,7 +174,7 @@ const Playlist = () => {
         } else if (sort === 'tempoThenKey') {
           let temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
 
-          setSortedTracks(camelotSort(temp));
+          setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
         } else {
           setSortedTracks([...tracks])
         }
@@ -181,12 +183,14 @@ const Playlist = () => {
 
     sorter(sortOption)
 
-  }, [sortOption, tracks])
+  }, [sortOption, tracks, keyOption])
 
 
 
   return (
     <div>
+      <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
+      <br/>
       <PlaylistName>{playlist.name}</PlaylistName>
       {/* <p>{playlist.description}</p> */}
 
@@ -203,8 +207,8 @@ const Playlist = () => {
           <TracksLi key={`track${index}`}>
             <p id="track-name">{track.name} – <i>{track.artist}</i></p>
             <p className="track-data">
-               {track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"A"}
-               / {keyDict[track.key]}{track.mode === 1 ? "" : "m"}
+               {keyOption === 'camelot' && `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"A"} / `}
+               {keyDict[track.key]}{track.mode === 1 ? "" : "m"}
             </p>
 
             <p className="track-data">{track.tempo}</p>

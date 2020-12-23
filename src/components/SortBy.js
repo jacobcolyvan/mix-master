@@ -19,9 +19,9 @@ const SortBy = ({sortOption, setSortOption, sorter}) => {
         variant='outlined'
       >
         <MenuItem value={'default'}>Original Order</MenuItem>
-        <MenuItem value={'key'}>Sort by Key (Camelot)</MenuItem>
+        <MenuItem value={'key'}>Sort by Key</MenuItem>
         <MenuItem value={'tempo'}>Sort by Tempo</MenuItem>
-        <MenuItem value={'tempoThenKey'}>Sort by Tempo, then Key (Camelot)</MenuItem>
+        <MenuItem value={'tempoThenKey'}>Sort by Tempo, then Key</MenuItem>
       </Select>
     </div>
   )
