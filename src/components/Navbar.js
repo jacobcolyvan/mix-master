@@ -14,19 +14,29 @@ const NavbarCont = styled.header`
     color: #222222;
     text-decoration: underline;
   }
+
+  .button {
+    width:25%
+  }
 `
 
-const Navbar = ({clearPlaylist}) => {
-  const {playlist} = useContext(UserContext);
+const Navbar = ({loadPlaylists, loadAbout}) => {
+  const {playlist, about, token} = useContext(UserContext);
 
 
   return (
     <NavbarCont>
       <h1>Playlist Sorter</h1>
-      {playlist && (
-        <Button variant='outlined' color='primary' onClick={clearPlaylist} >
+      {(token && !about && !playlist) && (
+        < Button variant='outlined' color='secondary' onClick={loadAbout} className="button">
+          About
+        </ Button>
+      )}
+
+      {(playlist || about) && (
+        < Button variant='outlined' color='primary' onClick={loadPlaylists} className="button">
           Playlists
-        </Button>
+        </ Button>
       )}
     </NavbarCont>
   )

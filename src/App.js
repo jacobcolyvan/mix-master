@@ -17,18 +17,25 @@ import Navbar from './components/Navbar'
 function App() {
   const [ token, setToken ] = useState(false);
   const [ playlist, setPlaylist] = useState(false);
+  const [ about, setAbout] = useState(false);
   const [ playlists, setPlaylists] = useState([]);
 
-  const clearPlaylist = () => {
-    setPlaylist(false)
+  const loadPlaylists = () => {
+    setPlaylist(false);
+    setAbout(false);
+  }
+
+  const loadAbout = () => {
+    setPlaylist(false);
+    setAbout(true)
   }
 
   return (
     <div>
       <Router>
-        <UserContext.Provider value={{ token, setToken, playlist, setPlaylist, playlists, setPlaylists }}>
+        <UserContext.Provider value={{ token, setToken, playlist, setPlaylist, playlists, setPlaylists, about }}>
           <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>
-            <Navbar clearPlaylist={clearPlaylist} />
+            <Navbar loadPlaylists={loadPlaylists} loadAbout={loadAbout} />
             <Paper variant='outlined' className='main-paper' style={{}}>
               <Switch>
                 <Route

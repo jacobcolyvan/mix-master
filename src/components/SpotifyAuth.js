@@ -1,6 +1,8 @@
 import React from 'react'
 import Button from '@material-ui/core/Button';
 
+import Info from './Info'
+
 const SpotifyAuth = () => {
   const scopes = [
     'user-read-private',
@@ -11,6 +13,7 @@ const SpotifyAuth = () => {
 
   return (
     <div>
+      <Info />
       <p><i>Authorise Spotify to start: </i></p>
       <a
         href={`https://accounts.spotify.com/authorize?response_type=token&client_id=${

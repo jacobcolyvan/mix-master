@@ -77,6 +77,7 @@ const Playlists = () => {
   if (playlists.length > 0) {
     return (
       <div>
+        <p>See <i>About</i> for more info about how to use this site.</p>
         <PlaylistsTitle>Playlists</PlaylistsTitle>
         {playlists.length > 0 && (
           <ul>

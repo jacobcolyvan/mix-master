@@ -26,8 +26,12 @@ const Info = () => {
       <p id='info-points'>
         – Compare and sort your Spotify playlists by their genre, bpm, or both.
       </p>
-      <p id="info-points">* Intended to help a user make better flowing playlists,
-        or mixes.</p>
+      <p id="info-points">
+        * Intended to help a user make better flowing playlists,or mixes.
+      </p>
+      <p id="info-points">
+        – Meant to work similarly to programs such as MixedInkey, but for making Spotify.
+      </p>
     </InfoCont>
   )
 }
