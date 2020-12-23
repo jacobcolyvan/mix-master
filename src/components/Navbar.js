@@ -26,7 +26,7 @@ const Navbar = ({loadPlaylists, loadAbout}) => {
 
   return (
     <NavbarCont>
-      <h1>Playlist Sorter</h1>
+      <h1>Mix Master</h1>
       {(token && !about && !playlist) && (
         < Button variant='outlined' color='secondary' onClick={loadAbout} className="button">
           About
