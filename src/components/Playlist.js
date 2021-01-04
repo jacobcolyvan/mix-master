@@ -148,7 +148,6 @@ const Playlist = () => {
         a = a.mode === "0" ? (parseInt(camelotMinorKeyDict[a.key])) : (parseInt(camelotMajorKeyDict[a.key]));
         b = b.mode === "0" ? (parseInt(camelotMinorKeyDict[b.key])) : (parseInt(camelotMajorKeyDict[b.key]));
 
-        // return b.toString().localeCompare(a.toString());
         return a > b ? 1 : -1;
       });
 
@@ -156,8 +155,8 @@ const Playlist = () => {
     }
 
     // This is a function for standard non-camelot key sort
-    const keySort = () => {
-      let temp = [...tracks].sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
+    const keySort = (temp) => {
+      temp.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
       temp = temp.sort((a, b) => parseInt(a.key) - parseInt(b.key));
 
       return temp;
@@ -207,9 +206,15 @@ const Playlist = () => {
           <TracksLi key={`track${index}`}>
             <p id="track-name">{track.name} – <i>{track.artist}</i></p>
             <p className="track-data">
-               {keyOption === 'camelot' && `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"A"} / `}
-               {keyDict[track.key]}{track.mode === 1 ? "" : "m"}
+               {keyOption === 'camelot' ?
+                `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"A"}`
+                : `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
             </p>
+
+            {/* <p className="track-data">
+               {keyOption === 'camelot' && `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"a"} / `}
+               {keyDict[track.key]}{track.mode === 1 ? "" : "m"}
+            </p> */}
 
             <p className="track-data">{track.tempo}</p>
           </TracksLi>
