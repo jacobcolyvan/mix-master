@@ -1,5 +1,5 @@
 # Mix Master (Spotify)
-<b>Deployed at:</b> https://mix-master.netlify.app/ <br>
+<b><i>Deployed at:</i></b> <a href=https://mix-master.netlify.app/ target="_blank">https://mix-master.netlify.app/</a>. <br>
 
 This is project intended to help users make better playlists and mixes, by looking at key and tempo data of a chosen Spotify playlist. A good mix transitions between tracks that are similar in key and tempo (based on Circle of Fifths), this site helps you do this. A guide for using the site can be found in the 'About' section. <br>
 
@@ -17,8 +17,8 @@ It is built with React, and styled using Material-UI. Requests are done using ax
 <hr>
 
 If interested, other Spotify-based sites that I've written are:
-* Spotify Metadata – <a href=https://github.com/jacobcolyvan/spotify-metadata target="_blank"> Github</a>, <a href=https://spotify-metadata.netlify.app/ target="_blank">deployed</a>.
-* Seed Playlists – <a href=https://seed-playlists.netlify.app/ target="_blank"> Github</a>, <a href=https://seed-playlists.netlify.app/ target="_blank">deployed</a>.
+* <u>Spotify Metadata</u> – <a href=https://github.com/jacobcolyvan/spotify-metadata target="_blank"> Github</a>, <a href=https://spotify-metadata.netlify.app/ target="_blank">deployed</a>.
+* <u>Seed Playlists</u> – <a href=https://seed-playlists.netlify.app/ target="_blank"> Github</a>, <a href=https://seed-playlists.netlify.app/ target="_blank">deployed</a>.
 
 <br>
 Otherwise, <br>
