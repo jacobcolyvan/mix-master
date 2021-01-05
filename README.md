@@ -5,7 +5,7 @@ This is basic project intended to help users make better playlists and mixes, by
 
 Note that all data comes from Spotify, and will only be accurate.
 
-It is built with React, and styled using Material-UI. Requests are done using axios, and Spotify-auth is done completely client-side using the <a href="https://developer.spotify.com/documentation/general/guides/authorization-guide/">Client Credentials Authorisation Flow</a>.
+It is built with React, and styled using styled-components & Material-UI. Requests are done using axios, and Spotify-auth is done completely client-side using the <a href="https://developer.spotify.com/documentation/general/guides/authorization-guide/">Client Credentials Authorisation Flow</a>.
 
 <hr>
 <h4>Features</h4>

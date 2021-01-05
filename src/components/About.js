@@ -77,7 +77,7 @@ const About = () => {
     <div>
       <Info />
 
-      <p>Note that all info comes from Spotify, and may not always be  100% accurate.</p>
+      <p>Note that all info comes from Spotify, and may not always be 100% accurate.</p>
 
       <CamelotInfo>
         <hr/>
@@ -118,10 +118,10 @@ const About = () => {
         <p id="links-header">If you're interested, other Spotify-based sites that I've written can be found at:</p>
         <p className="links"><a target="_blank" rel="noopener noreferrer" href="https://spotify-metadata.netlify.app/">
           Spotify Metadata
-        </a>, and</p>
+        </a>, a site for exploring your listening habits, and</p>
         <p className="links"><a target="_blank" rel="noopener noreferrer"href="https://seed-playlists.netlify.app/">
           Seed Playlists
-        </a>.</p>
+        </a>, a site for building your own daily mixes/playlists.</p>
 
         <br/>
 
