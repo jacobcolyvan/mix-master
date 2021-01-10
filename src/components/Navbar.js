@@ -15,29 +15,43 @@ const NavbarCont = styled.header`
     text-decoration: underline;
   }
 
+  div {
+    width: 25%;
+  }
+
   .button {
-    width:25%
+    height: 50%;
   }
 `
 
-const Navbar = ({loadPlaylists, loadAbout}) => {
-  const {playlist, about, token} = useContext(UserContext);
+const Navbar = ({ loadPlaylists, loadAbout, loadSearch }) => {
+  const {playlist, about, token, search} = useContext(UserContext);
 
 
   return (
     <NavbarCont>
       <h1>Mix Master</h1>
-      {(token && !about && !playlist) && (
-        < Button variant='outlined' color='secondary' onClick={loadAbout} className="button">
-          About
-        </ Button>
-      )}
+      <div>
 
-      {(playlist || about) && (
-        < Button variant='outlined' color='primary' onClick={loadPlaylists} className="button">
-          Playlists
-        </ Button>
-      )}
+        {(playlist || about || search) && (
+          < Button variant='outlined' color='primary' onClick={loadPlaylists} className="button" fullWidth>
+            Playlists
+          </ Button>
+        )}
+
+        {(token && !search && !playlist ) && (
+          < Button variant='outlined' color='primary' onClick={loadSearch} className="button" fullWidth >
+            Search
+          </ Button>
+        )}
+
+
+        {(token && !about && !playlist) && (
+          < Button variant='outlined' color='secondary' onClick={loadAbout} className="button" fullWidth >
+            About
+          </ Button>
+        )}
+      </div>
     </NavbarCont>
   )
 }
