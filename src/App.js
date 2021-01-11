@@ -12,7 +12,7 @@ import './stylesheets/App.css';
 
 import Home from './pages/Home'
 import Navbar from './components/Navbar'
-import Search from './pages/Search';
+// import Search from './pages/Search';
 
 
 function App() {
