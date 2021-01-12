@@ -122,7 +122,7 @@ const Playlist = () => {
         const splicedTracks = tracklist.map((item, index) => {
           return {
             "name": item.track.name,
-            "artist": item.track.artists[0].name,
+            "artists": item.track.artists.length > 1 ? [item.track.artists[0].name, item.track.artists[1].name] : [item.track.artists[0].name],
             "id": item.track.id,
             "tempo": Math.round(featuresResponse.data.audio_features[index].tempo),
             "key": featuresResponse.data.audio_features[index].key,
@@ -167,9 +167,9 @@ const Playlist = () => {
         if (sort === 'key') {
           setSortedTracks(keyOption === 'camelot' ? camelotSort([...tracks]) : keySort([...tracks]));
         } else if (sort === 'tempo') {
-          const temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo))
+          const temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
 
-          setSortedTracks(temp)
+          setSortedTracks(temp);
         } else if (sort === 'tempoThenKey') {
           let temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
 
@@ -204,7 +204,7 @@ const Playlist = () => {
 
         {(sortedTracks) && sortedTracks.map((track, index) => (
           <TracksLi key={`track${index}`}>
-            <p id="track-name">{track.name} – <i>{track.artist}</i></p>
+            <p id="track-name">{track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i></p>
             <p className="track-data">
                {keyOption === 'camelot' ?
                 `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"A"}`
