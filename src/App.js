@@ -21,29 +21,37 @@ function App() {
   const [ about, setAbout] = useState(false);
   const [ search, setSearch] = useState(false);
   const [ playlists, setPlaylists] = useState([]);
+  const [ tracks, setTracks ] = useState(false);
+  const [ sortedTracks, setSortedTracks ] = useState(false);
+
+  const resetStates = () => {
+    setPlaylist(false);
+    setTracks(false);
+    setSortedTracks(false);
+  }
 
   const loadPlaylists = () => {
-    setPlaylist(false);
     setAbout(false);
     setSearch(false);
+    resetStates();
   }
 
   const loadAbout = () => {
     setAbout(true);
-    setPlaylist(false);
     setSearch(false);
+    resetStates();
   }
 
   const loadSearch = () => {
     setSearch(true);
-    setPlaylist(false);
     setAbout(false);
+    resetStates();
   }
 
   return (
     <div>
       <Router>
-        <UserContext.Provider value={{ token, setToken, playlist, setPlaylist, playlists, setPlaylists, about, search }}>
+        <UserContext.Provider value={{ token, setToken, playlist, setPlaylist, playlists, setPlaylists, about, search, tracks, setTracks, sortedTracks, setSortedTracks }}>
           <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>
             <Navbar loadPlaylists={loadPlaylists} loadAbout={loadAbout} loadSearch={loadSearch} />
             <Paper variant='outlined' className='main-paper' style={{}}>

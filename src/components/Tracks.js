@@ -1,5 +1,6 @@
-import React from 'react';
+import React,  { useEffect, useContext }  from 'react';
 import styled from 'styled-components';
+import UserContext from '../context/UserContext';
 
 const keyDict = {
   "0": "C",
@@ -15,6 +16,38 @@ const keyDict = {
   "10": "A#",
   "11": "B"
 };
+
+const camelotMajorKeyDict = {
+  "0": "8",
+  "1": "3",
+  "2": "10",
+  "3": "5",
+  "4": "12",
+  "5": "7",
+  "6": "2",
+  "7": "9",
+  "8": "4",
+  "9": "11",
+  "10": "6",
+  "11": "1"
+};
+
+const camelotMinorKeyDict = {
+  "0": "5",
+  "1": "12",
+  "2": "7",
+  "3": "2",
+  "4": "9",
+  "5": "4",
+  "6": "11",
+  "7": "6",
+  "8": "1",
+  "9": "8",
+  "10": "3",
+  "11": "10"
+};
+
+
 
 const TracksLi = styled.li`
   border-radius: 4px;
@@ -47,7 +80,52 @@ const TracksLi = styled.li`
 `;
 
 
-const Tracks = ({ sortedTracks, keyOption, camelotMajorKeyDict, camelotMinorKeyDict }) => {
+const Tracks = ({keyOption, sortOption }) => {
+  const {tracks, sortedTracks, setSortedTracks} = useContext(UserContext);
+
+  useEffect(() => {
+    const camelotSort = (temp) => {
+      temp = temp.sort((a, b) => { return a - b });
+      temp = temp.sort((a, b) => {
+        a = (a.mode === 0 ? (parseInt(camelotMinorKeyDict[a.key])) : (parseInt(camelotMajorKeyDict[a.key])));
+        b = (b.mode === 0 ? (parseInt(camelotMinorKeyDict[b.key])) : (parseInt(camelotMajorKeyDict[b.key])));
+
+        return a > b ? 1 : -1;
+      });
+
+      return temp;
+    }
+
+    // This is a function for standard non-camelot key sort
+    const keySort = (temp) => {
+      temp.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
+      temp = temp.sort((a, b) => parseInt(a.key) - parseInt(b.key));
+
+      return temp;
+    }
+
+    const sorter = (sort) => {
+      if (tracks) {
+        if (sort === 'key') {
+          setSortedTracks(keyOption === 'camelot' ? camelotSort([...tracks]) : keySort([...tracks]));
+        } else if (sort === 'tempo') {
+          const temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
+
+          setSortedTracks(temp);
+        } else if (sort === 'tempoThenKey') {
+          let temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
+
+          setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
+        } else {
+          setSortedTracks([...tracks])
+        }
+      }
+    };
+
+    sorter(sortOption);
+
+  }, [sortOption, tracks, keyOption, setSortedTracks]);
+
   return (
     <ul>
         <TracksLi>

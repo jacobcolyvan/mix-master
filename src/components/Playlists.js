@@ -58,7 +58,6 @@ const Playlists = () => {
           tempPlaylistArray = [...tempPlaylistArray, ...response.data.items];
         }
 
-
         setPlaylists(tempPlaylistArray);
       } catch (err) {
         console.log(err.message);
@@ -100,7 +99,7 @@ const Playlists = () => {
   } else {
     return (
       <div>
-        <p><i>Loading.</i></p>
+        <p><i>Loading...</i></p>
       </div>
     );
   }

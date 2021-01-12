@@ -39,7 +39,7 @@ const Navbar = ({ loadPlaylists, loadAbout, loadSearch }) => {
           </ Button>
         )}
 
-        {(token && !search && !playlist ) && (
+        {(token && !search ) && (
           < Button variant='outlined' color='primary' onClick={loadSearch} className="button" fullWidth >
             Search
           </ Button>
