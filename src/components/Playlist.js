@@ -3,23 +3,9 @@ import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
+import Tracks from './Tracks'
 import SortBy from './SortBy';
 import KeySelect from './KeySelect';
-
-const keyDict = {
-  "0": "C",
-  "1": "C#",
-  "2": "D",
-  "3": "D#",
-  "4": "E",
-  "5": "F",
-  "6": "F#",
-  "7": "G",
-  "8": "G#",
-  "9": "A",
-  "10": "A#",
-  "11": "B"
-}
 
 const camelotMajorKeyDict = {
   "0": "8",
@@ -34,7 +20,7 @@ const camelotMajorKeyDict = {
   "9": "11",
   "10": "6",
   "11": "1"
-}
+};
 
 const camelotMinorKeyDict = {
   "0": "5",
@@ -49,37 +35,7 @@ const camelotMinorKeyDict = {
   "9": "8",
   "10": "3",
   "11": "10"
-}
-
-const TracksLi = styled.li`
-  border-radius: 4px;
-  padding: 0;
-  width: 100%;
-
-  display: flex;
-
-  p {
-    display: inline-block;
-    border: 1px solid #c4c4c4;
-    padding: 10px 4px;
-    margin: 0;
-  }
-
-  #track-name {
-    flex-basis: 70%;
-  }
-
-  .track-data {
-
-    flex-basis: 15%;
-    text-align: center;
-  }
-
-  .table-headers {
-    font-weight: bold;
-    text-decoration: underline;
-  }
-`
+};
 
 const PlaylistName = styled.h3`
   text-decoration: underline;
@@ -98,35 +54,58 @@ const Playlist = () => {
   useEffect(() => {
     const getTracks = async () => {
       try {
-        const tracksResponse = await axios({
-          method: 'get',
-          url: playlist.href,
-          headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          }
-        });
+        const trackTotalAmount = playlist.tracks.total;
+        let allTracks = false;
+        let tracklist = [];
+        // let track$
+        let offset = 0;
+        let trackFeatures = [];
 
-        const tracklist = tracksResponse.data.tracks.items;
-        const trackIds = tracklist.map((item) => item.track.id);
+        while (!allTracks) {
+          const tracksResponse = await axios({
+            method: 'get',
+            url: playlist.href + `/tracks?offset=${offset}`,
+            // url: playlist.href,
+            headers: {
+              Authorization: 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            }
+          });
 
-        const featuresResponse = await axios({
-          method: 'get',
-          url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
-          headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          }
-        })
+
+
+          console.log('playlist :>> ', tracksResponse);
+
+
+          const trackIds = tracksResponse.data.items.map((item) => item.track.id);
+
+          const featuresResponse = await axios({
+            method: 'get',
+            url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
+            headers: {
+              Authorization: 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            }
+          })
+
+          tracklist = [...tracklist, ...tracksResponse.data.items];
+          trackFeatures = [...trackFeatures, ...featuresResponse.data.audio_features];
+
+          trackTotalAmount > tracklist.length ? offset += 100 : allTracks = true;
+        }
+
+        console.log('total :>> ', tracklist.length);
+
+
 
         const splicedTracks = tracklist.map((item, index) => {
           return {
             "name": item.track.name,
             "artists": item.track.artists.length > 1 ? [item.track.artists[0].name, item.track.artists[1].name] : [item.track.artists[0].name],
             "id": item.track.id,
-            "tempo": Math.round(featuresResponse.data.audio_features[index].tempo),
-            "key": featuresResponse.data.audio_features[index].key,
-            "mode": parseInt(featuresResponse.data.audio_features[index].mode)
+            "tempo": Math.round(trackFeatures[index].tempo),
+            "key": trackFeatures[index].key,
+            "mode": parseInt(trackFeatures[index].mode)
           }
         })
 
@@ -150,8 +129,6 @@ const Playlist = () => {
 
         return a > b ? 1 : -1;
       });
-
-
 
       return temp;
     }
@@ -197,32 +174,12 @@ const Playlist = () => {
 
       <SortBy sortOption={sortOption} setSortOption={setSortOption} />
 
-      <ul>
-        <TracksLi>
-          <p  id="track-name" className="table-headers">Track Name</p>
-          <p className="table-headers track-data">Key</p>
-          <p className="table-headers track-data">BPM</p>
-        </TracksLi>
-
-        {(sortedTracks) && sortedTracks.map((track, index) => (
-          <TracksLi key={`track${index}`}>
-            <p id="track-name">{track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i></p>
-            <p className="track-data">
-               {keyOption === 'camelot' ?
-                `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`
-                : `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
-            </p>
-
-            {/* <p className="track-data">
-               {keyOption === 'camelot' && `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"a"} / `}
-               {keyDict[track.key]}{track.mode === 1 ? "" : "m"}
-            </p> */}
-
-            <p className="track-data">{track.tempo}</p>
-          </TracksLi>
-
-        ))}
-      </ul>
+      <Tracks
+        sortedTracks={sortedTracks}
+        keyOption={keyOption}
+        camelotMajorKeyDict={camelotMajorKeyDict}
+        camelotMinorKeyDict={camelotMinorKeyDict}
+      />
     </div>
   )
 }
