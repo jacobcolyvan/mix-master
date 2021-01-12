@@ -1,34 +1,30 @@
 import React, {useState, useContext} from 'react';
 import axios from 'axios';
-// import styled from 'styled-components';
+import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
 import SearchOptions from '../components/SearchOptions';
 import SearchResults from '../components/SearchResults';
 
+const SearchTitle = styled.h1`
+  text-decoration: underline;
+  font-style: italic;
+`
 
-// Searches for albums
-// https://api.spotify.com/v1/search?q=tania%20bowra&type=artist
-// q=name:abacab&type=album,track
-
-
-// TODO: add second artist name to tracks tab
-//       seperate followed and owned playlists
+// TODO: seperate followed and owned playlists
 //       add error handling for search without
 
+
 const Search = () => {
-  const {token, tracks, setTracks} = useContext(UserContext);
+  const {token, setTracks, setSortedTracks} = useContext(UserContext);
 
   const [searchType, setSearchType] = useState('album');
-  // put this at the top level and change with navbar link changes
-  const [currentSearchResults, setcurrentSearchResults] = useState(false);
+
+  const [currentSearchResults, setCurrentSearchResults] = useState(false);
   const [albums, setAlbums] = useState(false);
-  // const [tracks, setTracks] = useState(false);
 
   const [albumSearchQuery, setAlbumSearchQuery] = useState('');
   const [trackSearchQuery, setTrackSearchQuery] = useState('');
-
-  const [albumLink, setAlbumLink] = useState(false);
   const [artist, setArtist] = useState(false);
 
 
@@ -40,8 +36,36 @@ const Search = () => {
     }
   }
 
+  const getTrackFeatures = async (tracks) => {
+    const trackIds = tracks.map((item) => item.id);
+    const featuresResponse = await axios({
+      method: 'get',
+      url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const trackFeatures = [featuresResponse.data.audio_features];
+    const splicedTracks = tracks.map((item, index) => {
+      return {
+        "name": item.name,
+        "artists": item.artists.length > 1 ? [item.artists[0].name, item.artists[1].name] : [item.artists[0].name],
+        "id": item.id,
+        "tempo": Math.round(trackFeatures[0][index].tempo),
+        "key": trackFeatures[0][index].key,
+        "mode": parseInt(trackFeatures[0][index].mode)
+      }
+    })
+
+    setSortedTracks([...splicedTracks]);
+    setTracks([...splicedTracks]);
+  }
+
+
   // useCallback() here?
-  const getTracks = async () => {
+  const getResults = async () => {
     try {
       const response = await axios({
         method: 'get',
@@ -53,41 +77,35 @@ const Search = () => {
       });
 
       if (searchType === 'album') {
-        console.log(response.data.albums.items);
         setAlbums(response.data.albums.items);
       } else {
-        console.log(response.data.tracks.items);
-        setTracks(response.data.tracks.items);
+        getTrackFeatures(response.data.tracks.items);
       }
 
-      setcurrentSearchResults(true);
+      setCurrentSearchResults(true);
     } catch (err) {
       console.log(err.message);
     }
-};
-
+  };
 
 
   return (
     <div>
-      <h1><i>Search</i></h1>
+      <SearchTitle>Search</SearchTitle>
 
       {!currentSearchResults ? (
-      <SearchOptions
-        searchType={searchType}
-        setSearchType={setSearchType}
-        setArtist={setArtist}
-        setAlbumSearchQuery={setAlbumSearchQuery}
-        setTrackSearchQuery={setTrackSearchQuery}
-        getTracks={getTracks}
-      />
-      ) : (
-      <SearchResults
-        albums={albums}
-        tracks={tracks}
-        albumLink={albumLink}
-        setAlbumLink={setAlbumLink}
-      />
+        <SearchOptions
+          searchType={searchType}
+          setSearchType={setSearchType}
+          setArtist={setArtist}
+          setAlbumSearchQuery={setAlbumSearchQuery}
+          setTrackSearchQuery={setTrackSearchQuery}
+          getResults={getResults}
+        />
+        ) : (
+        <SearchResults
+          albums={albums}
+        />
       )}
     </div>
   )

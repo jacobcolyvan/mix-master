@@ -14,7 +14,7 @@ const SearchOptions = ({
   albumSearchQuery,
   trackSearchQuery,
   setTrackSearchQuery,
-  getTracks }) => {
+  getResults }) => {
 
   return (
     <div>
@@ -43,7 +43,7 @@ const SearchOptions = ({
       < Button
         variant='outlined'
         color='primary'
-        onClick={getTracks}
+        onClick={getResults}
         className="button"
         fullWidth
       >

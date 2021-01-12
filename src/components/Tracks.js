@@ -83,6 +83,8 @@ const TracksLi = styled.li`
 const Tracks = ({keyOption, sortOption }) => {
   const {tracks, sortedTracks, setSortedTracks} = useContext(UserContext);
 
+
+
   useEffect(() => {
     const camelotSort = (temp) => {
       temp = temp.sort((a, b) => { return a - b });

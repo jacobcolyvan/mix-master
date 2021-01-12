@@ -40,6 +40,7 @@ const SearchResults = ({
           <br/>
           {albumName && <AlbumsTitle>{albumName}</AlbumsTitle>}
           <SortBy sortOption={sortOption} setSortOption={setSortOption} />
+          <br/>
 
           <Tracks
             sortOption={sortOption}
