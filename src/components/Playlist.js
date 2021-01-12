@@ -126,7 +126,7 @@ const Playlist = () => {
             "id": item.track.id,
             "tempo": Math.round(featuresResponse.data.audio_features[index].tempo),
             "key": featuresResponse.data.audio_features[index].key,
-            "mode": featuresResponse.data.audio_features[index].mode
+            "mode": parseInt(featuresResponse.data.audio_features[index].mode)
           }
         })
 
@@ -143,13 +143,15 @@ const Playlist = () => {
 
   useEffect(() => {
     const camelotSort = (temp) => {
-      temp = temp.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
+      temp = temp.sort((a, b) => { return a - b });
       temp = temp.sort((a, b) => {
-        a = a.mode === "0" ? (parseInt(camelotMinorKeyDict[a.key])) : (parseInt(camelotMajorKeyDict[a.key]));
-        b = b.mode === "0" ? (parseInt(camelotMinorKeyDict[b.key])) : (parseInt(camelotMajorKeyDict[b.key]));
+        a = (a.mode === 0 ? (parseInt(camelotMinorKeyDict[a.key])) : (parseInt(camelotMajorKeyDict[a.key])));
+        b = (b.mode === 0 ? (parseInt(camelotMinorKeyDict[b.key])) : (parseInt(camelotMajorKeyDict[b.key])));
 
         return a > b ? 1 : -1;
       });
+
+
 
       return temp;
     }
@@ -207,7 +209,7 @@ const Playlist = () => {
             <p id="track-name">{track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i></p>
             <p className="track-data">
                {keyOption === 'camelot' ?
-                `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"A"}`
+                `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`
                 : `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
             </p>
 
