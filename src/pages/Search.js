@@ -3,13 +3,16 @@ import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
+import Button from '@material-ui/core/Button';
+
 import SearchOptions from '../components/SearchOptions';
 import SearchResults from '../components/SearchResults';
+
 
 const SearchTitle = styled.h1`
   text-decoration: underline;
   font-style: italic;
-`
+`;
 
 // TODO: seperate followed and owned playlists
 //       add error handling for search without
@@ -22,6 +25,7 @@ const Search = () => {
 
   const [currentSearchResults, setCurrentSearchResults] = useState(false);
   const [albums, setAlbums] = useState(false);
+  const [albumName, setAlbumName] = useState(false);
 
   const [albumSearchQuery, setAlbumSearchQuery] = useState('');
   const [trackSearchQuery, setTrackSearchQuery] = useState('');
@@ -30,9 +34,13 @@ const Search = () => {
 
   const createRequestUrl = () => {
     if (searchType === 'album') {
-      return `https://api.spotify.com/v1/search?q=${albumSearchQuery ? 'album%3A$' + encodeURI(albumSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20' : encodeURI('jon hopkins')}&type=album`
+      return `https://api.spotify.com/v1/search?q=${albumSearchQuery ?
+      'album%3A$' + encodeURI(albumSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
+      : encodeURI('jon hopkins')}&type=album`;
     } else {
-      return `https://api.spotify.com/v1/search?q=${trackSearchQuery ? 'album%3A$' + encodeURI(trackSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20' : encodeURI('jon hopkins')}&type=track`
+      return `https://api.spotify.com/v1/search?q=${trackSearchQuery ?
+      'album%3A$' + encodeURI(trackSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
+      : encodeURI('jon hopkins')}&type=track`;
     }
   }
 
@@ -89,6 +97,16 @@ const Search = () => {
   };
 
 
+  const resetSearch = () => {
+    setCurrentSearchResults(false);
+    setAlbumSearchQuery('');
+    setTrackSearchQuery('');
+    setArtist(false);
+    setAlbumName(false);
+    setTracks(false);
+  }
+
+
   return (
     <div>
       <SearchTitle>Search</SearchTitle>
@@ -103,9 +121,22 @@ const Search = () => {
           getResults={getResults}
         />
         ) : (
-        <SearchResults
-          albums={albums}
-        />
+        <div>
+          <SearchResults
+            albums={albums}
+            albumName={albumName}
+            setAlbumName={setAlbumName}
+          />
+          <Button
+            variant='outlined'
+            color='primary'
+            onClick={resetSearch}
+            className="button"
+            fullWidth
+          >
+            Back to Search
+          </Button>
+        </div>
       )}
     </div>
   )

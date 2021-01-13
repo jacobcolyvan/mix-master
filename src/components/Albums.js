@@ -48,7 +48,6 @@ const Albums = ({ albums, setAlbumName }) => {
       console.log(tracksResponse.data.tracks.items);
 
       const trackIds = tracksResponse.data.tracks.items.map((item) => item.id);
-
       const featuresResponse = await axios({
         method: 'get',
         url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
@@ -60,9 +59,6 @@ const Albums = ({ albums, setAlbumName }) => {
 
       const tracklist = [tracksResponse.data.tracks.items];
       const trackFeatures = [featuresResponse.data.audio_features];
-
-      console.log('tracklist :>> ', tracklist);
-      console.log('trackFeatures :>> ', trackFeatures);
 
       const splicedTracks = tracklist[0].map((item, index) => {
         return {
