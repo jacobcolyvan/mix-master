@@ -24,7 +24,7 @@ const Playlist = () => {
     const getTracks = async () => {
       try {
         const trackTotalAmount = playlist.tracks.total;
-        console.log('trackTotalAmount :>> ', trackTotalAmount);
+        // console.log('trackTotalAmount :>> ', trackTotalAmount);
         let allTracks = false;
         let tracklist = [];
         // let track$

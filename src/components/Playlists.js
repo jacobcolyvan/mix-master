@@ -24,21 +24,32 @@ const PlaylistLi = styled.li`
   }
 `
 
-const PlaylistsTitle = styled.h3`
+const PlaylistsTitle = styled.div`
   text-decoration: underline;
-  font-style: italic;
+
+  #title {
+    font-style: italic;
+  }
+`
+
+const InfoDiv = styled.div`
+  margin-bottom: 40px;
+  p {
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
 `
 
 
 const Playlists = () => {
-  const {token, setPlaylist, playlists, setPlaylists} = useContext(UserContext);
+  const {token, setPlaylist, playlists, setPlaylists, username, setUsername} = useContext(UserContext);
+
 
   useEffect(() => {
     let playlistTotalAmount = 0;
     let allPlaylists = false;
     let tempPlaylistArray = []
     let offset = 0;
-
 
     const getAllPlaylists = async () => {
       try {
@@ -67,32 +78,81 @@ const Playlists = () => {
     getAllPlaylists();
   }, [token, setPlaylists]);
 
+  useEffect(() => {
+    const getUserProfile = async () => {
+      try {
+        const userResponse = await axios({
+          method: 'get',
+          url: `https://api.spotify.com/v1/me/`,
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        setUsername(userResponse.data.display_name);
+
+      } catch (err) {
+        console.log(err.message);
+      }
+    }
+
+    getUserProfile()
+  }, [token, setUsername])
+
   const savePlaylist = (index) => {
     setPlaylist(playlists[index]);
-    // history.push(`/playlists/${index}`)
   };
 
 
   if (playlists.length > 0) {
     return (
       <div>
-        <p>See <i>About</i> for more info about how to use this site.</p>
-        <PlaylistsTitle>Playlists</PlaylistsTitle>
+        <PlaylistsTitle><h2 id='title'>Playlists</h2></PlaylistsTitle>
+        <InfoDiv>
+          <p>See <i>About</i> for more info about how to use this site.</p>
+          <p>Playlists are automatically seperated into ones you've created, and ones you follow.</p>
+        </InfoDiv>
+
         {playlists.length > 0 && (
-          <ul>
-            {playlists.map((playlist, index) => (
-              <PlaylistLi
-                className='playlist item'
-                key={`track${index}`}
-                onClick={() => savePlaylist(index)}
-              >
-                <div className='single-playlist-div'>
-                  <div className='playlist-name'>{playlist.name}</div>
-                  {playlist.images[0] && <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
-                </div>
-              </PlaylistLi>
-            ))}
-          </ul>
+          <>
+            <PlaylistsTitle><h3>Created</h3></PlaylistsTitle>
+            <ul>
+              {playlists.map((playlist, index) => (
+                (playlist.owner.display_name === username) && (
+                  <PlaylistLi
+                    className='playlist item'
+                    key={`track${index}`}
+                    onClick={() => savePlaylist(index)}
+                  >
+                    <div className='single-playlist-div'>
+                      <div className='playlist-name'>{playlist.name}</div>
+                      {playlist.images[0] && <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
+                    </div>
+                  </PlaylistLi>
+                )
+              ))}
+            </ul>
+
+            <br/><br/>
+            <PlaylistsTitle><h3>Followed</h3></PlaylistsTitle>
+            <ul>
+              {playlists.map((playlist, index) => (
+                (playlist.owner.display_name !== username) && (
+                  <PlaylistLi
+                    className='playlist item'
+                    key={`track${index}`}
+                    onClick={() => savePlaylist(index)}
+                  >
+                    <div className='single-playlist-div'>
+                      <div className='playlist-name'>{playlist.name}</div>
+                      {playlist.images[0] && <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
+                    </div>
+                  </PlaylistLi>
+                )
+              ))}
+            </ul>
+          </>
         )}
       </div>
     );

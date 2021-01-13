@@ -23,6 +23,7 @@ function App() {
   const [ playlists, setPlaylists] = useState([]);
   const [ tracks, setTracks ] = useState(false);
   const [ sortedTracks, setSortedTracks ] = useState(false);
+  const [ username, setUsername ] = useState(false);
 
   const resetStates = () => {
     setPlaylist(false);
@@ -51,7 +52,22 @@ function App() {
   return (
     <div>
       <Router>
-        <UserContext.Provider value={{ token, setToken, playlist, setPlaylist, playlists, setPlaylists, about, search, tracks, setTracks, sortedTracks, setSortedTracks }}>
+        <UserContext.Provider value={{
+          token,
+          setToken,
+          playlist,
+          setPlaylist,
+          playlists,
+          setPlaylists,
+          about,
+          search,
+          tracks,
+          setTracks,
+          sortedTracks,
+          setSortedTracks,
+          username,
+          setUsername }}
+        >
           <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>
             <Navbar loadPlaylists={loadPlaylists} loadAbout={loadAbout} loadSearch={loadSearch} />
             <Paper variant='outlined' className='main-paper' style={{}}>
