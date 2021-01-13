@@ -12,30 +12,48 @@ import './stylesheets/App.css';
 
 import Home from './pages/Home'
 import Navbar from './components/Navbar'
+// import Search from './pages/Search';
 
 
 function App() {
   const [ token, setToken ] = useState(false);
   const [ playlist, setPlaylist] = useState(false);
   const [ about, setAbout] = useState(false);
+  const [ search, setSearch] = useState(false);
   const [ playlists, setPlaylists] = useState([]);
+  const [ tracks, setTracks ] = useState(false);
+  const [ sortedTracks, setSortedTracks ] = useState(false);
+
+  const resetStates = () => {
+    setPlaylist(false);
+    setTracks(false);
+    setSortedTracks(false);
+  }
 
   const loadPlaylists = () => {
-    setPlaylist(false);
     setAbout(false);
+    setSearch(false);
+    resetStates();
   }
 
   const loadAbout = () => {
-    setPlaylist(false);
-    setAbout(true)
+    setAbout(true);
+    setSearch(false);
+    resetStates();
+  }
+
+  const loadSearch = () => {
+    setSearch(true);
+    setAbout(false);
+    resetStates();
   }
 
   return (
     <div>
       <Router>
-        <UserContext.Provider value={{ token, setToken, playlist, setPlaylist, playlists, setPlaylists, about }}>
+        <UserContext.Provider value={{ token, setToken, playlist, setPlaylist, playlists, setPlaylists, about, search, tracks, setTracks, sortedTracks, setSortedTracks }}>
           <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>
-            <Navbar loadPlaylists={loadPlaylists} loadAbout={loadAbout} />
+            <Navbar loadPlaylists={loadPlaylists} loadAbout={loadAbout} loadSearch={loadSearch} />
             <Paper variant='outlined' className='main-paper' style={{}}>
               <Switch>
                 <Route
@@ -47,7 +65,7 @@ function App() {
                   )}
                 />
 
-                <Route exact path='/' component={Home} />
+                {/* <Route exact path='/search' component={Search} /> */}
 
                 <Redirect to='/' />
               </Switch>
