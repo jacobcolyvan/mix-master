@@ -15,13 +15,13 @@ const AlbumsTitle = styled.h3`
 
 
 const SearchResults = ({
-  albums
+  albums,
+  albumName,
+  setAlbumName
 }) => {
   const {tracks} = useContext(UserContext);
-
   const [sortOption, setSortOption] = useState('tempoThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
-  const [albumName, setAlbumName] = useState(false);
 
 
 

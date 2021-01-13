@@ -15,7 +15,6 @@ const SearchTitle = styled.h1`
 `;
 
 // TODO: seperate followed and owned playlists
-//       add error handling for search without
 
 
 const Search = () => {
@@ -29,18 +28,18 @@ const Search = () => {
 
   const [albumSearchQuery, setAlbumSearchQuery] = useState('');
   const [trackSearchQuery, setTrackSearchQuery] = useState('');
-  const [artist, setArtist] = useState(false);
+  const [artist, setArtist] = useState('');
 
 
   const createRequestUrl = () => {
     if (searchType === 'album') {
       return `https://api.spotify.com/v1/search?q=${albumSearchQuery ?
       'album%3A$' + encodeURI(albumSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
-      : encodeURI('jon hopkins')}&type=album`;
+      : encodeURI('')}&type=album`;
     } else {
       return `https://api.spotify.com/v1/search?q=${trackSearchQuery ?
       'album%3A$' + encodeURI(trackSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
-      : encodeURI('jon hopkins')}&type=track`;
+      : encodeURI('')}&type=track`;
     }
   }
 
@@ -74,25 +73,27 @@ const Search = () => {
 
   // useCallback() here?
   const getResults = async () => {
-    try {
-      const response = await axios({
-        method: 'get',
-        url: createRequestUrl(),
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json'
+    if (albumSearchQuery.length || trackSearchQuery.length || artist.length) {
+      try {
+        const response = await axios({
+          method: 'get',
+          url: createRequestUrl(),
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (searchType === 'album') {
+          setAlbums(response.data.albums.items);
+        } else {
+          getTrackFeatures(response.data.tracks.items);
         }
-      });
 
-      if (searchType === 'album') {
-        setAlbums(response.data.albums.items);
-      } else {
-        getTrackFeatures(response.data.tracks.items);
+        setCurrentSearchResults(true);
+      } catch (err) {
+        console.log(err.message);
       }
-
-      setCurrentSearchResults(true);
-    } catch (err) {
-      console.log(err.message);
     }
   };
 
@@ -101,7 +102,7 @@ const Search = () => {
     setCurrentSearchResults(false);
     setAlbumSearchQuery('');
     setTrackSearchQuery('');
-    setArtist(false);
+    setArtist('');
     setAlbumName(false);
     setTracks(false);
   }
@@ -115,6 +116,7 @@ const Search = () => {
         <SearchOptions
           searchType={searchType}
           setSearchType={setSearchType}
+          artist={artist}
           setArtist={setArtist}
           setAlbumSearchQuery={setAlbumSearchQuery}
           setTrackSearchQuery={setTrackSearchQuery}

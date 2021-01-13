@@ -19,13 +19,12 @@ const SearchBarDiv = styled.div`
   div {
     margin-bottom: 12px;
   }
-
-
 `
 
 const SearchOptions = ({
   searchType,
   setSearchType,
+  artist,
   setArtist,
   setAlbumSearchQuery,
   albumSearchQuery,
@@ -48,11 +47,26 @@ const SearchOptions = ({
       </Select>
 
       <SearchBarDiv>
-        <SearchBar label={"artist"} setParam={setArtist} />
+        <SearchBar
+          label={"artist"}
+          setParam={setArtist}
+          param={artist}
+          getResults={getResults}
+        />
 
         {searchType === "album" ?
-          <SearchBar label={"album name"} setParam={setAlbumSearchQuery} param={albumSearchQuery} /> :
-          <SearchBar label={"track name"} setParam={setTrackSearchQuery} param={trackSearchQuery}/>
+          <SearchBar
+            label={"album name"}
+            setParam={setAlbumSearchQuery}
+            param={albumSearchQuery}
+            getResults={getResults}
+          /> :
+          <SearchBar
+            label={"track name"}
+            setParam={setTrackSearchQuery}
+            param={trackSearchQuery}
+            getResults={getResults}
+          />
         }
        </SearchBarDiv>
 
