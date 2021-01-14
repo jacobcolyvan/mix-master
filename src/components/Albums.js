@@ -83,7 +83,7 @@ const Albums = ({ albums, setAlbumName }) => {
 
   return (
     <div>
-      <AlbumsTitle>Album Results:</AlbumsTitle>
+      <AlbumsTitle>Album Results</AlbumsTitle>
       {albums.length > 0 && (
         <ul>
           {albums.map((album, index) => (
@@ -93,7 +93,7 @@ const Albums = ({ albums, setAlbumName }) => {
               onClick={() => getAlbumTracks(album)}
             >
               <div className='single-playlist-div'>
-                <p className='playlist-name'>{album.name} – <i>{album.artists.length > 1 ? album.artists[0].name + ', ' + album.artists[1].name : album.artists[0].name}</i> </p>
+                <p className='playlist-name'>{album.name} – <i>{album.artists.length > 1 ? album.artists[0].name + ', ' + album.artists[1].name : album.artists[0].name}{"   (" + album.release_date.slice(0, 4) + ")"}</i> </p>
                 {album.images[0] && <img src={album.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
               </div>
             </AlbumLi>
