@@ -30,10 +30,14 @@ const PlaylistsTitle = styled.div`
   #title {
     font-style: italic;
   }
+
+  h3 {
+    padding-top: 24px;
+  }
 `
 
 const InfoDiv = styled.div`
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   p {
     margin-top: 0;
     margin-bottom: 8px;
@@ -91,7 +95,6 @@ const Playlists = () => {
         });
 
         setUsername(userResponse.data.display_name);
-
       } catch (err) {
         console.log(err.message);
       }
@@ -111,12 +114,12 @@ const Playlists = () => {
         <PlaylistsTitle><h2 id='title'>Playlists</h2></PlaylistsTitle>
         <InfoDiv>
           <p>See <i>About</i> for more info about how to use this site.</p>
-          <p>Playlists are automatically seperated into ones you've created, and ones you follow.</p>
+          <p>Playlists are automatically seperated into ones you've <a href="#created-playlists">created</a>, and ones you <a href="#followed-playlists">follow</a>.</p>
         </InfoDiv>
 
         {playlists.length > 0 && (
-          <>
-            <PlaylistsTitle><h3>Created</h3></PlaylistsTitle>
+          <div>
+            <PlaylistsTitle id="created-playlists"><h3>Created</h3></PlaylistsTitle>
             <ul>
               {playlists.map((playlist, index) => (
                 (playlist.owner.display_name === username) && (
@@ -134,8 +137,8 @@ const Playlists = () => {
               ))}
             </ul>
 
-            <br/><br/>
-            <PlaylistsTitle><h3>Followed</h3></PlaylistsTitle>
+            <br/>
+            <PlaylistsTitle id="followed-playlists"><h3>Followed</h3></PlaylistsTitle>
             <ul>
               {playlists.map((playlist, index) => (
                 (playlist.owner.display_name !== username) && (
@@ -152,7 +155,7 @@ const Playlists = () => {
                 )
               ))}
             </ul>
-          </>
+          </div>
         )}
       </div>
     );
