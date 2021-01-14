@@ -3,14 +3,14 @@ import styled from 'styled-components';
 
 const InfoCont = styled.div`
   width: 100%;
-  margin-bottom: 32px;
+  margin-bottom: 56px;
 
   p {
     margin: 0px;
   }
 
   #info-header {
-    margin-bottom: 8px;
+    margin-bottom: 24px;
     margin-top: 16px;
   }
 
@@ -22,15 +22,15 @@ const InfoCont = styled.div`
 const Info = () => {
   return (
     <InfoCont>
-      <p id='info-header'>This is a website to:</p>
+      <p id='info-header'><ins>This is a website to:</ins></p>
       <p id='info-points'>
-        – Compare and sort your Spotify playlists by their key, bpm, or both.
+        – Compare and sort tracks in your Spotify playlists by their key and BPM, or search for tracks, albums, or playlists.
       </p>
       <p id="info-points">
         * Intended to help a user make better flowing playlists, or mixes.
       </p>
       <p id="info-points">
-        – Works similarly to programs such as MixedInkey, but for Spotify.
+        – Works similarly to programs such as MixedInkey, but for the Spotify catalogue.
       </p>
     </InfoCont>
   )
