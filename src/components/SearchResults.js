@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
 import Albums from './Albums';
-import Tracks from './Tracks'
+import Tracks from './Tracks';
+import PlaylistList from './PlaylistList';
 
 import SortBy from './SortBy';
 import KeySelect from './KeySelect';
@@ -17,13 +18,12 @@ const AlbumsTitle = styled.h3`
 const SearchResults = ({
   albums,
   albumName,
-  setAlbumName
+  setAlbumName,
+  playlistSearchResults
 }) => {
   const {tracks} = useContext(UserContext);
   const [sortOption, setSortOption] = useState('tempoThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
-
-
 
   return (
     <div>
@@ -47,6 +47,10 @@ const SearchResults = ({
             keyOption={keyOption}
           />
         </>
+      )}
+
+      {playlistSearchResults && (
+        <PlaylistList playlistsToRender={playlistSearchResults} />
       )}
 
 

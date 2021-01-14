@@ -30,7 +30,54 @@ const SearchOptions = ({
   albumSearchQuery,
   trackSearchQuery,
   setTrackSearchQuery,
-  getResults }) => {
+  getResults,
+  playlistSearchQuery,
+  setPlaylistSearchQuery
+ }) => {
+
+    const createSearchBars = () => {
+      let searchBars;
+      if (searchType === "playlist") {
+        searchBars =
+        <SearchBar
+          label={"playlist name"}
+          setParam={setPlaylistSearchQuery}
+          param={playlistSearchQuery}
+          getResults={getResults}
+        />
+      } else {
+        searchBars =
+        <div>
+          <SearchBar
+            label={"artist"}
+            setParam={setArtist}
+            param={artist}
+            getResults={getResults}
+          />
+
+          {searchType === "album" ? (
+            <SearchBar
+              label={"album name"}
+              setParam={setAlbumSearchQuery}
+              param={albumSearchQuery}
+              getResults={getResults}
+            />
+          ) : (
+            <SearchBar
+              label={"track name"}
+              setParam={setTrackSearchQuery}
+              param={trackSearchQuery}
+              getResults={getResults}
+            />
+          )}
+        </div>
+      }
+
+      return searchBars;
+    }
+
+
+
 
   return (
     <div>
@@ -42,32 +89,13 @@ const SearchOptions = ({
         fullWidth
         variant='outlined'
       >
-        <MenuItem value={'album'}>Album</MenuItem>
-        <MenuItem value={'track'}>Track</MenuItem>
+        <MenuItem value={'album'}>Albums</MenuItem>
+        <MenuItem value={'track'}>Tracks</MenuItem>
+        <MenuItem value={'playlist'}>Playlists</MenuItem>
       </Select>
 
       <SearchBarDiv>
-        <SearchBar
-          label={"artist"}
-          setParam={setArtist}
-          param={artist}
-          getResults={getResults}
-        />
-
-        {searchType === "album" ?
-          <SearchBar
-            label={"album name"}
-            setParam={setAlbumSearchQuery}
-            param={albumSearchQuery}
-            getResults={getResults}
-          /> :
-          <SearchBar
-            label={"track name"}
-            setParam={setTrackSearchQuery}
-            param={trackSearchQuery}
-            getResults={getResults}
-          />
-        }
+         {createSearchBars()}
        </SearchBarDiv>
 
 

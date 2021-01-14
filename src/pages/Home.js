@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
 import SpotifyAuth from '../components/SpotifyAuth';
-import Playlists from '../components/Playlists';
+import UserPlaylists from '../components/UserPlaylists';
 import Playlist from '../components/Playlist';
 import About from '../components/About';
 import Search from './Search'
@@ -30,11 +30,11 @@ const Home = ({ location }) => {
   return (
     <Main>
       {!token && <SpotifyAuth />}
-      {(about && token) && <About /> }
-      {(search && token) && <Search /> }
+      {(token && about) && <About /> }
+      {(search) && <Search /> }
 
-      {(!about && !search && token && playlist) && <Playlist />}
-      {(! about && !search && token && !playlist) && <Playlists />}
+      {(token && !about  && playlist) && <Playlist />}
+      {(token && ! about && !search && !playlist) && <UserPlaylists />}
 
     </Main>
   );

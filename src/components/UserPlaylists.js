@@ -1,28 +1,11 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
-const PlaylistLi = styled.li`
-  border: 1px solid #c4c4c4;
-  border-radius: 4px;
-  padding: 10px 4px;
+import PlaylistList from './PlaylistList'
 
-  &:hover {
-    color: #2882e9;
-    cursor: pointer;
-  }
-
-  div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .playlist-name {
-    padding-left: 4px;
-  }
-`
+// Add searchbar for filtering playlists
 
 const PlaylistsTitle = styled.div`
   text-decoration: underline;
@@ -45,8 +28,9 @@ const InfoDiv = styled.div`
 `
 
 
-const Playlists = () => {
-  const {token, setPlaylist, playlists, setPlaylists, username, setUsername} = useContext(UserContext);
+const UserPlaylists = () => {
+  const {token, playlists, setPlaylists, username, setUsername} = useContext(UserContext);
+  const [sortedPlaylists, setSortedPlaylists ] = useState(false);
 
 
   useEffect(() => {
@@ -101,11 +85,28 @@ const Playlists = () => {
     }
 
     getUserProfile()
-  }, [token, setUsername])
+  }, [token, setUsername]);
 
-  const savePlaylist = (index) => {
-    setPlaylist(playlists[index]);
-  };
+  useEffect(() => {
+    const sortPlaylists = () => {
+      let tempSortedPlaylists = {"created": [], "followed": [], "generated": []}
+
+      playlists.forEach((playlist, index) => {
+        if (playlist.name.slice(0, 4) === "gena") {
+          tempSortedPlaylists.generated.push(playlist);
+        } else if (playlist.owner.display_name === username) {
+          tempSortedPlaylists.created.push(playlist);
+        } else {
+          tempSortedPlaylists.followed.push(playlist);
+        }
+      })
+
+      setSortedPlaylists(tempSortedPlaylists);
+    }
+
+    sortPlaylists();
+  }, [playlists, username]);
+
 
 
   if (playlists.length > 0) {
@@ -117,44 +118,22 @@ const Playlists = () => {
           <p>Playlists are automatically seperated into ones you've <a href="#created-playlists">created</a>, and ones you <a href="#followed-playlists">follow</a>.</p>
         </InfoDiv>
 
-        {playlists.length > 0 && (
+        {sortedPlaylists && (
           <div>
             <PlaylistsTitle id="created-playlists"><h3>Created</h3></PlaylistsTitle>
-            <ul>
-              {playlists.map((playlist, index) => (
-                (playlist.owner.display_name === username) && (
-                  <PlaylistLi
-                    className='playlist item'
-                    key={`track${index}`}
-                    onClick={() => savePlaylist(index)}
-                  >
-                    <div className='single-playlist-div'>
-                      <div className='playlist-name'>{playlist.name}</div>
-                      {playlist.images[0] && <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
-                    </div>
-                  </PlaylistLi>
-                )
-              ))}
-            </ul>
+            <PlaylistList playlistsToRender={sortedPlaylists.created} />
 
             <br/>
             <PlaylistsTitle id="followed-playlists"><h3>Followed</h3></PlaylistsTitle>
-            <ul>
-              {playlists.map((playlist, index) => (
-                (playlist.owner.display_name !== username) && (
-                  <PlaylistLi
-                    className='playlist item'
-                    key={`track${index}`}
-                    onClick={() => savePlaylist(index)}
-                  >
-                    <div className='single-playlist-div'>
-                      <div className='playlist-name'>{playlist.name}</div>
-                      {playlist.images[0] && <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
-                    </div>
-                  </PlaylistLi>
-                )
-              ))}
-            </ul>
+            <PlaylistList playlistsToRender={sortedPlaylists.followed} />
+
+            <br/>
+            {sortedPlaylists.generated.length > 0 && (
+              <>
+                <PlaylistsTitle id="generated-playlists"><h3>Gena</h3></PlaylistsTitle>
+                <PlaylistList playlistsToRender={sortedPlaylists.generated} />
+              </>
+            )}
           </div>
         )}
       </div>
@@ -168,4 +147,4 @@ const Playlists = () => {
   }
 }
 
-export default Playlists
+export default UserPlaylists

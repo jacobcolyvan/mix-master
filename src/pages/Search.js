@@ -14,11 +14,10 @@ const SearchTitle = styled.h1`
   font-style: italic;
 `;
 
-// TODO: seperate followed and owned playlists
 
 
 const Search = () => {
-  const {token, setTracks, setSortedTracks} = useContext(UserContext);
+  const {token, setTracks, setSortedTracks, setPlaylist} = useContext(UserContext);
 
   const [searchType, setSearchType] = useState('album');
 
@@ -28,7 +27,10 @@ const Search = () => {
 
   const [albumSearchQuery, setAlbumSearchQuery] = useState('');
   const [trackSearchQuery, setTrackSearchQuery] = useState('');
+  const [playlistSearchQuery, setPlaylistSearchQuery ] = useState('');
   const [artist, setArtist] = useState('');
+
+  const [playlistSearchResults, setPlaylistSearchResults ] = useState('');
 
 
   const createRequestUrl = () => {
@@ -36,10 +38,12 @@ const Search = () => {
       return `https://api.spotify.com/v1/search?q=${albumSearchQuery ?
       'album%3A$' + encodeURI(albumSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
       : encodeURI('')}&type=album`;
-    } else {
+    } else if (searchType === 'track') {
       return `https://api.spotify.com/v1/search?q=${trackSearchQuery ?
       'album%3A$' + encodeURI(trackSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
       : encodeURI('')}&type=track`;
+    } else {
+      return `https://api.spotify.com/v1/search?q=${playlistSearchQuery}&type=playlist`;
     }
   }
 
@@ -73,7 +77,7 @@ const Search = () => {
 
   // useCallback() here?
   const getResults = async () => {
-    if (albumSearchQuery.length || trackSearchQuery.length || artist.length) {
+    if (artist.length || albumSearchQuery.length || trackSearchQuery.length || playlistSearchQuery.length ) {
       try {
         const response = await axios({
           method: 'get',
@@ -85,9 +89,12 @@ const Search = () => {
         });
 
         if (searchType === 'album') {
+          console.log(response.data.albums.items);
           setAlbums(response.data.albums.items);
-        } else {
+        } else if (searchType === 'track') {
           getTrackFeatures(response.data.tracks.items);
+        } else {
+          setPlaylistSearchResults(response.data.playlists.items);
         }
 
         setCurrentSearchResults(true);
@@ -105,6 +112,9 @@ const Search = () => {
     setArtist('');
     setAlbumName(false);
     setTracks(false);
+    setPlaylistSearchQuery('');
+    setPlaylistSearchResults(false);
+    setPlaylist(false);
   }
 
 
@@ -118,17 +128,16 @@ const Search = () => {
           setSearchType={setSearchType}
           artist={artist}
           setArtist={setArtist}
+          trackSearchQuery={trackSearchQuery}
+          albumSearchQuery={albumSearchQuery}
+          playlistSearchQuery={playlistSearchQuery}
           setAlbumSearchQuery={setAlbumSearchQuery}
           setTrackSearchQuery={setTrackSearchQuery}
+          setPlaylistSearchQuery={setPlaylistSearchQuery}
           getResults={getResults}
         />
         ) : (
         <div>
-          <SearchResults
-            albums={albums}
-            albumName={albumName}
-            setAlbumName={setAlbumName}
-          />
           <Button
             variant='outlined'
             color='primary'
@@ -138,6 +147,13 @@ const Search = () => {
           >
             Back to Search
           </Button>
+
+          <SearchResults
+            albums={albums}
+            albumName={albumName}
+            setAlbumName={setAlbumName}
+            playlistSearchResults={playlistSearchResults}
+          />
         </div>
       )}
     </div>

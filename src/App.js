@@ -81,8 +81,6 @@ function App() {
                   )}
                 />
 
-                {/* <Route exact path='/search' component={Search} /> */}
-
                 <Redirect to='/' />
               </Switch>
             </Paper>
