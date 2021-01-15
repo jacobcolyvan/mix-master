@@ -46,7 +46,7 @@ const Navbar = ({ loadPlaylists, loadAbout, loadSearch }) => {
         )}
 
 
-        {(token && !about) && (
+        {(token && !about && !playlist) && (
           < Button variant='outlined' color='secondary' onClick={loadAbout} className="button" fullWidth >
             About
           </ Button>
