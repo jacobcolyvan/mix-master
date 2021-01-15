@@ -38,7 +38,11 @@ const SearchResults = ({
         <>
           <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
           <br/>
-          {albumName && <AlbumsTitle>{albumName}</AlbumsTitle>}
+          {(albumName) ? (
+          <AlbumsTitle>{albumName}</AlbumsTitle>
+          ) : (
+            <AlbumsTitle>Track Results</AlbumsTitle>
+          )}
           <SortBy sortOption={sortOption} setSortOption={setSortOption} />
           <br/>
 
@@ -50,7 +54,10 @@ const SearchResults = ({
       )}
 
       {playlistSearchResults && (
-        <PlaylistList playlistsToRender={playlistSearchResults} />
+        <>
+          <AlbumsTitle>Playlist Results</AlbumsTitle>
+          <PlaylistList playlistsToRender={playlistSearchResults} />
+        </>
       )}
 
 

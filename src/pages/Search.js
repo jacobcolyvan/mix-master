@@ -115,6 +115,7 @@ const Search = () => {
     setPlaylistSearchQuery('');
     setPlaylistSearchResults(false);
     setPlaylist(false);
+    setAlbums(false);
   }
 
 
@@ -147,6 +148,8 @@ const Search = () => {
           >
             Back to Search
           </Button>
+
+          <br/><br/>
 
           <SearchResults
             albums={albums}
