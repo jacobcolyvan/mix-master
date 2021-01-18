@@ -89,8 +89,8 @@ const SearchOptions = ({
         fullWidth
         variant='outlined'
       >
-        <MenuItem value={'album'}>Albums</MenuItem>
         <MenuItem value={'track'}>Tracks</MenuItem>
+        <MenuItem value={'album'}>Albums</MenuItem>
         <MenuItem value={'playlist'}>Playlists</MenuItem>
       </Select>
 

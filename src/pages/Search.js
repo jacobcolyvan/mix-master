@@ -19,7 +19,7 @@ const SearchTitle = styled.h1`
 const Search = () => {
   const {token, setTracks, setSortedTracks, setPlaylist} = useContext(UserContext);
 
-  const [searchType, setSearchType] = useState('album');
+  const [searchType, setSearchType] = useState('track');
 
   const [currentSearchResults, setCurrentSearchResults] = useState(false);
   const [albums, setAlbums] = useState(false);
