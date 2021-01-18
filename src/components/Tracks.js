@@ -63,8 +63,12 @@ const TracksLi = styled.li`
     margin: 0;
   }
 
-  #track-name {
+  #track-name, .track-details {
     flex-basis: 70%;
+  }
+
+  .track-name-p:hover {
+    cursor: pointer;
   }
 
   .track-data {
@@ -82,7 +86,6 @@ const TracksLi = styled.li`
 
 const Tracks = ({keyOption, sortOption }) => {
   const {tracks, sortedTracks, setSortedTracks} = useContext(UserContext);
-
 
 
   useEffect(() => {
@@ -128,6 +131,10 @@ const Tracks = ({keyOption, sortOption }) => {
 
   }, [sortOption, tracks, keyOption, setSortedTracks]);
 
+  const copyToClipboard = (trackName) => {
+    navigator.clipboard.writeText(trackName);
+  };
+
   return (
     <ul>
         <TracksLi>
@@ -138,7 +145,10 @@ const Tracks = ({keyOption, sortOption }) => {
 
         {(sortedTracks) && sortedTracks.map((track, index) => (
           <TracksLi key={`track${index}`}>
-            <p id="track-name">{track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i></p>
+            <p className="track-details">
+              <span className="track-name-p" onClick={() => copyToClipboard(track.name)}>{track.name} </span>
+              – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
+            </p>
             <p className="track-data">
                {keyOption === 'camelot' ?
                 `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`

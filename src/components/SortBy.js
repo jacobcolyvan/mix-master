@@ -10,6 +10,7 @@ const SortBy = ({sortOption, setSortOption, sorter}) => {
 
   return (
     <div>
+      <p>Note that the track name, <i>copies to clipboard</i> on click.</p>
       <Select
         labelId='Sort By:'
         id='sort-by-select'

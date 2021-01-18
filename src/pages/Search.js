@@ -89,7 +89,6 @@ const Search = () => {
         });
 
         if (searchType === 'album') {
-          console.log(response.data.albums.items);
           setAlbums(response.data.albums.items);
         } else if (searchType === 'track') {
           getTrackFeatures(response.data.tracks.items);
