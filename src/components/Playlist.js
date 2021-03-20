@@ -99,7 +99,7 @@ const Playlist = () => {
       <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
       <br/>
       <PlaylistName>{playlist.name}</PlaylistName>
-      {/* <p>{playlist.description}</p> */}
+      <p>{playlist.description}</p>
 
       <SortBy sortOption={sortOption} setSortOption={setSortOption} />
 

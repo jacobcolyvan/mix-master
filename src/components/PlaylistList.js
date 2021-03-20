@@ -23,7 +23,7 @@ const PlaylistLi = styled.li`
   }
 `
 
-const PlaylistItems = ({ playlistsToRender }) => {
+const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
   const {setPlaylist} = useContext(UserContext);
 
   return (
@@ -32,7 +32,11 @@ const PlaylistItems = ({ playlistsToRender }) => {
           <PlaylistLi
             className='playlist item'
             key={`track${index}`}
-            onClick={() => setPlaylist(playlist)}
+            onClick={() => {
+              setPlaylist(playlist)
+              console.log("gg")
+              showOnlyPlaylistTracks && showOnlyPlaylistTracks()
+            }}
           >
             <div className='single-playlist-div'>
               <div className='playlist-name'>{playlist.name}</div>

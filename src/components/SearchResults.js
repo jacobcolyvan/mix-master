@@ -19,9 +19,10 @@ const SearchResults = ({
   albums,
   albumName,
   setAlbumName,
-  playlistSearchResults
+  playlistSearchResults,
+  showOnlyPlaylistTracks
 }) => {
-  const {tracks} = useContext(UserContext);
+  const {tracks, playlist} = useContext(UserContext);
   const [sortOption, setSortOption] = useState('tempoThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
 
@@ -34,7 +35,7 @@ const SearchResults = ({
         />
       )}
 
-      {tracks && (
+      {(!playlist && tracks) && (
         <>
           <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
           <br/>
@@ -56,7 +57,10 @@ const SearchResults = ({
       {playlistSearchResults && (
         <>
           <AlbumsTitle>Playlist Results</AlbumsTitle>
-          <PlaylistList playlistsToRender={playlistSearchResults} />
+          <PlaylistList
+            playlistsToRender={playlistSearchResults}
+            showOnlyPlaylistTracks={showOnlyPlaylistTracks}
+          />
         </>
       )}
 

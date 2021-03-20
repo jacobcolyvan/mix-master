@@ -41,7 +41,7 @@ const Search = () => {
     } else if (searchType === 'track') {
       return `https://api.spotify.com/v1/search?q=${trackSearchQuery ?
       'album%3A$' + encodeURI(trackSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
-      : encodeURI('')}&type=track`;
+      : encodeURI('')}&type=track&limit=50`;
     } else {
       return `https://api.spotify.com/v1/search?q=${playlistSearchQuery}&type=playlist`;
     }
@@ -117,6 +117,10 @@ const Search = () => {
     setAlbums(false);
   }
 
+  const showOnlyPlaylistTracks = () => {
+    setPlaylistSearchResults(false);
+  }
+
 
   return (
     <div>
@@ -155,6 +159,7 @@ const Search = () => {
             albumName={albumName}
             setAlbumName={setAlbumName}
             playlistSearchResults={playlistSearchResults}
+            showOnlyPlaylistTracks={showOnlyPlaylistTracks}
           />
         </div>
       )}
