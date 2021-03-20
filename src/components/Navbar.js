@@ -15,6 +15,10 @@ const NavbarCont = styled.header`
     text-decoration: underline;
   }
 
+  h1:hover {
+    cursor: pointer;
+  }
+
   div {
     width: 25%;
   }
@@ -30,7 +34,7 @@ const Navbar = ({ loadPlaylists, loadAbout, loadSearch }) => {
 
   return (
     <NavbarCont>
-      <h1>Mix Master</h1>
+      <h1 onClick={loadPlaylists}>Mix Master</h1>
       <div>
 
         {(playlist || about || search) && (
