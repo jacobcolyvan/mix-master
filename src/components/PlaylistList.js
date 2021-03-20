@@ -34,7 +34,6 @@ const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
             key={`track${index}`}
             onClick={() => {
               setPlaylist(playlist)
-              console.log("gg")
               showOnlyPlaylistTracks && showOnlyPlaylistTracks()
             }}
           >

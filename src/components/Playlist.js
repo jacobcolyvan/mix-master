@@ -75,7 +75,9 @@ const Playlist = () => {
             "id": item.track.id,
             "tempo": Math.round(trackFeatures[index].tempo),
             "key": trackFeatures[index].key,
-            "mode": parseInt(trackFeatures[index].mode)
+            "mode": parseInt(trackFeatures[index].mode),
+            "energy": trackFeatures[index].energy,
+            "danceability": trackFeatures[index].danceability
           }
         })
 
@@ -99,7 +101,7 @@ const Playlist = () => {
       <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
       <br/>
       <PlaylistName>{playlist.name}</PlaylistName>
-      <p>{playlist.description}</p>
+      {/* <p>{playlist.description}</p> */}
 
       <SortBy sortOption={sortOption} setSortOption={setSortOption} />
 

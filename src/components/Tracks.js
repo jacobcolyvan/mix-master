@@ -72,8 +72,7 @@ const TracksLi = styled.li`
   }
 
   .track-data {
-
-    flex-basis: 15%;
+    flex-basis: 12%;
     text-align: center;
   }
 
@@ -140,6 +139,7 @@ const Tracks = ({keyOption, sortOption }) => {
         <TracksLi>
           <p  id="track-name" className="table-headers">Track Name</p>
           <p className="table-headers track-data">Key</p>
+          <p className="table-headers track-data">Enrgy</p>
           <p className="table-headers track-data">BPM</p>
         </TracksLi>
 
@@ -154,6 +154,7 @@ const Tracks = ({keyOption, sortOption }) => {
                 `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`
                 : `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
             </p>
+            <p className="track-data">{track.energy}</p>
             <p className="track-data">{track.tempo}</p>
           </TracksLi>
 
