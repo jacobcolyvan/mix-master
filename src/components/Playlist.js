@@ -23,16 +23,14 @@ const Playlist = () => {
   useEffect(() => {
     const getTracks = async () => {
       try {
-        const trackTotalAmount = playlist.tracks.total;
-        // console.log('trackTotalAmount :>> ', trackTotalAmount);
+        let trackTotalAmount = playlist.tracks.total;
         let allTracks = false;
         let tracklist = [];
-        // let track$
         let offset = 0;
         let trackFeatures = [];
 
         while (!allTracks) {
-          const tracksResponse = await axios({
+          let tracksResponse = await axios({
             method: 'get',
             url: playlist.href + `/tracks?offset=${offset}`,
             headers: {
@@ -41,7 +39,19 @@ const Playlist = () => {
             }
           });
 
-          const trackIds = tracksResponse.data.items.map((item) => item.track.id);
+          tracksResponse = tracksResponse.data.items.map((item) => {
+            if (item.track) {
+              return item
+            } else {
+              trackTotalAmount --;
+              return undefined
+            }
+          })
+
+          // remove null items
+          tracksResponse = tracksResponse.filter(Boolean);
+          let trackIds = tracksResponse.map((item) => item.track.id)
+
           const featuresResponse = await axios({
             method: 'get',
             url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
@@ -51,11 +61,12 @@ const Playlist = () => {
             }
           })
 
-          tracklist = [...tracklist, ...tracksResponse.data.items];
+          tracklist = [...tracklist, ...tracksResponse];
           trackFeatures = [...trackFeatures, ...featuresResponse.data.audio_features];
 
-          trackTotalAmount > tracklist.length ? offset += 100 : allTracks = true;
+          trackTotalAmount > (tracklist.length) ? offset += 100 : allTracks = true;
         }
+
 
         const splicedTracks = tracklist.map((item, index) => {
           return {
@@ -71,7 +82,8 @@ const Playlist = () => {
         setTracks([...splicedTracks]);
         setSortedTracks([...splicedTracks]);
       } catch (err) {
-        console.log(err.message);
+        console.log(err);
+
       }
     };
 
