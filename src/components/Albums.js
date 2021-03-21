@@ -34,7 +34,6 @@ const Albums = ({ albums, setAlbumName }) => {
 
 
   const getAlbumTracks = async (album) => {
-    console.log('album :>> ', album);
     try {
       const tracksResponse = await axios({
         method: 'get',
@@ -44,8 +43,6 @@ const Albums = ({ albums, setAlbumName }) => {
           'Content-Type': 'application/json'
         }
       });
-
-      console.log(tracksResponse.data.tracks.items);
 
       const trackIds = tracksResponse.data.tracks.items.map((item) => item.id);
       const featuresResponse = await axios({

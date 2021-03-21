@@ -23,7 +23,7 @@ const SearchResults = ({
   showOnlyPlaylistTracks
 }) => {
   const {tracks, playlist} = useContext(UserContext);
-  const [sortOption, setSortOption] = useState('tempoThenKey');
+  const [sortOption, setSortOption] = useState('default');
   const [keyOption, setKeyOption] = useState('camelot');
 
   return (
