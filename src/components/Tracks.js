@@ -68,7 +68,7 @@ const TracksLi = styled.li`
     flex-basis: 70%;
   }
 
-  .track-name-p:hover, .key-data:hover {
+  .key-data:hover, .track-name-p:hover {
     cursor: pointer;
   }
 
@@ -135,13 +135,17 @@ const Tracks = ({keyOption, sortOption }) => {
     };
 
     sorter(sortOption);
-    // console.log("sortedTracks", sortedTracks)
-
   }, [sortOption, tracks, keyOption, setSortedTracks]);
 
-  const copyToClipboard = (trackName) => {
-    navigator.clipboard.writeText(trackName);
+  const copyToClipboard = (trackName, trackArtist) => {
+    navigator.clipboard.writeText(`${trackName} ${trackArtist}`);
   };
+
+  const goToRecommended = (track) => {
+    resetStates();
+    setRecommendedTracksInfo({"id": track.id, "key": track.key, "mode": track.mode});
+    history.push('/recommended');
+  }
 
   return (
     <ul className="tracks-container">
@@ -155,16 +159,16 @@ const Tracks = ({keyOption, sortOption }) => {
         {(sortedTracks) && sortedTracks.map((track, index) => (
           <TracksLi key={`track${index}`}>
             <p className="track-details">
-              <span className="track-name-p" onClick={() => copyToClipboard(track.name)}>{track.name} </span>
-              – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
+              <span
+                className="track-name-p"
+                onClick={() => copyToClipboard(track.name, track.artists[0])}
+              >
+                {track.name}
+              </span> – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
             </p>
             <p
               className="track-data key-data"
-              onClick={() => {
-                resetStates()
-                setRecommendedTracksInfo({"id": track.id, "key": track.key, "mode": track.mode})
-                history.push('/recommended')
-              }}
+              onClick={() => goToRecommended(track)}
             >
                {keyOption === 'camelot' ?
                 `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`
