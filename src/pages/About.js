@@ -78,6 +78,10 @@ const About = () => {
       <Info />
 
       <p>Note that all info comes from Spotify, and may not always be 100% accurate.</p>
+      <ul>
+        <li>The track name <b><i>copies to clipboard</i></b> on pressing the name.</li>
+        <li>Click on the key of any track to go to <b><i>recommended tracks</i></b>.</li>
+      </ul>
 
       <CamelotInfo>
         <hr/>

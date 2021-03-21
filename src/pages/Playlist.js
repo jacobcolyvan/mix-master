@@ -83,8 +83,7 @@ const Playlist = () => {
         setTracks([...splicedTracks]);
         setSortedTracks([...splicedTracks]);
       } catch (err) {
-        console.log(err);
-
+        console.log(err.message);
       }
     };
 

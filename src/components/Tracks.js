@@ -1,5 +1,6 @@
 import React,  { useEffect, useContext }  from 'react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 import UserContext from '../context/UserContext';
 
 const keyDict = {
@@ -67,7 +68,7 @@ const TracksLi = styled.li`
     flex-basis: 70%;
   }
 
-  .track-name-p:hover {
+  .track-name-p:hover, .key-data:hover {
     cursor: pointer;
   }
 
@@ -84,7 +85,14 @@ const TracksLi = styled.li`
 
 
 const Tracks = ({keyOption, sortOption }) => {
-  const {tracks, sortedTracks, setSortedTracks} = useContext(UserContext);
+  const {
+    tracks,
+    sortedTracks,
+    setSortedTracks,
+    resetStates,
+    setRecommendedTracksInfo
+  } = useContext(UserContext);
+  const history = useHistory();
 
 
   useEffect(() => {
@@ -127,6 +135,7 @@ const Tracks = ({keyOption, sortOption }) => {
     };
 
     sorter(sortOption);
+    // console.log("sortedTracks", sortedTracks)
 
   }, [sortOption, tracks, keyOption, setSortedTracks]);
 
@@ -135,7 +144,7 @@ const Tracks = ({keyOption, sortOption }) => {
   };
 
   return (
-    <ul>
+    <ul className="tracks-container">
         <TracksLi>
           <p  id="track-name" className="table-headers">Track Name</p>
           <p className="table-headers track-data">Key</p>
@@ -149,7 +158,14 @@ const Tracks = ({keyOption, sortOption }) => {
               <span className="track-name-p" onClick={() => copyToClipboard(track.name)}>{track.name} </span>
               – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
             </p>
-            <p className="track-data">
+            <p
+              className="track-data key-data"
+              onClick={() => {
+                resetStates()
+                setRecommendedTracksInfo({"id": track.id, "key": track.key, "mode": track.mode})
+                history.push('/recommended')
+              }}
+            >
                {keyOption === 'camelot' ?
                 `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`
                 : `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
@@ -164,10 +180,3 @@ const Tracks = ({keyOption, sortOption }) => {
 }
 
 export default Tracks
-
-
-// eslint-disable-next-line no-lone-blocks
-{/* <p className="track-data">
-    {keyOption === 'camelot' && `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMajorKeyDict[track.key]+"a"} / `}
-    {keyDict[track.key]}{track.mode === 1 ? "" : "m"}
-</p> */}

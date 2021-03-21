@@ -5,12 +5,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 const SortBy = ({sortOption, setSortOption, sorter}) => {
   const sortOptionChange = (event) => {
     setSortOption(event.target.value)
-    // sorter(event.target.value)
   }
 
   return (
     <div>
-      <p>Note that the track name, <i>copies to clipboard</i> on click.</p>
       <Select
         labelId='Sort By:'
         id='sort-by-select'

@@ -46,7 +46,7 @@ const Navbar = ({ resetStates }) => {
       {token && (
         <div id="nav-buttons">
 
-          {pathname !== '/' && (
+          {pathname !== '/'  && (
             < Button
               variant='outlined'
               color='primary'
@@ -70,7 +70,9 @@ const Navbar = ({ resetStates }) => {
             </ Button>
           )}
 
-          {(pathname !== '/about' && pathname !== '/playlist') && (
+          {(pathname !== '/about' &&
+            pathname !== '/playlist' &&
+            pathname !== '/recommended') && (
             < Button
               variant='outlined'
               color='secondary'

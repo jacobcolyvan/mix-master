@@ -16,7 +16,8 @@ import SpotifyAuth from './pages/SpotifyAuth';
 import UserPlaylists from './pages/UserPlaylists';
 import Playlist from './pages/Playlist';
 import About from './pages/About';
-import Search from './pages/Search'
+import Search from './pages/Search';
+import RecommendedTracks from './pages/RecommendedTracks';
 
 const Main = styled.div`
   padding: 10px;
@@ -31,11 +32,14 @@ function App() {
   const [ tracks, setTracks ] = useState(false);
   const [ sortedTracks, setSortedTracks ] = useState(false);
   const [ username, setUsername ] = useState(false);
+  const [recommendedTracksInfo, setRecommendedTracksInfo] = useState(false);
 
   const resetStates = () => {
     setPlaylist(false);
+    // setPlaylists([]);
     setTracks(false);
     setSortedTracks(false);
+    setRecommendedTracksInfo(false);
   }
 
   return (
@@ -54,7 +58,9 @@ function App() {
           setSortedTracks,
           username,
           setUsername,
-          resetStates
+          resetStates,
+          setRecommendedTracksInfo,
+          recommendedTracksInfo
          }}
         >
           <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>
@@ -77,6 +83,7 @@ function App() {
                       <Route exact path='/about' component={About} />
                       <Route exact path='/search' component={Search} />
                       <Route exact path='/playlist' component={Playlist} />
+                      <Route exact path='/recommended' component={RecommendedTracks} />
                     </>
                   )}
 
