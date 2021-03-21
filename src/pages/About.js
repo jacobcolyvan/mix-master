@@ -80,7 +80,7 @@ const About = () => {
       <p>Note that all info comes from Spotify, and may not always be 100% accurate.</p>
       <ul>
         <li>The track name <b><i>copies to clipboard</i></b> on pressing the name.</li>
-        <li>Click on the key of any track to go to <b><i>recommended tracks</i></b>.</li>
+        <li>Click on the key of any track to go to <b><i>recommended tracks</i></b>. This uses Spotify's song radio/generated tracks (API) feature to get tracks that are similar, and in a similar key/mode to the selected song.</li>
       </ul>
 
       <CamelotInfo>

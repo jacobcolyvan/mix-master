@@ -3,14 +3,14 @@ import styled from 'styled-components';
 
 const InfoCont = styled.div`
   width: 100%;
-  margin-bottom: 56px;
+  margin-bottom: 40px;
 
   p {
     margin: 0px;
   }
 
   #info-header {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     margin-top: 16px;
   }
 
@@ -31,6 +31,9 @@ const Info = () => {
       </p>
       <p id="info-points">
         – Works similarly to programs such as MixedInkey, but for the Spotify catalogue.
+      </p>
+      <p id="info-points">
+        – Click on track name to copy name to clipboard; clik on track key to go to recommended tracks.
       </p>
     </InfoCont>
   )

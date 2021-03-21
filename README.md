@@ -6,6 +6,7 @@ This is basic project intended to help users make better playlists and mixes, by
 * Can be used as a companion app for dj software, to help you make better transitions between tracks.
 * Can can be used to help find samples for production, given that you know what tempo/key you want to work in.
 * Can be used as a companion site for getting quick key data, to aid jamming with whatever album/playlist you want (because knowing what key you're in is goes a long way).
+* Can be used to find similar tracks by using Spotifys' song radio / get track recommendations API endpoint; see <a href="https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-recommendations">here</a> for more info.
 <br>
 
 <ins>Note:</ins> that all data comes from Spotify, and will only be as accurate as Spotify's analysis alogorithms'. \
@@ -20,7 +21,8 @@ It is built with React, and styled using styled-components & Material-UI. Reques
 * Sort by key, tempo, or tempo and key.
 * Display key in standard or Camelot, which is a system that lets you understand keys that are close together without having to know musical theory (the site explains how to do this).
 * Search for albums, tracks, and public playlists, and see key/tempo data for each.
-* Separates playlists into created and followed, because if you're anything like me.
+* Separates playlists into created and followed.
+* Get recommendations for any track that also tries to match key.
 
 <hr>
 
