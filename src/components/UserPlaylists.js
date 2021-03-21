@@ -6,7 +6,6 @@ import UserContext from '../context/UserContext';
 import PlaylistList from './PlaylistList'
 
 // Add searchbar for filtering playlists
-
 const PlaylistsTitle = styled.div`
   text-decoration: underline;
 
@@ -24,6 +23,10 @@ const InfoDiv = styled.div`
   p {
     margin-top: 0;
     margin-bottom: 8px;
+  }
+
+  a {
+    color: blue;
   }
 `
 
@@ -115,7 +118,7 @@ const UserPlaylists = () => {
         <PlaylistsTitle><h2 id='title'>Playlists</h2></PlaylistsTitle>
         <InfoDiv>
           <p>See <i>About</i> for more info about how to use this site.</p>
-          <p>Playlists are automatically seperated into ones you've <a href="#created-playlists">created</a>, and ones you <a href="#followed-playlists">follow</a>.</p>
+          <p>Playlists are automatically seperated into ones you've <a href="#created-playlists" className="subpage-link">created</a>, and ones you <a href="#followed-playlists" className="subpage-link">follow</a>.</p>
         </InfoDiv>
 
         {sortedPlaylists && (

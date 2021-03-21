@@ -1,15 +1,27 @@
-import React from 'react'
+import React, {useEffect, useContext} from 'react';
+import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
+import UserContext from '../context/UserContext';
 import Info from './Info'
 
-const SpotifyAuth = () => {
+const SpotifyAuth = ({ location }) => {
   const scopes = [
     'user-read-private',
     'playlist-read-private',
     'user-library-read',
     'user-top-read'
   ];
+
+  const history = useHistory();
+  const { token, setToken } = useContext(UserContext);
+
+  useEffect(() => {
+    if (location.hash.split('=')[1]) {
+      setToken(location.hash.split('=')[1].split('&token')[0]);
+      history.push('/');
+    }
+  }, [setToken, token, history, location.hash]);
 
   return (
     <div>

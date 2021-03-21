@@ -2,6 +2,7 @@ import React, {useContext} from 'react'
 import Button from '@material-ui/core/Button';
 import UserContext from '../context/UserContext';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 
 const NavbarCont = styled.header`
   width: 100%;
@@ -28,34 +29,61 @@ const NavbarCont = styled.header`
   }
 `
 
-const Navbar = ({ loadPlaylists, loadAbout, loadSearch }) => {
-  const {playlist, about, token, search} = useContext(UserContext);
+const Navbar = ({ resetStates }) => {
+  const history = useHistory();
+  const { token } = useContext(UserContext);
+  const pathname = history.location.pathname;
 
+  const loadPage = (link) => {
+    resetStates()
+    history.push(link)
+    console.log(history.location.pathname)
+  }
 
   return (
     <NavbarCont>
-      <h1 onClick={loadPlaylists}>Mix Master</h1>
-      <div>
+      <h1 onClick={() => loadPage('/')} id="site-name">Mix Master</h1>
 
-        {(playlist || about || search) && (
-          < Button variant='outlined' color='primary' onClick={loadPlaylists} className="button" fullWidth>
-            Playlists
-          </ Button>
-        )}
+      {token && (
+        <div id="nav-buttons">
 
-        {(token && !search ) && (
-          < Button variant='outlined' color='primary' onClick={loadSearch} className="button" fullWidth >
-            Search
-          </ Button>
-        )}
+          {pathname !== '/' && (
+            < Button
+              variant='outlined'
+              color='primary'
+              onClick={() => loadPage('/')}
+              className="button"
+              fullWidth
+            >
+              Playlists
+            </ Button>
+          )}
 
+          {pathname !== '/search' && (
+            < Button
+              variant='outlined'
+              color='primary'
+              onClick={() => loadPage('search')}
+              className="button"
+              fullWidth
+            >
+              Search
+            </ Button>
+          )}
 
-        {(token && !about && !playlist) && (
-          < Button variant='outlined' color='secondary' onClick={loadAbout} className="button" fullWidth >
-            About
-          </ Button>
-        )}
-      </div>
+          {(pathname !== '/about' && pathname !== '/playlist') && (
+            < Button
+              variant='outlined'
+              color='secondary'
+              onClick={() => loadPage('/about')}
+              className="button"
+              fullWidth
+            >
+              About
+            </ Button>
+          )}
+        </div>
+      )}
     </NavbarCont>
   )
 }

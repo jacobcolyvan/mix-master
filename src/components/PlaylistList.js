@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
@@ -24,6 +25,7 @@ const PlaylistLi = styled.li`
 `
 
 const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
+  const history = useHistory();
   const {setPlaylist} = useContext(UserContext);
 
   return (
@@ -34,6 +36,7 @@ const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
             key={`track${index}`}
             onClick={() => {
               setPlaylist(playlist)
+              history.push('/playlist')
               showOnlyPlaylistTracks && showOnlyPlaylistTracks()
             }}
           >

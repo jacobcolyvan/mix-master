@@ -1,25 +1,32 @@
 import React, {useState} from 'react';
-import UserContext from './context/UserContext';
-import { Container} from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect
 } from 'react-router-dom';
+import styled from 'styled-components';
+import { Container, Paper} from '@material-ui/core';
+
+import UserContext from './context/UserContext';
 import './stylesheets/App.css';
 
-import Home from './pages/Home'
 import Navbar from './components/Navbar'
-// import Search from './pages/Search';
+import SpotifyAuth from './components/SpotifyAuth';
+import UserPlaylists from './components/UserPlaylists';
+import Playlist from './components/Playlist';
+import About from './components/About';
+import Search from './pages/Search'
+
+const Main = styled.div`
+  padding: 10px;
+  margin-bottom: 10px;
+`
 
 
 function App() {
   const [ token, setToken ] = useState(false);
   const [ playlist, setPlaylist] = useState(false);
-  const [ about, setAbout] = useState(false);
-  const [ search, setSearch] = useState(false);
   const [ playlists, setPlaylists] = useState([]);
   const [ tracks, setTracks ] = useState(false);
   const [ sortedTracks, setSortedTracks ] = useState(false);
@@ -29,24 +36,6 @@ function App() {
     setPlaylist(false);
     setTracks(false);
     setSortedTracks(false);
-  }
-
-  const loadPlaylists = () => {
-    setAbout(false);
-    setSearch(false);
-    resetStates();
-  }
-
-  const loadAbout = () => {
-    setAbout(true);
-    setSearch(false);
-    resetStates();
-  }
-
-  const loadSearch = () => {
-    setSearch(true);
-    setAbout(false);
-    resetStates();
   }
 
   return (
@@ -59,29 +48,40 @@ function App() {
           setPlaylist,
           playlists,
           setPlaylists,
-          about,
-          search,
           tracks,
           setTracks,
           sortedTracks,
           setSortedTracks,
           username,
-          setUsername }}
+          setUsername,
+          resetStates
+         }}
         >
           <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>
-            <Navbar loadPlaylists={loadPlaylists} loadAbout={loadAbout} loadSearch={loadSearch} />
+            <Navbar resetStates={resetStates} />
             <Paper variant='outlined' className='main-paper' style={{}}>
               <Switch>
-                <Route
-                  exact path='/'
-                  render={(props) => (
-                    <Home
-                      location={props.location}
-                    />
+                <Main>
+                  {!token ? (
+                      <Route
+                        exact path='/'
+                        render={(props) => (
+                          <SpotifyAuth
+                            location={props.location}
+                          />
+                        )}
+                      />
+                  ) : (
+                    <>
+                      <Route exact path='/' component={UserPlaylists} />
+                      <Route exact path='/about' component={About} />
+                      <Route exact path='/search' component={Search} />
+                      <Route exact path='/playlist' component={Playlist} />
+                    </>
                   )}
-                />
 
-                <Redirect to='/' />
+                  <Redirect to='/' />
+                </Main>
               </Switch>
             </Paper>
           </Container>
