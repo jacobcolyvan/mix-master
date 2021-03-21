@@ -9,10 +9,12 @@ This is basic project intended to help users make better playlists and mixes, by
 * Can be used to find similar tracks by using Spotifys' song radio / get track recommendations API endpoint; see <a href="https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-recommendations">here</a> for more info.
 <br>
 
-<ins>Note:</ins> that all data comes from Spotify, and will only be as accurate as Spotify's analysis alogorithms'. \
+<ins>Note:</ins> that all data comes from Spotify, and will only be as accurate as Spotify's analysis algorithms'. \
 <ins>Note#2:</ins> (for music nerds) Spotify only provides estimations for major/minor, and as such at this point will not tell you whether the key is in a different Mode to those.
 
 It is built with React, and styled using styled-components & Material-UI. Requests are done using axios, and Spotify-auth is done completely client-side using the <a href="https://developer.spotify.com/documentation/general/guides/authorization-guide/">Client Credentials Authorisation Flow</a>. This means none of your personal data ever actually leaves your browser.
+
+
 
 <hr>
 <h4>Features</h4>
@@ -22,7 +24,16 @@ It is built with React, and styled using styled-components & Material-UI. Reques
 * Display key in standard or Camelot, which is a system that lets you understand keys that are close together without having to know musical theory (the site explains how to do this).
 * Search for albums, tracks, and public playlists, and see key/tempo data for each.
 * Separates playlists into created and followed.
-* Get recommendations for any track that also tries to match key.
+* Get recommendations for any track that will also try to match key.
+
+<hr>
+<h4>Setup</h4>
+
+To build your own setup, run `yarn install` after cloning, and create a copy of `.env.base` as `.env` file in the root directory (or set it in your local environment) with your own Spotify ClientID and a callback URI.
+
+<br>
+
+Your Spotify ClientID can be found by <a href='https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app'>registering your app</a>.
 
 <hr>
 
