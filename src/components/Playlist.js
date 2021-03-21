@@ -24,12 +24,11 @@ const Playlist = () => {
     const getTracks = async () => {
       try {
         let trackTotalAmount = playlist.tracks.total;
-        let allTracks = false;
         let tracklist = [];
         let offset = 0;
         let trackFeatures = [];
 
-        while (!allTracks) {
+        while (trackTotalAmount > (tracklist.length)) {
           let tracksResponse = await axios({
             method: 'get',
             url: playlist.href + `/tracks?offset=${offset}`,
@@ -50,7 +49,7 @@ const Playlist = () => {
 
           // remove null items
           tracksResponse = tracksResponse.filter(Boolean);
-          let trackIds = tracksResponse.map((item) => item.track.id)
+          const trackIds = tracksResponse.map((item) => item.track.id)
 
           const featuresResponse = await axios({
             method: 'get',
@@ -64,7 +63,7 @@ const Playlist = () => {
           tracklist = [...tracklist, ...tracksResponse];
           trackFeatures = [...trackFeatures, ...featuresResponse.data.audio_features];
 
-          trackTotalAmount > (tracklist.length) ? offset += 100 : allTracks = true;
+          offset += 100;
         }
 
 
