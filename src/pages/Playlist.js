@@ -3,9 +3,9 @@ import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
-import Tracks from './Tracks'
-import SortBy from './SortBy';
-import KeySelect from './KeySelect';
+import Tracks from '../components/Tracks'
+import SortBy from '../components/SortBy';
+import KeySelect from '../components/KeySelect';
 
 
 const PlaylistName = styled.h3`

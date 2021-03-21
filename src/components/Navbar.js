@@ -37,7 +37,6 @@ const Navbar = ({ resetStates }) => {
   const loadPage = (link) => {
     resetStates()
     history.push(link)
-    console.log(history.location.pathname)
   }
 
   return (

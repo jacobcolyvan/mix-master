@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
 import UserContext from '../context/UserContext';
-import Info from './Info'
+import Info from '../components/Info'
 
 const SpotifyAuth = ({ location }) => {
   const scopes = [

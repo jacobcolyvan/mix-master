@@ -12,10 +12,10 @@ import UserContext from './context/UserContext';
 import './stylesheets/App.css';
 
 import Navbar from './components/Navbar'
-import SpotifyAuth from './components/SpotifyAuth';
-import UserPlaylists from './components/UserPlaylists';
-import Playlist from './components/Playlist';
-import About from './components/About';
+import SpotifyAuth from './pages/SpotifyAuth';
+import UserPlaylists from './pages/UserPlaylists';
+import Playlist from './pages/Playlist';
+import About from './pages/About';
 import Search from './pages/Search'
 
 const Main = styled.div`

@@ -3,9 +3,10 @@ import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
-import PlaylistList from './PlaylistList'
+import PlaylistList from '../components/PlaylistList'
 
-// Add searchbar for filtering playlists
+// Add searchbar for filtering playlists (?)
+
 const PlaylistsTitle = styled.div`
   text-decoration: underline;
 
@@ -116,7 +117,7 @@ const UserPlaylists = () => {
     return (
       <div>
         <PlaylistsTitle><h2 id='title'>Playlists</h2></PlaylistsTitle>
-        <InfoDiv>
+        <InfoDiv id="info-div">
           <p>See <i>About</i> for more info about how to use this site.</p>
           <p>Playlists are automatically seperated into ones you've <a href="#created-playlists" className="subpage-link">created</a>, and ones you <a href="#followed-playlists" className="subpage-link">follow</a>.</p>
         </InfoDiv>

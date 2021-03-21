@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Info from './Info';
+import Info from '../components/Info';
 import styled from 'styled-components';
 
 import CamelotWheel from '../media/camelot-wheel.jpg'
