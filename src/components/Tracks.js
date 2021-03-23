@@ -50,38 +50,79 @@ const camelotMinorKeyDict = {
 
 
 
-const TracksLi = styled.li`
-  border-radius: 4px;
-  padding: 0;
+// const TracksLi = styled.li`
+//   border-radius: 4px;
+//   padding: 0;
+//   width: 100%;
+
+//   display: flex;
+
+//   p {
+//     display: inline-block;
+//     border: 1px solid #c4c4c4;
+//     padding: 10px 4px;
+//     margin: 0;
+//   }
+
+//   #track-name, .track-details {
+//     flex-basis: 64%;
+//   }
+
+//   .key-data:hover, .track-name-p:hover {
+//     cursor: pointer;
+//   }
+
+//   .track-data {
+//     flex-basis: 12%;
+//     text-align: center;
+//   }
+
+//   .table-headers {
+//     font-weight: bold;
+//     text-decoration: underline;
+//   }
+// `;
+
+const TracksTable = styled.table`
   width: 100%;
+  padding: 0;
+  margin-top: 24px;
 
-  display: flex;
+  border-collapse: collapse;
 
-  p {
-    display: inline-block;
+  tr  {
+    width: 100%;
+    margin: 0;
+
+    td {
+      margin: 0;
+    }
+
+    .table-data__name {
+      text-align: left;
+      width: 70%;
+    }
+
+    .table-data__attributes {
+      text-align: center;
+      width: 10%;
+    }
+  }
+
+  td, th  {
     border: 1px solid #c4c4c4;
     padding: 10px 4px;
     margin: 0;
   }
 
-  #track-name, .track-details {
-    flex-basis: 70%;
-  }
-
-  .key-data:hover, .track-name-p:hover {
+  .key-data:hover, .track-name-span:hover {
     cursor: pointer;
   }
 
-  .track-data {
-    flex-basis: 12%;
-    text-align: center;
+  .track-name-tr:hover {
+    background-color: 	#F0F0F0;
   }
-
-  .table-headers {
-    font-weight: bold;
-    text-decoration: underline;
-  }
-`;
+`
 
 
 const Tracks = ({keyOption, sortOption }) => {
@@ -148,38 +189,41 @@ const Tracks = ({keyOption, sortOption }) => {
   }
 
   return (
-    <ul className="tracks-container">
-        <TracksLi>
-          <p  id="track-name" className="table-headers">Track Name</p>
-          <p className="table-headers track-data">Key</p>
-          <p className="table-headers track-data">Enrgy</p>
-          <p className="table-headers track-data">BPM</p>
-        </TracksLi>
+      <TracksTable id="tracks-container">
+        <thead>
+          <tr>
+            <th className="table-data__name">Track Name</th>
+            <th className="table-data__attributes">Key</th>
+            <th className="table-data__attributes">Enrgy</th>
+            <th className="table-data__attributes">BPM</th>
+          </tr>
+        </thead>
 
-        {(sortedTracks) && sortedTracks.map((track, index) => (
-          <TracksLi key={`track${index}`}>
-            <p className="track-details">
-              <span
-                className="track-name-p"
-                onClick={() => copyToClipboard(track.name, track.artists[0])}
+        <tbody>
+          {(sortedTracks) && sortedTracks.map((track, index) => (
+            <tr key={`track${index}`} className="track-name-tr">
+              <td className="table-data__name">
+                <span
+                  className="track-name-span"
+                  onClick={() => copyToClipboard(track.name, track.artists[0])}
+                >
+                  {track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
+                </span>
+              </td>
+              <td
+                className="table-data__attributes key-data"
+                onClick={() => goToRecommended(track)}
               >
-                {track.name}
-              </span> – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
-            </p>
-            <p
-              className="track-data key-data"
-              onClick={() => goToRecommended(track)}
-            >
-               {keyOption === 'camelot' ?
-                `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`
-                : `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
-            </p>
-            <p className="track-data">{track.energy}</p>
-            <p className="track-data">{track.tempo}</p>
-          </TracksLi>
-
-        ))}
-      </ul>
+                {keyOption === 'camelot' ?
+                  `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`
+                  : `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
+              </td>
+              <td className="table-data__attributes">{track.energy}</td>
+              <td className="table-data__attributes">{track.tempo}</td>
+            </tr>
+          ))}
+        </tbody>
+     </TracksTable>
   )
 }
 

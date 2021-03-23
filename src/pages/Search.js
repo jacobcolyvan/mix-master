@@ -66,7 +66,9 @@ const Search = () => {
         "id": item.id,
         "tempo": Math.round(trackFeatures[0][index].tempo),
         "key": trackFeatures[0][index].key,
-        "mode": parseInt(trackFeatures[0][index].mode)
+        "mode": parseInt(trackFeatures[0][index].mode),
+        "energy": Math.round((100-trackFeatures[index].energy.toFixed(2))*100)/100,
+        "danceability": trackFeatures[index].danceability
       }
     })
 

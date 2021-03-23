@@ -75,7 +75,7 @@ const Playlist = () => {
             "tempo": Math.round(trackFeatures[index].tempo),
             "key": trackFeatures[index].key,
             "mode": parseInt(trackFeatures[index].mode),
-            "energy": trackFeatures[index].energy,
+            "energy": Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100,
             "danceability": trackFeatures[index].danceability
           }
         })
