@@ -1,4 +1,4 @@
-import React,  { useEffect, useContext }  from 'react';
+import React,  { useEffect, useContext, useState }  from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import UserContext from '../context/UserContext';
@@ -49,40 +49,6 @@ const camelotMinorKeyDict = {
 };
 
 
-
-// const TracksLi = styled.li`
-//   border-radius: 4px;
-//   padding: 0;
-//   width: 100%;
-
-//   display: flex;
-
-//   p {
-//     display: inline-block;
-//     border: 1px solid #c4c4c4;
-//     padding: 10px 4px;
-//     margin: 0;
-//   }
-
-//   #track-name, .track-details {
-//     flex-basis: 64%;
-//   }
-
-//   .key-data:hover, .track-name-p:hover {
-//     cursor: pointer;
-//   }
-
-//   .track-data {
-//     flex-basis: 12%;
-//     text-align: center;
-//   }
-
-//   .table-headers {
-//     font-weight: bold;
-//     text-decoration: underline;
-//   }
-// `;
-
 const TracksTable = styled.table`
   width: 100%;
   padding: 0;
@@ -122,6 +88,10 @@ const TracksTable = styled.table`
   .track-name-tr:hover {
     background-color: 	#F0F0F0;
   }
+
+  .currently-selected {
+    background-color: 	#E0E0E0;
+  }
 `
 
 
@@ -134,6 +104,8 @@ const Tracks = ({keyOption, sortOption }) => {
     setRecommendedTracksInfo
   } = useContext(UserContext);
   const history = useHistory();
+  const [lastClickedTrack, setLastClickedTrack] = useState(false);
+
 
 
   useEffect(() => {
@@ -178,8 +150,17 @@ const Tracks = ({keyOption, sortOption }) => {
     sorter(sortOption);
   }, [sortOption, tracks, keyOption, setSortedTracks]);
 
-  const copyToClipboard = (trackName, trackArtist) => {
+  const copyNameAndSaveAsCurrentTrack = (trackName, trackArtist, clickedTrackId) => {
     navigator.clipboard.writeText(`${trackName} ${trackArtist}`);
+  
+    if (lastClickedTrack) {
+      let currentlySelected = document.getElementById(lastClickedTrack);
+      currentlySelected.classList.remove("currently-selected");
+    } 
+
+    let nowSelected = document.getElementById(clickedTrackId);
+    nowSelected.classList.add("currently-selected");
+    setLastClickedTrack(clickedTrackId)
   };
 
   const goToRecommended = (track) => {
@@ -201,11 +182,11 @@ const Tracks = ({keyOption, sortOption }) => {
 
         <tbody>
           {(sortedTracks) && sortedTracks.map((track, index) => (
-            <tr key={`track${index}`} className="track-name-tr">
+            <tr key={`track${index}`} id={`track-${track.id}`} className={`track-name-tr`}>
               <td className="table-data__name">
                 <span
                   className="track-name-span"
-                  onClick={() => copyToClipboard(track.name, track.artists[0])}
+                  onClick={() => copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`)}
                 >
                   {track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
                 </span>
