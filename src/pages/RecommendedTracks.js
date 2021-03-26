@@ -12,9 +12,53 @@ const PageTitle = styled.h2`
   font-style: italic;
 `
 
+const RecommendedTrackDiv = styled.div`
+  p {
+    margin-bottom: 0;
+    font-style: italic;
+  }
+
+  table {
+    margin-top: 12px;
+    width: 100%;
+    padding: 0;
+
+    border-collapse: collapse;
+
+    tr  {
+      width: 100%;
+      margin: 0;
+
+      td {
+        margin: 0;
+      }
+
+      .table-data__name {
+        text-align: left;
+        width: 70%;
+      }
+
+      .table-data__attributes {
+        text-align: center;
+        width: 10%;
+      }
+    }
+
+    td, th  {
+      border: 1px solid #c4c4c4;
+      padding: 10px 4px;
+      margin: 0;
+    }
+
+    .track-name-span:hover {
+      cursor: pointer;
+    }
+  }
+`
+
 
 const RecommendedTracks = () => {
-  const {token, setTracks, setSortedTracks, recommendedTracksInfo} = useContext(UserContext);
+  const {token, setTracks, setSortedTracks, recommendedTrack} = useContext(UserContext);
   const [sortOption, setSortOption] = useState('tempoThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
 
@@ -24,8 +68,8 @@ const RecommendedTracks = () => {
       try {
         let tracklist = await axios({
         method: 'get',
-        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTracksInfo.id}&limit=30&`
-        +`target_key=${recommendedTracksInfo.key}&target_mode=${recommendedTracksInfo.mode}`,
+        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=30&`
+        +`target_key=${recommendedTrack.key}&target_mode=${recommendedTrack.mode}`,
         headers: {
             Authorization: 'Bearer ' + token,
             'Content-Type': 'application/json'
@@ -68,7 +112,7 @@ const RecommendedTracks = () => {
     };
 
     getTracks();
-  }, [token, setTracks, setSortedTracks, recommendedTracksInfo]);
+  }, [token, setTracks, setSortedTracks, recommendedTrack]);
 
 
 
@@ -79,6 +123,42 @@ const RecommendedTracks = () => {
         <br/>
 
         <SortBy sortOption={sortOption} setSortOption={setSortOption} />
+        <br/><hr/>
+
+        <RecommendedTrackDiv>
+          <p>Tracks were recommended off this track:</p>
+          <table>
+            <thead>
+              <tr>
+                <th className="table-data__name">Track</th>
+                <th className="table-data__attributes">Key</th>
+                <th className="table-data__attributes">Enrgy</th>
+                <th className="table-data__attributes">BPM</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr className={`track-name-tr`}>
+                <td className="table-data__name">
+                  <span
+                    onClick={navigator.clipboard.writeText(`${recommendedTrack.name} ${recommendedTrack.artist}`)}
+                    className="track-name-span"
+                  >
+                    {recommendedTrack.name} – <i>{recommendedTrack.artists.length > 1 ? recommendedTrack.artists[0] + ', ' + recommendedTrack.artists[1] : recommendedTrack.artists[0]}</i>
+                  </span>
+                </td>
+                <td
+                  className="table-data__attributes key-data"
+                >
+                  {keyOption === 'camelot' ? recommendedTrack.parsedKeys[0] : recommendedTrack.parsedKeys[1]}
+                </td>
+                <td className="table-data__attributes">{recommendedTrack.energy}</td>
+                <td className="table-data__attributes">{recommendedTrack.tempo}</td>
+              </tr>
+            </tbody>
+          </table>
+        </RecommendedTrackDiv>
+        
         <br/><hr/>
 
         <Tracks

@@ -32,14 +32,14 @@ function App() {
   const [ tracks, setTracks ] = useState(false);
   const [ sortedTracks, setSortedTracks ] = useState(false);
   const [ username, setUsername ] = useState(false);
-  const [recommendedTracksInfo, setRecommendedTracksInfo] = useState(false);
+  const [recommendedTrack, setRecommendedTrack] = useState(false);
 
   const resetStates = () => {
     setPlaylist(false);
     // setPlaylists([]);
     setTracks(false);
     setSortedTracks(false);
-    setRecommendedTracksInfo(false);
+    setRecommendedTrack(false);
   }
 
   return (
@@ -59,8 +59,8 @@ function App() {
           username,
           setUsername,
           resetStates,
-          setRecommendedTracksInfo,
-          recommendedTracksInfo
+          setRecommendedTrack,
+          recommendedTrack
          }}
         >
           <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>

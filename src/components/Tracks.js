@@ -101,7 +101,7 @@ const Tracks = ({keyOption, sortOption }) => {
     sortedTracks,
     setSortedTracks,
     resetStates,
-    setRecommendedTracksInfo
+    setRecommendedTrack
   } = useContext(UserContext);
   const history = useHistory();
   const [lastClickedTrack, setLastClickedTrack] = useState(false);
@@ -165,7 +165,19 @@ const Tracks = ({keyOption, sortOption }) => {
 
   const goToRecommended = (track) => {
     resetStates();
-    setRecommendedTracksInfo({"id": track.id, "key": track.key, "mode": track.mode});
+    setRecommendedTrack({
+      "id": track.id, 
+      "key": track.key, 
+      "parsedKeys": [
+        `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`,
+        `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`
+      ],
+      "mode": track.mode, 
+      "name": track.name,
+      "artists": track.artists,
+      "energy": track.energy,
+      "tempo": track.tempo
+    });
     history.push('/recommended');
   }
 
@@ -173,7 +185,7 @@ const Tracks = ({keyOption, sortOption }) => {
       <TracksTable id="tracks-container">
         <thead>
           <tr>
-            <th className="table-data__name">Track Name</th>
+            <th className="table-data__name">Track</th>
             <th className="table-data__attributes">Key</th>
             <th className="table-data__attributes">Enrgy</th>
             <th className="table-data__attributes">BPM</th>
@@ -196,8 +208,8 @@ const Tracks = ({keyOption, sortOption }) => {
                 onClick={() => goToRecommended(track)}
               >
                 {keyOption === 'camelot' ?
-                  `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`
-                  : `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
+                  `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}` : 
+                  `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
               </td>
               <td className="table-data__attributes">{track.energy}</td>
               <td className="table-data__attributes">{track.tempo}</td>
