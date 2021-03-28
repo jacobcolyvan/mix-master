@@ -1,4 +1,4 @@
-import React,  { useEffect, useContext, useState }  from 'react';
+import React,  { useEffect, useContext }  from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import UserContext from '../context/UserContext';
@@ -101,11 +101,11 @@ const Tracks = ({keyOption, sortOption }) => {
     sortedTracks,
     setSortedTracks,
     resetStates,
-    setRecommendedTrack
+    setRecommendedTrack,
+    lastClickedTrack, 
+    setLastClickedTrack
   } = useContext(UserContext);
   const history = useHistory();
-  const [lastClickedTrack, setLastClickedTrack] = useState(false);
-
 
 
   useEffect(() => {
@@ -164,7 +164,7 @@ const Tracks = ({keyOption, sortOption }) => {
   };
 
   const goToRecommended = (track) => {
-    resetStates();
+    resetStates(false);
     setRecommendedTrack({
       "id": track.id, 
       "key": track.key, 

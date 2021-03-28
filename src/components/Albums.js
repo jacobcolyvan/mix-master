@@ -55,16 +55,18 @@ const Albums = ({ albums, setAlbumName }) => {
       });
 
       const tracklist = [tracksResponse.data.tracks.items];
-      const trackFeatures = [featuresResponse.data.audio_features];
+      const trackFeatures = [...featuresResponse.data.audio_features];
 
       const splicedTracks = tracklist[0].map((item, index) => {
         return {
           "name": item.name,
           "artists": item.artists.length > 1 ? [item.artists[0].name, item.artists[1].name] : [item.artists[0].name],
           "id": item.id,
-          "tempo": Math.round(trackFeatures[0][index].tempo),
-          "key": trackFeatures[0][index].key,
-          "mode": parseInt(trackFeatures[0][index].mode)
+          "tempo": Math.round(trackFeatures[index].tempo),
+          "key": trackFeatures[index].key,
+          "mode": parseInt(trackFeatures[index].mode),
+          "energy": Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100,
+          "danceability": trackFeatures[index].danceability
         }
       })
 
