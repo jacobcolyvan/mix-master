@@ -71,6 +71,7 @@ const TracksTable = styled.table`
 
     .table-data__name-hover:hover {
       cursor: pointer;
+      background-color: 	#F0F0F0;
     }
 
     .table-data__attributes {
@@ -87,10 +88,6 @@ const TracksTable = styled.table`
 
   .key-data:hover {
     cursor: alias;
-  }
-
-  .track-name-tr:hover {
-    background-color: 	#F0F0F0;
   }
 
   .currently-selected {
@@ -204,10 +201,11 @@ const Tracks = ({keyOption, sortOption }) => {
 
         <tbody>
           {(sortedTracks) && sortedTracks.map((track, index) => (
-            <tr key={`track${index}`} id={`track-${track.id}`} className={`track-name-tr`}>
+            <tr key={`track${index}`} className={`track-name-tr`}>
               <td 
                 className="table-data__name table-data__name-hover"
                 onClick={() => copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`)}
+                id={`track-${track.id}`}
               >
                 {track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
               </td>

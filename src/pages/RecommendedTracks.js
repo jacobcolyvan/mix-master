@@ -40,7 +40,8 @@ const RecommendedTrackDiv = styled.div`
       }
 
       .table-data__name-hover:hover {
-        cursor: copy;
+        cursor: pointer;
+        background-color: 	#F0F0F0;
       }
 
       .table-data__attributes {
