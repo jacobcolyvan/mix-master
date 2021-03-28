@@ -93,6 +93,16 @@ const TracksTable = styled.table`
   .currently-selected {
     background-color: 	#E0E0E0;
   }
+
+  @media screen and (max-width: 600px) {
+    .table-data__attributes-energy {
+      display: none;
+    }
+
+    .table-data__attributes {
+      width: 15%;
+    }
+  }
 `
 
 
@@ -194,7 +204,7 @@ const Tracks = ({keyOption, sortOption }) => {
           <tr>
             <th className="table-data__name">Track</th>
             <th className="table-data__attributes">Key</th>
-            <th className="table-data__attributes">Enrgy</th>
+            <th className="table-data__attributes table-data__attributes-energy">Enrgy</th>
             <th className="table-data__attributes">BPM</th>
           </tr>
         </thead>
@@ -217,7 +227,7 @@ const Tracks = ({keyOption, sortOption }) => {
                   `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}` : 
                   `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
               </td>
-              <td className="table-data__attributes">{track.energy}</td>
+              <td className="table-data__attributes table-data__attributes-energy">{track.energy}</td>
               <td className="table-data__attributes">{track.tempo}</td>
             </tr>
           ))}

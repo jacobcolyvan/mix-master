@@ -18,10 +18,10 @@ const SearchTitle = styled.h1`
 
 const Search = () => {
   const {
-    token, 
-    setTracks, 
-    setSortedTracks, 
-    setRecommendedTrack 
+    token,
+    setTracks,
+    setSortedTracks,
+    setRecommendedTrack
   } = useContext(UserContext);
 
   const [searchType, setSearchType] = useState('track');

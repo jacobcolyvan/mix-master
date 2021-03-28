@@ -55,6 +55,16 @@ const RecommendedTrackDiv = styled.div`
       padding: 10px 4px;
       margin: 0;
     }
+
+    @media screen and (max-width: 600px) {
+      .table-data__attributes-energy {
+        display: none;
+      }
+
+      .table-data__attributes {
+        width: 15%;
+      }
+    }
   }
 `
 
@@ -136,7 +146,7 @@ const RecommendedTracks = () => {
               <tr>
                 <th className="table-data__name">Track</th>
                 <th className="table-data__attributes">Key</th>
-                <th className="table-data__attributes">Enrgy</th>
+                <th className="table-data__attributes table-data__attributes-energy">Enrgy</th>
                 <th className="table-data__attributes">BPM</th>
               </tr>
             </thead>
@@ -154,7 +164,7 @@ const RecommendedTracks = () => {
                 >
                   {keyOption === 'camelot' ? recommendedTrack.parsedKeys[0] : recommendedTrack.parsedKeys[1]}
                 </td>
-                <td className="table-data__attributes">{recommendedTrack.energy}</td>
+                <td className="table-data__attributes table-data__attributes-energy">{recommendedTrack.energy}</td>
                 <td className="table-data__attributes">{recommendedTrack.tempo}</td>
               </tr>
             </tbody>
