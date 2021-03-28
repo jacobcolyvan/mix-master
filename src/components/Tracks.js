@@ -69,6 +69,10 @@ const TracksTable = styled.table`
       width: 70%;
     }
 
+    .table-data__name-hover:hover {
+      cursor: pointer;
+    }
+
     .table-data__attributes {
       text-align: center;
       width: 10%;
@@ -81,8 +85,8 @@ const TracksTable = styled.table`
     margin: 0;
   }
 
-  .key-data:hover, .track-name-span:hover {
-    cursor: pointer;
+  .key-data:hover {
+    cursor: alias;
   }
 
   .track-name-tr:hover {
@@ -195,13 +199,11 @@ const Tracks = ({keyOption, sortOption }) => {
         <tbody>
           {(sortedTracks) && sortedTracks.map((track, index) => (
             <tr key={`track${index}`} id={`track-${track.id}`} className={`track-name-tr`}>
-              <td className="table-data__name">
-                <span
-                  className="track-name-span"
-                  onClick={() => copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`)}
-                >
-                  {track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
-                </span>
+              <td 
+                className="table-data__name table-data__name-hover"
+                onClick={() => copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`)}
+              >
+                {track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
               </td>
               <td
                 className="table-data__attributes key-data"

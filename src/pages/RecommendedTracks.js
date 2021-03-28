@@ -38,6 +38,10 @@ const RecommendedTrackDiv = styled.div`
         width: 70%;
       }
 
+      .table-data__name-hover:hover {
+        cursor: copy;
+      }
+
       .table-data__attributes {
         text-align: center;
         width: 10%;
@@ -48,10 +52,6 @@ const RecommendedTrackDiv = styled.div`
       border: 1px solid #c4c4c4;
       padding: 10px 4px;
       margin: 0;
-    }
-
-    .track-name-span:hover {
-      cursor: pointer;
     }
   }
 `
@@ -139,13 +139,11 @@ const RecommendedTracks = () => {
 
             <tbody>
               <tr className={`track-name-tr`} id="recommended-track">
-                <td className="table-data__name">
-                  <span
-                    onClick={() => navigator.clipboard.writeText(`${recommendedTrack.name} ${recommendedTrack.artist}`)}
-                    className="track-name-span"
-                  >
-                    {recommendedTrack.name} – <i>{recommendedTrack.artists.length > 1 ? recommendedTrack.artists[0] + ', ' + recommendedTrack.artists[1] : recommendedTrack.artists[0]}</i>
-                  </span>
+                <td 
+                  className="table-data__name table-data__name-hover"
+                  onClick={() => navigator.clipboard.writeText(`${recommendedTrack.name} ${recommendedTrack.artist}`)}
+                >
+                  {recommendedTrack.name} – <i>{recommendedTrack.artists.length > 1 ? recommendedTrack.artists[0] + ', ' + recommendedTrack.artists[1] : recommendedTrack.artists[0]}</i>
                 </td>
                 <td
                   className="table-data__attributes key-data"
