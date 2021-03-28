@@ -17,19 +17,21 @@ const SearchTitle = styled.h1`
 
 
 const Search = () => {
-  const {token, setTracks, setSortedTracks, setPlaylist} = useContext(UserContext);
+  const {
+    token, 
+    setTracks, 
+    setSortedTracks, 
+    setRecommendedTrack 
+  } = useContext(UserContext);
 
   const [searchType, setSearchType] = useState('track');
-
   const [currentSearchResults, setCurrentSearchResults] = useState(false);
   const [albums, setAlbums] = useState(false);
   const [albumName, setAlbumName] = useState(false);
-
   const [albumSearchQuery, setAlbumSearchQuery] = useState('');
   const [trackSearchQuery, setTrackSearchQuery] = useState('');
   const [playlistSearchQuery, setPlaylistSearchQuery ] = useState('');
   const [artist, setArtist] = useState('');
-
   const [playlistSearchResults, setPlaylistSearchResults ] = useState('');
 
 
@@ -115,12 +117,16 @@ const Search = () => {
     setTracks(false);
     setPlaylistSearchQuery('');
     setPlaylistSearchResults(false);
-    setPlaylist(false);
     setAlbums(false);
+    setRecommendedTrack(false);
   }
 
   const showOnlyPlaylistTracks = () => {
     setPlaylistSearchResults(false);
+  }
+
+  const showOnlyPlaylists = () => {
+    setAlbums(false);
   }
 
 
@@ -162,6 +168,7 @@ const Search = () => {
             setAlbumName={setAlbumName}
             playlistSearchResults={playlistSearchResults}
             showOnlyPlaylistTracks={showOnlyPlaylistTracks}
+            showOnlyPlaylists={showOnlyPlaylists}
           />
         </div>
       )}
