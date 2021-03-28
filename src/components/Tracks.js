@@ -105,7 +105,6 @@ const Tracks = ({keyOption, sortOption }) => {
     sortedTracks,
     setSortedTracks,
     resetStates,
-    setRecommendedTrack,
     lastClickedTrack, 
     setLastClickedTrack
   } = useContext(UserContext);
@@ -169,7 +168,7 @@ const Tracks = ({keyOption, sortOption }) => {
 
   const goToRecommended = (track) => {
     resetStates(false);
-    setRecommendedTrack({
+    const recommendedTrack = {
       "id": track.id, 
       "key": track.key, 
       "parsedKeys": [
@@ -181,8 +180,15 @@ const Tracks = ({keyOption, sortOption }) => {
       "artists": track.artists,
       "energy": track.energy,
       "tempo": track.tempo
-    });
-    history.push('/recommended');
+    };
+
+    history.push({
+      pathname: '/recommended',
+      search: `?id=${track.id}`
+    },
+    {
+      recommendedTrack: recommendedTrack,
+    })
   }
 
   return (

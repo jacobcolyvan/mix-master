@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -27,16 +27,14 @@ const Main = styled.div`
 
 function App() {
   const [ token, setToken ] = useState(false);
-  const [ playlist, setPlaylist] = useState(false);
   const [ playlists, setPlaylists] = useState([]);
   const [ tracks, setTracks ] = useState(false);
   const [ sortedTracks, setSortedTracks ] = useState(false);
   const [ username, setUsername ] = useState(false);
-  const [recommendedTrack, setRecommendedTrack] = useState(false);
-  const [lastClickedTrack, setLastClickedTrack] = useState(false);
+  const [ recommendedTrack, setRecommendedTrack ] = useState(false);
+  const [ lastClickedTrack, setLastClickedTrack ] = useState(false);
 
   const resetStates = (resetRecommended=false) => {
-    setPlaylist(false);
     // setPlaylists([]);
     setTracks(false);
     setSortedTracks(false);
@@ -51,8 +49,6 @@ function App() {
         <UserContext.Provider value={{
           token,
           setToken,
-          playlist,
-          setPlaylist,
           playlists,
           setPlaylists,
           tracks,
@@ -65,7 +61,7 @@ function App() {
           recommendedTrack,
           setRecommendedTrack,
           lastClickedTrack, 
-          setLastClickedTrack
+          setLastClickedTrack,
          }}
         >
           <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>
@@ -87,8 +83,8 @@ function App() {
                       <Route exact path='/' component={UserPlaylists} />
                       <Route exact path='/about' component={About} />
                       <Route exact path='/search' component={Search} />
-                      <Route exact path='/playlist' component={Playlist} />
-                      <Route exact path='/recommended' component={RecommendedTracks} />
+                      <Route path='/playlist' component={Playlist} />
+                      <Route path='/recommended' component={RecommendedTracks} />
                     </>
                   )}
 

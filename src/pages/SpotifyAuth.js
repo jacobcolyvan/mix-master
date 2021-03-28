@@ -19,7 +19,7 @@ const SpotifyAuth = ({ location }) => {
   useEffect(() => {
     if (location.hash.split('=')[1]) {
       setToken(location.hash.split('=')[1].split('&token')[0]);
-      history.push('/');
+      history.replace('/');
     }
   }, [setToken, token, history, location.hash]);
 

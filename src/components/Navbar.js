@@ -71,7 +71,7 @@ const Navbar = ({ resetStates }) => {
           )}
 
           {(pathname !== '/about' &&
-            pathname !== '/playlist' &&
+            !(pathname.includes('/playlist')) &&
             pathname !== '/recommended') && (
             < Button
               variant='outlined'

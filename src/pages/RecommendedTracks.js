@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
@@ -58,9 +59,11 @@ const RecommendedTrackDiv = styled.div`
 
 
 const RecommendedTracks = () => {
-  const {token, setTracks, setSortedTracks, recommendedTrack} = useContext(UserContext);
+  const {token, setTracks, setSortedTracks} = useContext(UserContext);
   const [sortOption, setSortOption] = useState('tempoThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
+  const history = useHistory();
+  const recommendedTrack = history.location.state.recommendedTrack;
 
 
   useEffect(() => {

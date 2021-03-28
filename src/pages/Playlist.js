@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
@@ -15,9 +16,11 @@ const PlaylistName = styled.h3`
 
 
 const Playlist = () => {
-  const {token, playlist, setTracks, setSortedTracks} = useContext(UserContext);
-  const [sortOption, setSortOption] = useState('tempoThenKey');
-  const [keyOption, setKeyOption] = useState('camelot');
+  const { token, setTracks, setSortedTracks } = useContext(UserContext);
+  const [ sortOption, setSortOption ] = useState('tempoThenKey');
+  const [ keyOption, setKeyOption ] = useState('camelot');
+  const history = useHistory();
+  const playlist = history.location.state.playlist;
 
 
   useEffect(() => {
@@ -88,20 +91,19 @@ const Playlist = () => {
     };
 
     getTracks();
-  }, [token, playlist, setTracks, setSortedTracks]);
-
-
+  }, [token, setTracks, setSortedTracks, playlist.href, playlist.tracks.total]);
 
 
 
   return (
     <div>
       <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
-      <br/>
-      <PlaylistName>{playlist.name}</PlaylistName>
-      {/* <p>{playlist.description}</p> */}
-
+      <br />
       <SortBy sortOption={sortOption} setSortOption={setSortOption} />
+
+      {playlist && (
+        <PlaylistName>{playlist.name}</PlaylistName>
+      )}
 
       <Tracks
         sortOption={sortOption}
@@ -111,4 +113,20 @@ const Playlist = () => {
   )
 }
 
-export default Playlist
+export default Playlist;
+
+
+
+// const getPlaylist = async () => {
+//   const playlistId = history.location.pathname.split('/')[2];
+//   const playlistResponse = await axios({
+//     method: 'get',
+//     url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+//     headers: {
+//       Authorization: 'Bearer ' + token,
+//       'Content-Type': 'application/json'
+//     }
+//   });
+//   setPlaylistName(playlistResponse.data.name)
+//   return playlistResponse.data;
+// }
