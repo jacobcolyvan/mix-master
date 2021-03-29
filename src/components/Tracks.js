@@ -100,7 +100,7 @@ const TracksTable = styled.table`
     }
 
     .table-data__attributes {
-      width: 15%;
+      min-width: 15%;
     }
   }
 `

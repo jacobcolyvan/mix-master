@@ -1,10 +1,10 @@
 import React, {useState, useContext} from 'react';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
 import Button from '@material-ui/core/Button';
-
 import SearchOptions from '../components/SearchOptions';
 import SearchResults from '../components/SearchResults';
 
@@ -24,28 +24,53 @@ const Search = () => {
     setRecommendedTrack
   } = useContext(UserContext);
 
-  const [searchType, setSearchType] = useState('track');
   const [currentSearchResults, setCurrentSearchResults] = useState(false);
-  const [albums, setAlbums] = useState(false);
-  const [albumName, setAlbumName] = useState(false);
-  const [albumSearchQuery, setAlbumSearchQuery] = useState('');
-  const [trackSearchQuery, setTrackSearchQuery] = useState('');
-  const [playlistSearchQuery, setPlaylistSearchQuery ] = useState('');
-  const [artist, setArtist] = useState('');
-  const [playlistSearchResults, setPlaylistSearchResults ] = useState('');
+  // const [searchType, setSearchType] = useState('track');
+  // const [albumSearchQuery, setAlbumSearchQuery] = useState('');
+  // const [trackSearchQuery, setTrackSearchQuery] = useState('');
+  // const [playlistSearchQuery, setPlaylistSearchQuery ] = useState('');
+  // const [artist, setArtist] = useState('');
+  // const [albums, setAlbums] = useState(false);
+  // const [albumName, setAlbumName] = useState(false);
+  // const [playlistSearchResults, setPlaylistSearchResults ] = useState('');
+
+  // const history = useHistory();
+  // const state = history.location.state;
+
+  const [ searchOptionValues, setSearchOptionValues ] = useState({
+    albumSearchQuery: '',
+    artist: '',
+    playlistSearchQuery: '',
+    searchType: 'track',
+    trackSearchQuery: '',
+  });
+
+  const [ searchResultValues, setSearchResultValues ] = useState({
+    albums: false,
+    albumName: false,
+    playlistSearchResults: '',
+  });
+
+  const handleOptionsChange = (prop, value) => {
+    setSearchOptionValues({ ...searchOptionValues, [prop]: value });
+  };
+
+  const handleResultsChange = (prop, value) => {
+    setSearchResultValues({ ...searchResultValues, [prop]: value });
+  };
 
 
   const createRequestUrl = () => {
-    if (searchType === 'album') {
-      return `https://api.spotify.com/v1/search?q=${albumSearchQuery ?
-      'album%3A$' + encodeURI(albumSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
+    if (searchOptionValues.searchType === 'album') {
+      return `https://api.spotify.com/v1/search?q=${searchOptionValues.albumSearchQuery ?
+      'album%3A$' + encodeURI(searchOptionValues.albumSearchQuery) + '%20' : ''}${searchOptionValues.artist ? 'artist%3A$' + encodeURI(searchOptionValues.artist) + '%20'
       : encodeURI('')}&type=album`;
-    } else if (searchType === 'track') {
-      return `https://api.spotify.com/v1/search?q=${trackSearchQuery ?
-      'album%3A$' + encodeURI(trackSearchQuery) + '%20' : ''}${artist ? 'artist%3A$' + encodeURI(artist) + '%20'
+    } else if (searchOptionValues.searchType === 'track') {
+      return `https://api.spotify.com/v1/search?q=${searchOptionValues.trackSearchQuery ?
+      'album%3A$' + encodeURI(searchOptionValues.trackSearchQuery) + '%20' : ''}${searchOptionValues.artist ? 'artist%3A$' + encodeURI(searchOptionValues.artist) + '%20'
       : encodeURI('')}&type=track&limit=50`;
     } else {
-      return `https://api.spotify.com/v1/search?q=${playlistSearchQuery}&type=playlist`;
+      return `https://api.spotify.com/v1/search?q=${searchOptionValues.playlistSearchQuery}&type=playlist`;
     }
   }
 
@@ -81,7 +106,7 @@ const Search = () => {
 
   // useCallback() here?
   const getResults = async () => {
-    if (artist.length || albumSearchQuery.length || trackSearchQuery.length || playlistSearchQuery.length ) {
+    if (searchOptionValues.artist.length || searchOptionValues.albumSearchQuery.length || searchOptionValues.trackSearchQuery.length || searchOptionValues.playlistSearchQuery.length ) {
       try {
         const response = await axios({
           method: 'get',
@@ -92,12 +117,14 @@ const Search = () => {
           }
         });
 
-        if (searchType === 'album') {
-          setAlbums(response.data.albums.items);
-        } else if (searchType === 'track') {
+        if (searchOptionValues.searchType === 'album') {
+          handleResultsChange("albums", response.data.albums.items);
+          // setAlbums(response.data.albums.items);
+        } else if (searchOptionValues.searchType === 'track') {
           getTrackFeatures(response.data.tracks.items);
         } else {
-          setPlaylistSearchResults(response.data.playlists.items);
+          handleResultsChange("playlistSearchResults", response.data.playlists.items);
+          // setPlaylistSearchResults(response.data.playlists.items);
         }
 
         setCurrentSearchResults(true);
@@ -110,23 +137,38 @@ const Search = () => {
 
   const resetSearch = () => {
     setCurrentSearchResults(false);
-    setAlbumSearchQuery('');
-    setTrackSearchQuery('');
-    setArtist('');
-    setAlbumName(false);
-    setTracks(false);
-    setPlaylistSearchQuery('');
-    setPlaylistSearchResults(false);
-    setAlbums(false);
     setRecommendedTrack(false);
+    setTracks(false);
+
+    // setAlbumSearchQuery('');
+    // setTrackSearchQuery('');
+    // setArtist('');
+    // setAlbumName(false);
+    // setPlaylistSearchQuery('');
+    // setPlaylistSearchResults(false);
+    // setAlbums(false);
+
+    setSearchOptionValues({
+      albumSearchQuery: '',
+      artist: '',
+      playlistSearchQuery: '',
+      searchType: 'track',
+      trackSearchQuery: '',
+    });
+
+    setSearchResultValues({
+      albums: false,
+      albumName: false,
+      playlistSearchResults: '',
+    })
   }
 
   const showOnlyPlaylistTracks = () => {
-    setPlaylistSearchResults(false);
+    handleResultsChange("playlistSearchResults", false);
   }
 
   const showOnlyPlaylists = () => {
-    setAlbums(false);
+    handleResultsChange("albums", false);
   }
 
 
@@ -136,19 +178,11 @@ const Search = () => {
 
       {!currentSearchResults ? (
         <SearchOptions
-          searchType={searchType}
-          setSearchType={setSearchType}
-          artist={artist}
-          setArtist={setArtist}
-          trackSearchQuery={trackSearchQuery}
-          albumSearchQuery={albumSearchQuery}
-          playlistSearchQuery={playlistSearchQuery}
-          setAlbumSearchQuery={setAlbumSearchQuery}
-          setTrackSearchQuery={setTrackSearchQuery}
-          setPlaylistSearchQuery={setPlaylistSearchQuery}
           getResults={getResults}
+          handleOptionsChange
+          searchOptionValues
         />
-        ) : (
+      ) : (
         <div>
           <Button
             variant='outlined'
@@ -163,12 +197,10 @@ const Search = () => {
           <br/><br/>
 
           <SearchResults
-            albums={albums}
-            albumName={albumName}
-            setAlbumName={setAlbumName}
-            playlistSearchResults={playlistSearchResults}
-            showOnlyPlaylistTracks={showOnlyPlaylistTracks}
+            handleResultsChange
+            searchResultsValues
             showOnlyPlaylists={showOnlyPlaylists}
+            showOnlyPlaylistTracks={showOnlyPlaylistTracks}
           />
         </div>
       )}

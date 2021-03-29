@@ -22,27 +22,31 @@ const SearchBarDiv = styled.div`
 `
 
 const SearchOptions = ({
-  searchType,
-  setSearchType,
-  artist,
-  setArtist,
-  setAlbumSearchQuery,
-  albumSearchQuery,
-  trackSearchQuery,
-  setTrackSearchQuery,
   getResults,
-  playlistSearchQuery,
-  setPlaylistSearchQuery
+  handleOptionsChange,
+  searchOptionValues
+  // searchType,
+  // setSearchType,
+  // artist,
+  // setArtist,
+  // setAlbumSearchQuery,
+  // albumSearchQuery,
+  // trackSearchQuery,
+  // setTrackSearchQuery,
+  // getResults,
+  // playlistSearchQuery,
+  // setPlaylistSearchQuery
  }) => {
 
     const createSearchBars = () => {
       let searchBars;
-      if (searchType === "playlist") {
+      if (searchOptionValues.searchType === "playlist") {
         searchBars =
         <SearchBar
           label={"playlist name"}
-          setParam={setPlaylistSearchQuery}
-          param={playlistSearchQuery}
+          setParam={handleOptionsChange}
+          param={searchOptionValues.playlistSearchQuery}
+          paramName={"playlistSearchQuery"}
           getResults={getResults}
         />
       } else {
@@ -50,23 +54,26 @@ const SearchOptions = ({
         <div>
           <SearchBar
             label={"artist"}
-            setParam={setArtist}
-            param={artist}
+            setParam={handleOptionsChange}
+            param={searchOptionValues.artist}
+            paramName={"artist"}
             getResults={getResults}
           />
 
-          {searchType === "album" ? (
+          {searchOptionValues.searchType === "album" ? (
             <SearchBar
               label={"album name"}
-              setParam={setAlbumSearchQuery}
-              param={albumSearchQuery}
+              setParam={handleOptionsChange}
+              paramName={"albumSearchQuery"}
+              param={searchOptionValues.albumSearchQuery}
               getResults={getResults}
             />
           ) : (
             <SearchBar
               label={"track name"}
-              setParam={setTrackSearchQuery}
-              param={trackSearchQuery}
+              setParam={handleOptionsChange}
+              param={searchOptionValues.trackSearchQuery}
+              paramName={"trackSearchQuery"}
               getResults={getResults}
             />
           )}
@@ -84,8 +91,8 @@ const SearchOptions = ({
       <Select
         labelId='Search Type'
         id='search-type'
-        value={searchType}
-        onChange={(e) => setSearchType(e.target.value)}
+        value={searchOptionValues.searchType}
+        onChange={(e) => handleOptionsChange("searchType", e.target.value)}
         fullWidth
         variant='outlined'
       >
