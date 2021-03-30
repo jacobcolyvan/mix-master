@@ -16,11 +16,9 @@ const AlbumsTitle = styled.h3`
 
 
 const SearchResults = ({
-  albums,
-  albumName,
-  setAlbumName,
-  playlistSearchResults,
-  showOnlyPlaylistTracks
+  handleResultsChange,
+  showOnlyPlaylistTracks,
+  searchResultValues
 }) => {
   const {tracks, playlist} = useContext(UserContext);
   const [sortOption, setSortOption] = useState('default');
@@ -28,10 +26,10 @@ const SearchResults = ({
 
   return (
     <div>
-      {(albums && !tracks)  && (
+      {(searchResultValues.albums && !tracks)  && (
         <Albums
-          albums={albums}
-          setAlbumName={setAlbumName}
+          albums={searchResultValues.albums}
+          handleResultsChange={handleResultsChange}
         />
       )}
 
@@ -39,8 +37,8 @@ const SearchResults = ({
         <>
           <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
           <br/>
-          {(albumName) ? (
-          <AlbumsTitle>{albumName}</AlbumsTitle>
+          {(searchResultValues.albumName) ? (
+            <AlbumsTitle>{searchResultValues.albumName}</AlbumsTitle>
           ) : (
             <AlbumsTitle>Track Results</AlbumsTitle>
           )}
@@ -54,11 +52,11 @@ const SearchResults = ({
         </>
       )}
 
-      {playlistSearchResults && (
+      {searchResultValues.playlistSearchResults && (
         <>
           <AlbumsTitle>Playlist Results</AlbumsTitle>
           <PlaylistList
-            playlistsToRender={playlistSearchResults}
+            playlistsToRender={searchResultValues.playlistSearchResults}
             showOnlyPlaylistTracks={showOnlyPlaylistTracks}
           />
         </>

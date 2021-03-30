@@ -82,7 +82,7 @@ function App() {
                     <>
                       <Route exact path='/' component={UserPlaylists} />
                       <Route exact path='/about' component={About} />
-                      <Route exact path='/search' component={Search} />
+                      <Route path='/search' component={Search} />
                       <Route path='/playlist' component={Playlist} />
                       <Route path='/recommended' component={RecommendedTracks} />
                     </>

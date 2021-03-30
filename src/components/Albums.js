@@ -29,7 +29,7 @@ const AlbumsTitle = styled.h3`
   font-style: italic;
 `
 
-const Albums = ({ albums, setAlbumName }) => {
+const Albums = ({ albums, handleResultsChange }) => {
   const {token, setTracks, setSortedTracks} = useContext(UserContext);
 
 
@@ -70,7 +70,7 @@ const Albums = ({ albums, setAlbumName }) => {
         }
       })
 
-      setAlbumName(`${album.name} – ${album.artists.length > 1 ? [album.artists[0].name, album.artists[1].name].join(', ') : album.artists[0].name}`);
+      handleResultsChange('albumName', `${album.name} – ${album.artists.length > 1 ? [album.artists[0].name, album.artists[1].name].join(', ') : album.artists[0].name}`);
       setSortedTracks([...splicedTracks]);
       setTracks([...splicedTracks]);
 

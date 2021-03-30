@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -34,9 +34,6 @@ const Search = () => {
   // const [albumName, setAlbumName] = useState(false);
   // const [playlistSearchResults, setPlaylistSearchResults ] = useState('');
 
-  // const history = useHistory();
-  // const state = history.location.state;
-
   const [ searchOptionValues, setSearchOptionValues ] = useState({
     albumSearchQuery: '',
     artist: '',
@@ -44,12 +41,50 @@ const Search = () => {
     searchType: 'track',
     trackSearchQuery: '',
   });
-
   const [ searchResultValues, setSearchResultValues ] = useState({
     albums: false,
     albumName: false,
     playlistSearchResults: '',
   });
+  
+
+  const history = useHistory();
+  const state = history.location.state;
+
+  // useEffect(() => {
+  //   if (state) {
+  //     console.log('state :>> ', state);
+  //     setSearchResultValues(state.searchResultValues)
+  //     setCurrentSearchResults(state.currentSearchResults)
+  //   } else {
+  //     console.log('state :>> ', "no state");
+  //     setSearchResultValues({
+  //       albums: false,
+  //       albumName: false,
+  //       playlistSearchResults: '',
+  //     });
+  //   }
+  // }, [state, setSearchResultValues, setCurrentSearchResults])
+
+
+  useEffect(() => {
+    console.log("state", state)
+
+  }, [state])
+
+
+
+  const updateUrl = (slug) => {
+    history.push({
+      pathname: '/search',
+      search: `?${slug}`
+    },
+    { 
+      searchResultValues: searchResultValues,
+      currentSearchResults: currentSearchResults
+    })
+  }
+
 
   const handleOptionsChange = (prop, value) => {
     setSearchOptionValues({ ...searchOptionValues, [prop]: value });
@@ -99,6 +134,7 @@ const Search = () => {
       }
     })
 
+    updateUrl('tracks')
     setSortedTracks([...splicedTracks]);
     setTracks([...splicedTracks]);
   }
@@ -118,13 +154,13 @@ const Search = () => {
         });
 
         if (searchOptionValues.searchType === 'album') {
+          updateUrl('albums')
           handleResultsChange("albums", response.data.albums.items);
-          // setAlbums(response.data.albums.items);
         } else if (searchOptionValues.searchType === 'track') {
           getTrackFeatures(response.data.tracks.items);
         } else {
+          updateUrl('playlists')
           handleResultsChange("playlistSearchResults", response.data.playlists.items);
-          // setPlaylistSearchResults(response.data.playlists.items);
         }
 
         setCurrentSearchResults(true);
@@ -161,6 +197,8 @@ const Search = () => {
       albumName: false,
       playlistSearchResults: '',
     })
+
+    history.push('/search')
   }
 
   const showOnlyPlaylistTracks = () => {
@@ -179,8 +217,9 @@ const Search = () => {
       {!currentSearchResults ? (
         <SearchOptions
           getResults={getResults}
-          handleOptionsChange
-          searchOptionValues
+          handleOptionsChange={handleOptionsChange}
+          searchOptionValues={searchOptionValues}
+          history={history}
         />
       ) : (
         <div>
@@ -197,8 +236,8 @@ const Search = () => {
           <br/><br/>
 
           <SearchResults
-            handleResultsChange
-            searchResultsValues
+            handleResultsChange={handleResultsChange}
+            searchResultValues={searchResultValues}
             showOnlyPlaylists={showOnlyPlaylists}
             showOnlyPlaylistTracks={showOnlyPlaylistTracks}
           />

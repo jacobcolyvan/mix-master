@@ -3,7 +3,7 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 
 
-const SearchBar = ({ label, param, setParam, getResults }) => {
+const SearchBar = ({ label, param, paramName, setParam, getResults }) => {
 
   const searchOnEnter = (e) => {
     if (e.key === "Enter") getResults();
@@ -16,7 +16,7 @@ const SearchBar = ({ label, param, setParam, getResults }) => {
       <TextField
         fullWidth
         label={label}
-        onChange={(e) => setParam(e.target.value)}
+        onChange={(e) => setParam(paramName, e.target.value)}
         style={{ flex: 1, margin: '4px 20px 0 0', color: 'white'}}
         value={param}
         onKeyDown={searchOnEnter}
