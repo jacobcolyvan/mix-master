@@ -180,7 +180,10 @@ const Tracks = ({keyOption, sortOption }) => {
       "key": track.key, 
       "parsedKeys": [
         `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`,
-        `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`
+        `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`,
+        // find the inverse major/minor key
+        track.mode === 1 ? [Object.keys(camelotMinorKeyDict).find(key => camelotMinorKeyDict[key] == track.key), 0] :
+        [Object.keys(camelotMajorKeyDict).find(key => camelotMajorKeyDict[key] == track.key), 1]
       ],
       "mode": track.mode, 
       "name": track.name,

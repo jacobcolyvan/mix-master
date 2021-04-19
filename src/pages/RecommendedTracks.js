@@ -80,9 +80,9 @@ const RecommendedTracks = () => {
   useEffect(() => {
     const getTracks = async () => {
       try {
-        let tracklist = await axios({
+        const tracks1 = await axios({
         method: 'get',
-        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=30&`
+        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=16&`
         +`target_key=${recommendedTrack.key}&target_mode=${recommendedTrack.mode}`,
         headers: {
             Authorization: 'Bearer ' + token,
@@ -90,8 +90,21 @@ const RecommendedTracks = () => {
         }
         });
 
+        // minor/major alternative scale
+        const tracks2 = await axios({
+        method: 'get',
+        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=16&`
+        +`target_key=${recommendedTrack.parsedKeys[2][0]}&target_mode=${recommendedTrack.parsedKeys[2][1]}`,
+        headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+        });
+
+        let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks)
+
         // remove null items
-        tracklist = tracklist.data.tracks.filter(Boolean);
+        tracklist = tracklist.filter(Boolean);
         const trackIds = tracklist.map((track) => track.id)
 
         let trackFeatures = await axios({
