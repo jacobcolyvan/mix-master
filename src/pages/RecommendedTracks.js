@@ -41,7 +41,10 @@ const RecommendedTrackDiv = styled.div`
 
       .table-data__name-hover:hover {
         cursor: pointer;
-        background-color: 	#F0F0F0;
+        background-color: 	#424242;
+        * {
+          background-color: 	#424242;
+        }
       }
 
       .table-data__attributes {
@@ -51,7 +54,7 @@ const RecommendedTrackDiv = styled.div`
     }
 
     td, th  {
-      border: 1px solid #c4c4c4;
+      border: 1px solid #424242;
       padding: 10px 4px;
       margin: 0;
     }
