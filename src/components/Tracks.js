@@ -188,8 +188,8 @@ const Tracks = ({keyOption, sortOption }) => {
         `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`,
         `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`,
         // find the inverse major/minor key
-        track.mode === 1 ? [Object.keys(camelotMinorKeyDict).find(key => camelotMinorKeyDict[key] === track.key), 0] :
-        [Object.keys(camelotMajorKeyDict).find(key => camelotMajorKeyDict[key] === track.key), 1]
+        track.mode === 1 ? [Object.keys(camelotMinorKeyDict).find(key => camelotMinorKeyDict[key] === String(track.key)), 0] :
+        [Object.keys(camelotMajorKeyDict).find(key => camelotMajorKeyDict[key] === String(track.key)), 1]
       ],
       "mode": track.mode, 
       "name": track.name,
@@ -236,8 +236,8 @@ const Tracks = ({keyOption, sortOption }) => {
                   `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}` : 
                   `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
               </td>
-              <td className="table-data__attributes table-data__attributes-energy">{track.energy}</td>
-              <td className="table-data__attributes">{track.tempo}</td>
+              <td className="table-data__attributes table-data__attributes-energy">{ track.energy && track.energy}</td>
+              <td className="table-data__attributes">{track.tempo && track.tempo}</td>
             </tr>
           ))}
         </tbody>

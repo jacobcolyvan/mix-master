@@ -57,18 +57,19 @@ const Albums = ({ albums, setAlbumName }) => {
       const tracklist = [tracksResponse.data.tracks.items];
       const trackFeatures = [...featuresResponse.data.audio_features];
 
-      const splicedTracks = tracklist[0].map((item, index) => {
-        return {
-          "name": item.name,
-          "artists": item.artists.length > 1 ? [item.artists[0].name, item.artists[1].name] : [item.artists[0].name],
-          "id": item.id,
-          "tempo": Math.round(trackFeatures[index].tempo),
-          "key": trackFeatures[index].key,
-          "mode": parseInt(trackFeatures[index].mode),
-          "energy": Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100,
-          "danceability": trackFeatures[index].danceability
-        }
-      })
+      const splicedTracks = tracklist.filter((item, index) => trackFeatures[index] != null)
+        .map((item, index) => {
+          return {
+            "name": item.track.name,
+            "artists": item.track.artists.length > 1 ? [item.track.artists[0].name, item.track.artists[1].name] : [item.track.artists[0].name],
+            "id": item.track.id && item.track.id,
+            "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
+            "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
+            "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
+            "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
+            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : ""
+          }
+        })
 
       setAlbumName(`${album.name} – ${album.artists.length > 1 ? [album.artists[0].name, album.artists[1].name].join(', ') : album.artists[0].name}`);
       setSortedTracks([...splicedTracks]);
