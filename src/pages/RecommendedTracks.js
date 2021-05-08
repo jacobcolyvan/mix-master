@@ -122,13 +122,13 @@ const RecommendedTracks = () => {
         })
 
         trackFeatures = [...trackFeatures.data.audio_features]
-
+        
         const splicedTracks = tracklist.filter((item, index) => trackFeatures[index] != null)
         .map((item, index) => {
           return {
-            "name": item.track.name,
-            "artists": item.track.artists.length > 1 ? [item.track.artists[0].name, item.track.artists[1].name] : [item.track.artists[0].name],
-            "id": item.track.id && item.track.id,
+            "name": item.name,
+            "artists": item.artists.length > 1 ? [item.artists[0].name, item.artists[1].name] : [item.artists[0].name],
+            "id": item.id && item.id,
             "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
             "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
             "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
