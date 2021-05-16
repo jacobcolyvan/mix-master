@@ -154,7 +154,12 @@ const Tracks = ({keyOption, sortOption }) => {
 
           setSortedTracks(temp);
         } else if (sort === 'tempoThenKey') {
-          let temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
+          let temp = [...tracks].sort((a, b) => parseInt(b.energy) - parseInt(a.energy));
+          temp = [...temp].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
+
+          setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
+        } else if (sort === 'energyThenKey') {
+          let temp = [...tracks].sort((a, b) => parseInt(b.energy) - parseInt(a.energy));
 
           setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
         } else {

@@ -74,7 +74,7 @@ const RecommendedTrackDiv = styled.div`
 
 const RecommendedTracks = () => {
   const {token, setTracks, setSortedTracks} = useContext(UserContext);
-  const [sortOption, setSortOption] = useState('tempoThenKey');
+  const [sortOption, setSortOption] = useState('energyThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
   const history = useHistory();
   const recommendedTrack = history.location.state.recommendedTrack;

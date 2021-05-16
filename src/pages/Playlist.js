@@ -17,7 +17,7 @@ const PlaylistName = styled.h3`
 
 const Playlist = () => {
   const { token, setTracks, setSortedTracks } = useContext(UserContext);
-  const [ sortOption, setSortOption ] = useState('tempoThenKey');
+  const [ sortOption, setSortOption ] = useState('energyThenKey');
   const [ keyOption, setKeyOption ] = useState('camelot');
   const history = useHistory();
   const playlist = history.location.state.playlist;
