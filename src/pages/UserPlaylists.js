@@ -27,7 +27,7 @@ const InfoDiv = styled.div`
   }
 
   a {
-    color: blue;
+    color: #65D9EF;
   }
 `
 

@@ -71,7 +71,10 @@ const TracksTable = styled.table`
 
     .table-data__name-hover:hover {
       cursor: pointer;
-      background-color: 	#F0F0F0;
+      background-color: 	#424242;
+      * {
+        background-color: 	#424242;
+      }
     }
 
     .table-data__attributes {
@@ -81,7 +84,7 @@ const TracksTable = styled.table`
   }
 
   td, th  {
-    border: 1px solid #c4c4c4;
+    border: 1px solid #424242;
     padding: 10px 4px;
     margin: 0;
   }
@@ -91,7 +94,10 @@ const TracksTable = styled.table`
   }
 
   .currently-selected {
-    background-color: 	#E0E0E0;
+    background-color: 	#484848;
+    * {
+      background-color: 	#484848;
+    }
   }
 
   @media screen and (max-width: 600px) {
@@ -148,7 +154,12 @@ const Tracks = ({keyOption, sortOption }) => {
 
           setSortedTracks(temp);
         } else if (sort === 'tempoThenKey') {
-          let temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
+          let temp = [...tracks].sort((a, b) => parseInt(b.energy) - parseInt(a.energy));
+          temp = [...temp].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
+
+          setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
+        } else if (sort === 'energyThenKey') {
+          let temp = [...tracks].sort((a, b) => parseInt(b.energy) - parseInt(a.energy));
 
           setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
         } else {
@@ -180,7 +191,10 @@ const Tracks = ({keyOption, sortOption }) => {
       "key": track.key, 
       "parsedKeys": [
         `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`,
-        `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`
+        `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`,
+        // find the inverse major/minor key
+        track.mode === 1 ? [Object.keys(camelotMinorKeyDict).find(key => camelotMinorKeyDict[key] === String(track.key)), 0] :
+        [Object.keys(camelotMajorKeyDict).find(key => camelotMajorKeyDict[key] === String(track.key)), 1]
       ],
       "mode": track.mode, 
       "name": track.name,
@@ -227,8 +241,8 @@ const Tracks = ({keyOption, sortOption }) => {
                   `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}` : 
                   `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
               </td>
-              <td className="table-data__attributes table-data__attributes-energy">{track.energy}</td>
-              <td className="table-data__attributes">{track.tempo}</td>
+              <td className="table-data__attributes table-data__attributes-energy">{ track.energy && track.energy}</td>
+              <td className="table-data__attributes">{track.tempo && track.tempo}</td>
             </tr>
           ))}
         </tbody>

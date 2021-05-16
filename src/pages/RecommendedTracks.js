@@ -41,7 +41,10 @@ const RecommendedTrackDiv = styled.div`
 
       .table-data__name-hover:hover {
         cursor: pointer;
-        background-color: 	#F0F0F0;
+        background-color: 	#424242;
+        * {
+          background-color: 	#424242;
+        }
       }
 
       .table-data__attributes {
@@ -51,7 +54,7 @@ const RecommendedTrackDiv = styled.div`
     }
 
     td, th  {
-      border: 1px solid #c4c4c4;
+      border: 1px solid #424242;
       padding: 10px 4px;
       margin: 0;
     }
@@ -71,7 +74,7 @@ const RecommendedTrackDiv = styled.div`
 
 const RecommendedTracks = () => {
   const {token, setTracks, setSortedTracks} = useContext(UserContext);
-  const [sortOption, setSortOption] = useState('tempoThenKey');
+  const [sortOption, setSortOption] = useState('energyThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
   const history = useHistory();
   const recommendedTrack = history.location.state.recommendedTrack;
@@ -80,9 +83,9 @@ const RecommendedTracks = () => {
   useEffect(() => {
     const getTracks = async () => {
       try {
-        let tracklist = await axios({
+        const tracks1 = await axios({
         method: 'get',
-        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=30&`
+        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=20&`
         +`target_key=${recommendedTrack.key}&target_mode=${recommendedTrack.mode}`,
         headers: {
             Authorization: 'Bearer ' + token,
@@ -90,8 +93,23 @@ const RecommendedTracks = () => {
         }
         });
 
+        // minor/major alternative scale
+        const tracks2 = await axios({
+        method: 'get',
+        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=20&`
+        +`target_key=${recommendedTrack.parsedKeys[2][0]}&target_mode=${recommendedTrack.parsedKeys[2][1]}`,
+        headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+        });
+
+
+
+        let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks)
+
         // remove null items
-        tracklist = tracklist.data.tracks.filter(Boolean);
+        tracklist = tracklist.filter(Boolean);
         const trackIds = tracklist.map((track) => track.id)
 
         let trackFeatures = await axios({
@@ -104,17 +122,18 @@ const RecommendedTracks = () => {
         })
 
         trackFeatures = [...trackFeatures.data.audio_features]
-
-        const splicedTracks = tracklist.map((track, index) => {
+        
+        const splicedTracks = tracklist.filter((item, index) => trackFeatures[index] != null)
+        .map((item, index) => {
           return {
-            "name": track.name,
-            "artists": track.artists.length > 1 ? [track.artists[0].name, track.artists[1].name] : [track.artists[0].name],
-            "id": track.id,
-            "tempo": Math.round(trackFeatures[index].tempo),
-            "key": trackFeatures[index].key,
-            "mode": parseInt(trackFeatures[index].mode),
-            "energy": Math.round(100-trackFeatures[index].energy.toFixed(2)*100)/100,
-            "danceability": trackFeatures[index].danceability
+            "name": item.name,
+            "artists": item.artists.length > 1 ? [item.artists[0].name, item.artists[1].name] : [item.artists[0].name],
+            "id": item.id && item.id,
+            "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
+            "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
+            "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
+            "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
+            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : ""
           }
         })
 

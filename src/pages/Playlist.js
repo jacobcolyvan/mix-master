@@ -17,7 +17,7 @@ const PlaylistName = styled.h3`
 
 const Playlist = () => {
   const { token, setTracks, setSortedTracks } = useContext(UserContext);
-  const [ sortOption, setSortOption ] = useState('tempoThenKey');
+  const [ sortOption, setSortOption ] = useState('energyThenKey');
   const [ keyOption, setKeyOption ] = useState('camelot');
   const history = useHistory();
   const playlist = history.location.state.playlist;
@@ -31,37 +31,44 @@ const Playlist = () => {
         let offset = 0;
         let trackFeatures = [];
 
+
+
         while (trackTotalAmount > (tracklist.length)) {
-          let tracksResponse = await axios({
-            method: 'get',
-            url: playlist.href + `/tracks?offset=${offset}`,
-            headers: {
-              Authorization: 'Bearer ' + token,
-              'Content-Type': 'application/json'
-            }
-          });
+          let tracksResponse, featuresResponse
+          try {
+            tracksResponse = await axios({
+              method: 'get',
+              url: playlist.href + `/tracks?offset=${offset}`,
+              headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+              }
+            });
 
-          tracksResponse = tracksResponse.data.items.map((item) => {
-            if (item.track) {
-              return item
-            } else {
-              trackTotalAmount --;
-              return undefined
-            }
-          })
+            tracksResponse = tracksResponse.data.items.map((item) => {
+              if (item.track) {
+                return item
+              } else {
+                trackTotalAmount --;
+                return undefined
+              }
+            })
 
-          // remove null items
-          tracksResponse = tracksResponse.filter(Boolean);
-          const trackIds = tracksResponse.map((item) => item.track.id)
+            // remove null items
+            tracksResponse = tracksResponse.filter(Boolean);
+            const trackIds = tracksResponse.map((item) => item.track.id)
 
-          const featuresResponse = await axios({
-            method: 'get',
-            url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
-            headers: {
-              Authorization: 'Bearer ' + token,
-              'Content-Type': 'application/json'
-            }
-          })
+            featuresResponse = await axios({
+              method: 'get',
+              url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
+              headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+              }
+            })
+          } catch (error) {
+            console.log(error)
+          }
 
           tracklist = [...tracklist, ...tracksResponse];
           trackFeatures = [...trackFeatures, ...featuresResponse.data.audio_features];
@@ -69,17 +76,18 @@ const Playlist = () => {
           offset += 100;
         }
 
-
-        const splicedTracks = tracklist.map((item, index) => {
+        // expensive fix for null trackFeatures; flatMap?
+        const splicedTracks = tracklist.filter((item, index) => trackFeatures[index] != null)
+        .map((item, index) => {
           return {
             "name": item.track.name,
             "artists": item.track.artists.length > 1 ? [item.track.artists[0].name, item.track.artists[1].name] : [item.track.artists[0].name],
-            "id": item.track.id,
-            "tempo": Math.round(trackFeatures[index].tempo),
-            "key": trackFeatures[index].key,
-            "mode": parseInt(trackFeatures[index].mode),
-            "energy": Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100,
-            "danceability": trackFeatures[index].danceability
+            "id": item.track.id && item.track.id,
+            "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
+            "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
+            "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
+            "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
+            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : ""
           }
         })
 

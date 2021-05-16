@@ -8,11 +8,10 @@ const NavbarCont = styled.header`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #424242;
 
   h1 {
     margin-left: 8px;
-    color: #222222;
     text-decoration: underline;
   }
 
@@ -75,7 +74,7 @@ const Navbar = ({ resetStates }) => {
             pathname !== '/recommended') && (
             < Button
               variant='outlined'
-              color='secondary'
+              color='primary'
               onClick={() => loadPage('/about')}
               className="button"
               fullWidth

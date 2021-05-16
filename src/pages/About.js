@@ -3,7 +3,7 @@ import React from 'react';
 import Info from '../components/Info';
 import styled from 'styled-components';
 
-import CamelotWheel from '../media/camelot-wheel.jpg'
+import CamelotWheel from '../media/camelot-wheel.jpg';
 
 const CamelotInfo = styled.div`
   hr {
@@ -91,7 +91,7 @@ const About = () => {
           It lets you understand how different keys might work together, without having to understand music theory.
         </p>
 
-        <img src={CamelotWheel} alt="Camelot wheel" />
+        <img src={CamelotWheel} alt="Camelot wheel" style={{ border: "1px solid #424242" }} />
         <p>
           The basic idea is the closer the numbers are numerically, the more notes they share, and the better they will sound together
           (each number apart represents one difference). Those numbers that are followed by 'B', represent major scales, whereas those

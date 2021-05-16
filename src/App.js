@@ -6,7 +6,7 @@ import {
   Redirect
 } from 'react-router-dom';
 import styled from 'styled-components';
-import { Container, Paper} from '@material-ui/core';
+import { Container } from '@material-ui/core';
 
 import UserContext from './context/UserContext';
 import './stylesheets/App.css';
@@ -19,7 +19,7 @@ import About from './pages/About';
 import Search from './pages/Search';
 import RecommendedTracks from './pages/RecommendedTracks';
 
-const Main = styled.div`
+const Content = styled.div`
   padding: 10px;
   margin-bottom: 10px;
 `
@@ -62,13 +62,13 @@ function App() {
           setRecommendedTrack,
           lastClickedTrack, 
           setLastClickedTrack,
-         }}
+        }}
         >
-          <Container maxWidth='md' id='main' style={{marginBottom: "24px", marginTop: "24px"}}>
+          <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>
             <Navbar resetStates={resetStates} />
-            <Paper variant='outlined' className='main-paper' style={{}}>
+            <div className='main-paper' style={{ border: "1px solid #424242"}}>
               <Switch>
-                <Main>
+                <Content>
                   {!token ? (
                       <Route
                         exact path='/'
@@ -89,9 +89,9 @@ function App() {
                   )}
 
                   <Redirect to='/' />
-                </Main>
+                </Content>
               </Switch>
-            </Paper>
+            </div>
           </Container>
         </UserContext.Provider>
       </Router>

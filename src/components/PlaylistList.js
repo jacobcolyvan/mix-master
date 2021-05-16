@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 const PlaylistLi = styled.li`
-  border: 1px solid #c4c4c4;
+  border: 1px solid #424242;
   border-radius: 4px;
   padding: 10px 4px;
 
@@ -50,7 +50,16 @@ const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
           >
             <div className='single-playlist-div'>
               <div className='playlist-name'>{playlist.name}</div>
-              {playlist.images[0] && <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
+              {playlist.images[0] && (
+                <img
+                  src={playlist.images[0].url}
+                  alt={`playlist img`}
+                  width="60"
+                  height="60"
+                  className='playlist-image'
+                  style={{ border: "1px solid #424242" }}
+                />
+              )}
             </div>
           </PlaylistLi>
         ))}
