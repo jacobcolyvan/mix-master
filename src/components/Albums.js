@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import UserContext from '../context/UserContext';
 
-const AlbumLi = styled.li`
+const AlbumList = styled.li`
   border: 1px solid #c4c4c4;
   border-radius: 4px;
   padding: 10px 4px;
@@ -29,8 +29,8 @@ const AlbumsTitle = styled.h3`
   font-style: italic;
 `
 
-const Albums = ({ albums, handleResultsChange }) => {
-  const {token, setTracks, setSortedTracks} = useContext(UserContext);
+const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
+  const {token, setTracks, setSortedTracks, } = useContext(UserContext);
 
 
   const getAlbumTracks = async (album) => {
@@ -71,9 +71,11 @@ const Albums = ({ albums, handleResultsChange }) => {
           }
         })
 
-      handleResultsChange('albumName', `${album.name} – ${album.artists.length > 1 ? [album.artists[0].name, album.artists[1].name].join(', ') : album.artists[0].name}`);
+      setAlbumName(`${album.name} – ${album.artists.length > 1 ? [album.artists[0].name, album.artists[1].name].join(', ') : album.artists[0].name}`);
       setSortedTracks([...splicedTracks]);
       setTracks([...splicedTracks]);
+      const results = handleResultsChange('tracks', [...splicedTracks])
+      updateUrl('album-tracks', results)
 
     } catch (err) {
       console.log(err.message);
@@ -87,16 +89,22 @@ const Albums = ({ albums, handleResultsChange }) => {
       {albums.length > 0 && (
         <ul>
           {albums.map((album, index) => (
-            <AlbumLi
+            <AlbumList
               className='album item'
               key={`track${index}`}
               onClick={() => getAlbumTracks(album)}
             >
               <div className='single-playlist-div'>
-                <p className='playlist-name'>{album.name} – <i>{album.artists.length > 1 ? album.artists[0].name + ', ' + album.artists[1].name : album.artists[0].name}{"   (" + album.release_date.slice(0, 4) + ")"}</i> </p>
+                <p className='playlist-name'>
+                  {album.name} –
+                  <i>
+                    {album.artists.length > 1 ? album.artists[0].name + ', ' + album.artists[1].name :
+                    album.artists[0].name}{" (" + album.release_date.slice(0, 4) + ")"}
+                  </i>
+                </p>
                 {album.images[0] && <img src={album.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
               </div>
-            </AlbumLi>
+            </AlbumList>
           ))}
         </ul>
       )}

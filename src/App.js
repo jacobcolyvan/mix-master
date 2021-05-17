@@ -34,8 +34,21 @@ function App() {
   const [ recommendedTrack, setRecommendedTrack ] = useState(false);
   const [ lastClickedTrack, setLastClickedTrack ] = useState(false);
 
+  const [ searchOptionValues, setSearchOptionValues ] = useState({
+    albumSearchQuery: '',
+    artist: '',
+    playlistSearchQuery: '',
+    searchType: 'track',
+    trackSearchQuery: '',
+  });
+
+  const [ searchResultValues, setSearchResultValues ] = useState({
+    albums: false,
+    playlistSearchResults: '',
+    tracks: false,
+  });
+
   const resetStates = (resetRecommended=false) => {
-    // setPlaylists([]);
     setTracks(false);
     setSortedTracks(false);
     setRecommendedTrack(false);
@@ -62,6 +75,10 @@ function App() {
           setRecommendedTrack,
           lastClickedTrack, 
           setLastClickedTrack,
+          searchOptionValues,
+          setSearchOptionValues,
+          searchResultValues,
+          setSearchResultValues
         }}
         >
           <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>

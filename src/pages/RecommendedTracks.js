@@ -174,7 +174,7 @@ const RecommendedTracks = () => {
               <tr className={`track-name-tr`} id="recommended-track">
                 <td 
                   className="table-data__name table-data__name-hover"
-                  onClick={() => navigator.clipboard.writeText(`${recommendedTrack.name} ${recommendedTrack.artist}`)}
+                  onClick={() => navigator.clipboard.writeText(`${recommendedTrack.name} ${recommendedTrack.artists[0]}`)}
                 >
                   {recommendedTrack.name} – <i>{recommendedTrack.artists.length > 1 ? recommendedTrack.artists[0] + ', ' + recommendedTrack.artists[1] : recommendedTrack.artists[0]}</i>
                 </td>

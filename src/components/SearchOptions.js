@@ -25,63 +25,52 @@ const SearchOptions = ({
   getResults,
   handleOptionsChange,
   searchOptionValues
-  // searchType,
-  // setSearchType,
-  // artist,
-  // setArtist,
-  // setAlbumSearchQuery,
-  // albumSearchQuery,
-  // trackSearchQuery,
-  // setTrackSearchQuery,
-  // getResults,
-  // playlistSearchQuery,
-  // setPlaylistSearchQuery
  }) => {
 
-    const createSearchBars = () => {
-      let searchBars;
-      if (searchOptionValues.searchType === "playlist") {
-        searchBars =
+  const createSearchBars = () => {
+    let searchBars;
+    if (searchOptionValues.searchType === "playlist") {
+      searchBars =
+      <SearchBar
+        label={"playlist name"}
+        setParam={handleOptionsChange}
+        param={searchOptionValues.playlistSearchQuery}
+        paramName={"playlistSearchQuery"}
+        getResults={getResults}
+      />
+    } else {
+      searchBars =
+      <div>
         <SearchBar
-          label={"playlist name"}
+          label={"artist"}
           setParam={handleOptionsChange}
-          param={searchOptionValues.playlistSearchQuery}
-          paramName={"playlistSearchQuery"}
+          param={searchOptionValues.artist}
+          paramName={"artist"}
           getResults={getResults}
         />
-      } else {
-        searchBars =
-        <div>
+
+        {searchOptionValues.searchType === "album" ? (
           <SearchBar
-            label={"artist"}
+            label={"album name"}
             setParam={handleOptionsChange}
-            param={searchOptionValues.artist}
-            paramName={"artist"}
+            paramName={"albumSearchQuery"}
+            param={searchOptionValues.albumSearchQuery}
             getResults={getResults}
           />
-
-          {searchOptionValues.searchType === "album" ? (
-            <SearchBar
-              label={"album name"}
-              setParam={handleOptionsChange}
-              paramName={"albumSearchQuery"}
-              param={searchOptionValues.albumSearchQuery}
-              getResults={getResults}
-            />
-          ) : (
-            <SearchBar
-              label={"track name"}
-              setParam={handleOptionsChange}
-              param={searchOptionValues.trackSearchQuery}
-              paramName={"trackSearchQuery"}
-              getResults={getResults}
-            />
-          )}
-        </div>
-      }
-
-      return searchBars;
+        ) : (
+          <SearchBar
+            label={"track name"}
+            setParam={handleOptionsChange}
+            param={searchOptionValues.trackSearchQuery}
+            paramName={"trackSearchQuery"}
+            getResults={getResults}
+          />
+        )}
+      </div>
     }
+
+    return searchBars;
+  }
 
 
 

@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -19,79 +19,114 @@ const SearchTitle = styled.h1`
 const Search = () => {
   const {
     token,
+    tracks,
     setTracks,
     setSortedTracks,
-    setRecommendedTrack
+    setRecommendedTrack,
+    searchOptionValues,
+    setSearchOptionValues,
+    searchResultValues,
+    setSearchResultValues
   } = useContext(UserContext);
 
   const [currentSearchResults, setCurrentSearchResults] = useState(false);
-  // const [searchType, setSearchType] = useState('track');
-  // const [albumSearchQuery, setAlbumSearchQuery] = useState('');
-  // const [trackSearchQuery, setTrackSearchQuery] = useState('');
-  // const [playlistSearchQuery, setPlaylistSearchQuery ] = useState('');
-  // const [artist, setArtist] = useState('');
-  // const [albums, setAlbums] = useState(false);
-  // const [albumName, setAlbumName] = useState(false);
-  // const [playlistSearchResults, setPlaylistSearchResults ] = useState('');
-
-  const [ searchOptionValues, setSearchOptionValues ] = useState({
-    albumSearchQuery: '',
-    artist: '',
-    playlistSearchQuery: '',
-    searchType: 'track',
-    trackSearchQuery: '',
-  });
-  const [ searchResultValues, setSearchResultValues ] = useState({
-    albums: false,
-    albumName: false,
-    playlistSearchResults: '',
-  });
-  
-
+  const [albumName, setAlbumName] = useState(false);
   const history = useHistory();
   const state = history.location.state;
 
-  // useEffect(() => {
-  //   if (state) {
-  //     console.log('state :>> ', state);
-  //     setSearchResultValues(state.searchResultValues)
-  //     setCurrentSearchResults(state.currentSearchResults)
-  //   } else {
-  //     console.log('state :>> ', "no state");
-  //     setSearchResultValues({
-  //       albums: false,
-  //       albumName: false,
-  //       playlistSearchResults: '',
-  //     });
-  //   }
-  // }, [state, setSearchResultValues, setCurrentSearchResults])
+
+  const resetSearch = useCallback(() => {
+    setCurrentSearchResults(false);
+    setRecommendedTrack(false);
+    setAlbumName(false);
+    setSortedTracks(false);
+    setTracks(false);
+
+    setSearchOptionValues({
+      albumSearchQuery: '',
+      artist: '',
+      playlistSearchQuery: '',
+      searchType: 'track',
+      trackSearchQuery: '',
+    });
+    setSearchResultValues({
+      albums: false,
+      playlistSearchResults: '',
+      tracks: false
+    })
+  }, [
+    setRecommendedTrack,
+    setSearchOptionValues,
+    setSearchResultValues,
+    setTracks,
+    setSortedTracks
+  ])
 
 
+  const updateHooksFromState = useCallback(() => {
+    if (state) {
+      setSearchOptionValues(state.searchOptionValues)
+
+      if (history.location.search === '?' || history.location.search === '') {
+        setCurrentSearchResults(false);
+        // Reset searchValues witout resetting searchOptions
+        setSearchResultValues({
+          albums: false,
+          playlistSearchResults: '',
+          tracks: false
+        });
+        setAlbumName(false);
+        setSortedTracks(false);
+        setTracks(false);
+
+      } else {
+        setTracks(state.searchResultValues["tracks"]);
+        setCurrentSearchResults(true);
+        setSearchResultValues(state.searchResultValues);
+      }
+
+    } else {
+      resetSearch()
+    }
+  }, [
+    state,
+    history.location.search,
+    resetSearch,
+    setSearchResultValues,
+    setSearchOptionValues,
+    setTracks,
+    setSortedTracks,
+  ]);
+
+
+  // Refresh state on search re-render
   useEffect(() => {
-    console.log("state", state)
-
-  }, [state])
-
+    updateHooksFromState()
+  }, [history.location, updateHooksFromState])
 
 
-  const updateUrl = (slug) => {
+
+  const updateUrl = (slug="rand", results=false) => {
     history.push({
       pathname: '/search',
       search: `?${slug}`
     },
-    { 
-      searchResultValues: searchResultValues,
-      currentSearchResults: currentSearchResults
+    {
+      searchOptionValues: searchOptionValues,
+      searchResultValues: results || searchResultValues,
+      currentSearchResults: currentSearchResults,
+      tracks: tracks
     })
   }
 
 
-  const handleOptionsChange = (prop, value) => {
-    setSearchOptionValues({ ...searchOptionValues, [prop]: value });
+  const handleOptionsChange = (key, value) => {
+    setSearchOptionValues({ ...searchOptionValues, [key]: value });
   };
 
-  const handleResultsChange = (prop, value) => {
-    setSearchResultValues({ ...searchResultValues, [prop]: value });
+  const handleResultsChange = (key, value) => {
+    setSearchResultValues({ ...searchResultValues, [key]: value });
+    return { ...searchResultValues, [key]: value }
   };
 
 
@@ -135,14 +170,16 @@ const Search = () => {
           }
         })
 
-    updateUrl('tracks')
-    setSortedTracks([...splicedTracks]);
-    setTracks([...splicedTracks]);
+      setSortedTracks([...splicedTracks]);
+      setTracks([...splicedTracks]);
+      // return([...splicedTracks])
   }
 
 
-  // useCallback() here?
   const getResults = async () => {
+    // updateUrl to save searchOption params
+    updateUrl('')
+
     if (searchOptionValues.artist.length || searchOptionValues.albumSearchQuery.length || searchOptionValues.trackSearchQuery.length || searchOptionValues.playlistSearchQuery.length ) {
       try {
         const response = await axios({
@@ -155,13 +192,14 @@ const Search = () => {
         });
 
         if (searchOptionValues.searchType === 'album') {
-          updateUrl('albums')
-          handleResultsChange("albums", response.data.albums.items);
+          const results = handleResultsChange("albums", response.data.albums.items);
+          updateUrl('albums', results)
         } else if (searchOptionValues.searchType === 'track') {
           getTrackFeatures(response.data.tracks.items);
+          updateUrl('tracks')
         } else {
-          updateUrl('playlists')
-          handleResultsChange("playlistSearchResults", response.data.playlists.items);
+          const results = handleResultsChange("playlistSearchResults", response.data.playlists.items);
+          updateUrl('playlists', results)
         }
 
         setCurrentSearchResults(true);
@@ -170,37 +208,6 @@ const Search = () => {
       }
     }
   };
-
-
-  const resetSearch = () => {
-    setCurrentSearchResults(false);
-    setRecommendedTrack(false);
-    setTracks(false);
-
-    // setAlbumSearchQuery('');
-    // setTrackSearchQuery('');
-    // setArtist('');
-    // setAlbumName(false);
-    // setPlaylistSearchQuery('');
-    // setPlaylistSearchResults(false);
-    // setAlbums(false);
-
-    setSearchOptionValues({
-      albumSearchQuery: '',
-      artist: '',
-      playlistSearchQuery: '',
-      searchType: 'track',
-      trackSearchQuery: '',
-    });
-
-    setSearchResultValues({
-      albums: false,
-      albumName: false,
-      playlistSearchResults: '',
-    })
-
-    history.push('/search')
-  }
 
   const showOnlyPlaylistTracks = () => {
     handleResultsChange("playlistSearchResults", false);
@@ -218,6 +225,7 @@ const Search = () => {
       {!currentSearchResults ? (
         <SearchOptions
           getResults={getResults}
+          updateUrl={updateUrl}
           handleOptionsChange={handleOptionsChange}
           searchOptionValues={searchOptionValues}
           history={history}
@@ -227,7 +235,7 @@ const Search = () => {
           <Button
             variant='outlined'
             color='primary'
-            onClick={resetSearch}
+            onClick={() => { updateUrl(''); resetSearch(); }}
             className="button"
             fullWidth
           >
@@ -241,6 +249,9 @@ const Search = () => {
             searchResultValues={searchResultValues}
             showOnlyPlaylists={showOnlyPlaylists}
             showOnlyPlaylistTracks={showOnlyPlaylistTracks}
+            updateUrl={updateUrl}
+            albumName={albumName}
+            setAlbumName={setAlbumName}
           />
         </div>
       )}
