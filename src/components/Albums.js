@@ -2,6 +2,7 @@ import React, { useContext }  from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import UserContext from '../context/UserContext';
+import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
 const AlbumList = styled.li`
   border: 1px solid #c4c4c4;
@@ -32,7 +33,6 @@ const AlbumsTitle = styled.h3`
 const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
   const {token, setTracks, setSortedTracks, } = useContext(UserContext);
 
-
   const getAlbumTracks = async (album) => {
     try {
       const tracksResponse = await axios({
@@ -44,8 +44,11 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
         }
       });
 
-      const trackIds = tracksResponse.data.tracks.items.map((item) => item.id);
-      const featuresResponse = await axios({
+      const tracklist = [tracksResponse.data.tracks.items][0];
+      const trackIds = tracklist.map((track) => track.id);
+      const artistIds = tracklist.map((track) => track.artists[0].id)
+
+      let trackFeatures = await axios({
         method: 'get',
         url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
         headers: {
@@ -54,10 +57,19 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
         }
       });
 
-      const tracklist = [tracksResponse.data.tracks.items];
-      const trackFeatures = [...featuresResponse.data.audio_features];
+      let artistFeatures = await axios({
+        method: 'get',
+        url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        }
+      });
 
-      const splicedTracks = tracklist[0].filter((item, index) => trackFeatures[index] != null)
+      trackFeatures = [...trackFeatures.data.audio_features];
+      artistFeatures = [...artistFeatures.data.artists];
+
+      const splicedTracks = tracklist.filter((item, index) => trackFeatures[index] != null)
         .map((item, index) => {
           return {
             "name": item.name,
@@ -67,7 +79,16 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
             "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
             "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
             "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
-            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : ""
+            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
+            "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
+            "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
+            "loudness": trackFeatures[index] != null ? trackFeatures[index].loudness : "",
+            "speechiness": trackFeatures[index] != null ? trackFeatures[index].speechiness : "",
+            "valence": trackFeatures[index] != null ? trackFeatures[index].valence : "",
+
+            "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
+            "track_popularity": item.popularity != null ? item.popularity : "",
+            "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
           }
         })
 

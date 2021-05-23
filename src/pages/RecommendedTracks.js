@@ -3,10 +3,16 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
+import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
 import Tracks from '../components/Tracks'
 import SortBy from '../components/SortBy';
 import KeySelect from '../components/KeySelect';
+
+import { withStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+
 
 const PageTitle = styled.h2`
   text-decoration: underline;
@@ -36,7 +42,14 @@ const RecommendedTrackDiv = styled.div`
 
       .table-data__name {
         text-align: left;
-        width: 70%;
+        width: 100%;
+
+        display: flex;
+        justify-content: space-between;
+
+        .table_data__artist-name {
+          font-style: italic;
+        }
       }
 
       .table-data__name-hover:hover {
@@ -60,7 +73,7 @@ const RecommendedTrackDiv = styled.div`
     }
 
     @media screen and (max-width: 600px) {
-      .table-data__attributes-energy {
+      .table-data__attributes-energy, .table-data__name__tooltip { {
         display: none;
       }
 
@@ -70,6 +83,34 @@ const RecommendedTrackDiv = styled.div`
     }
   }
 `
+
+const TooltipUl = styled.ul`
+  li {
+    margin: 6px 0;
+    display: flex;
+    justify-content: space-between;
+
+    span:first-child {
+      font-style: italic;
+    }
+    span:last-child {
+      margin-left: 4rem;
+    }
+  }
+
+  .table-date__tooltip-genres {
+    padding-bottom: 1rem;
+    line-height: 1.1;
+  }
+`
+
+const HtmlTooltip = withStyles(() => ({
+  tooltip: {
+    backgroundColor: '#484848',
+    maxWidth: 1000,
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
 
 
 const RecommendedTracks = () => {
@@ -111,6 +152,16 @@ const RecommendedTracks = () => {
         // remove null items
         tracklist = tracklist.filter(Boolean);
         const trackIds = tracklist.map((track) => track.id)
+        const artistIds = tracklist.map((track) => track.artists[0].id)
+
+        let artistFeatures = await axios({
+          method: 'get',
+          url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
 
         let trackFeatures = await axios({
         method: 'get',
@@ -119,10 +170,14 @@ const RecommendedTracks = () => {
             Authorization: 'Bearer ' + token,
             'Content-Type': 'application/json'
         }
-        })
+        });
 
-        trackFeatures = [...trackFeatures.data.audio_features]
-        
+        trackFeatures = [...trackFeatures.data.audio_features];
+        artistFeatures = [...artistFeatures.data.artists];
+
+
+
+
         const splicedTracks = tracklist.filter((item, index) => trackFeatures[index] != null)
         .map((item, index) => {
           return {
@@ -133,7 +188,16 @@ const RecommendedTracks = () => {
             "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
             "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
             "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
-            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : ""
+            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
+            "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
+            "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
+            "loudness": trackFeatures[index] != null ? trackFeatures[index].loudness : "",
+            "speechiness": trackFeatures[index] != null ? trackFeatures[index].speechiness : "",
+            "valence": trackFeatures[index] != null ? trackFeatures[index].valence : "",
+
+            "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
+            "track_popularity": item.popularity != null ? item.popularity : "",
+            "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
           }
         })
 
@@ -172,11 +236,39 @@ const RecommendedTracks = () => {
 
             <tbody>
               <tr className={`track-name-tr`} id="recommended-track">
-                <td 
+                <td
                   className="table-data__name table-data__name-hover"
                   onClick={() => navigator.clipboard.writeText(`${recommendedTrack.name} ${recommendedTrack.artists[0]}`)}
                 >
-                  {recommendedTrack.name} – <i>{recommendedTrack.artists.length > 1 ? recommendedTrack.artists[0] + ', ' + recommendedTrack.artists[1] : recommendedTrack.artists[0]}</i>
+                  <span>
+                    {recommendedTrack.name} – <span className="table_data__artist-name">
+                      {recommendedTrack.artists.length > 1 ? recommendedTrack.artists[0] + ', ' + recommendedTrack.artists[1] : recommendedTrack.artists[0]}
+                    </span>
+                  </span>
+
+                  <HtmlTooltip
+                    className="table-data__name__tooltip"
+                    placement="left"
+                    title={
+                      <TooltipUl>
+                        <li className="table-date__tooltip-genres">
+                          <span>Genres: </span>
+                          <span>{recommendedTrack.artist_genres.join(", ")}.</span>
+                        </li>
+
+                        <li><span>Acousticness:</span> <span>{recommendedTrack.acousticness}</span></li>
+                        <li><span>Duration:</span> <span>{recommendedTrack.duration}</span></li>
+                        <li><span>Danceability:</span> <span>{recommendedTrack.danceability}</span></li>
+                        <li><span>Liveness:</span> <span>{recommendedTrack.liveness}</span></li>
+                        <li><span>Loudness:</span> <span>{recommendedTrack.loudness}</span></li>
+                        <li><span>Popularity:</span> <span>{recommendedTrack.track_popularity}</span></li>
+                        <li><span>Speechiness:</span> <span>{recommendedTrack.speechiness}</span></li>
+                        <li><span>Valence:</span> <span>{recommendedTrack.valence}</span></li>
+                      </TooltipUl>
+                    }
+                  >
+                    <InfoOutlinedIcon fontSize="small" />
+                  </HtmlTooltip>
                 </td>
                 <td
                   className="table-data__attributes key-data"
@@ -189,7 +281,7 @@ const RecommendedTracks = () => {
             </tbody>
           </table>
         </RecommendedTrackDiv>
-        
+
         <br/><hr/>
 
         <Tracks

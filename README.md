@@ -25,6 +25,7 @@ It is built with React, and styled using styled-components & Material-UI. Reques
 * Search for albums, tracks, and public playlists, and see key/tempo data for each.
 * Separates playlists into created and followed.
 * Get recommendations for any track that will also try to match key.
+* Hover over the tooltip to see more track-related info. Note that the genres provided by Spotify are artist specific rather than track.
 
 <hr>
 <h4>Setup</h4>

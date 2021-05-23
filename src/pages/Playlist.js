@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
+import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
 import Tracks from '../components/Tracks'
 import SortBy from '../components/SortBy';
@@ -27,21 +28,22 @@ const Playlist = () => {
     const getTracks = async () => {
       try {
         let trackTotalAmount = playlist.tracks.total;
-        let tracklist = [];
         let offset = 0;
+        let tracklist = [];
         let trackFeatures = [];
+        let artistFeatures = []
 
 
 
         while (trackTotalAmount > (tracklist.length)) {
-          let tracksResponse, featuresResponse
+          let tracksResponse, featuresResponse, artistsResponse;
           try {
             tracksResponse = await axios({
               method: 'get',
-              url: playlist.href + `/tracks?offset=${offset}`,
+              url: playlist.href + `/tracks?offset=${offset}&limit=50`,
               headers: {
                 Authorization: 'Bearer ' + token,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
               }
             });
 
@@ -57,6 +59,17 @@ const Playlist = () => {
             // remove null items
             tracksResponse = tracksResponse.filter(Boolean);
             const trackIds = tracksResponse.map((item) => item.track.id)
+            const artistIds = tracksResponse.map((item) => item.track.artists[0].id)
+
+            artistsResponse = await axios({
+              method: 'get',
+              url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
+              headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+              }
+            })
+
 
             featuresResponse = await axios({
               method: 'get',
@@ -72,9 +85,11 @@ const Playlist = () => {
 
           tracklist = [...tracklist, ...tracksResponse];
           trackFeatures = [...trackFeatures, ...featuresResponse.data.audio_features];
+          artistFeatures = [...artistFeatures, ...artistsResponse.data.artists];
 
-          offset += 100;
+          offset += 50;
         }
+
 
         // expensive fix for null trackFeatures; flatMap?
         const splicedTracks = tracklist.filter((item, index) => trackFeatures[index] != null)
@@ -87,7 +102,16 @@ const Playlist = () => {
             "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
             "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
             "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
-            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : ""
+            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
+            "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
+            "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
+            "loudness": trackFeatures[index] != null ? trackFeatures[index].loudness : "",
+            "speechiness": trackFeatures[index] != null ? trackFeatures[index].speechiness : "",
+            "valence": trackFeatures[index] != null ? trackFeatures[index].valence : "",
+
+            "duration": item.track.duration_ms != null ? millisToMinutesAndSeconds(item.track.duration_ms) : "",
+            "track_popularity": item.track.popularity != null ? item.track.popularity : "",
+            "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
           }
         })
 
@@ -122,19 +146,3 @@ const Playlist = () => {
 }
 
 export default Playlist;
-
-
-
-// const getPlaylist = async () => {
-//   const playlistId = history.location.pathname.split('/')[2];
-//   const playlistResponse = await axios({
-//     method: 'get',
-//     url: `https://api.spotify.com/v1/playlists/${playlistId}`,
-//     headers: {
-//       Authorization: 'Bearer ' + token,
-//       'Content-Type': 'application/json'
-//     }
-//   });
-//   setPlaylistName(playlistResponse.data.name)
-//   return playlistResponse.data;
-// }

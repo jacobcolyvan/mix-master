@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
+import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
 import Button from '@material-ui/core/Button';
 import SearchOptions from '../components/SearchOptions';
@@ -144,9 +145,12 @@ const Search = () => {
     }
   }
 
-  const getTrackFeatures = async (tracks) => {
+
+  const getTrackAndArtistFeatures = async (tracks) => {
     const trackIds = tracks.map((item) => item.id);
-    const featuresResponse = await axios({
+    const artistIds = tracks.map((track) => track.artists[0].id)
+
+    let trackFeatures = await axios({
       method: 'get',
       url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
       headers: {
@@ -155,7 +159,19 @@ const Search = () => {
       }
     });
 
-    const trackFeatures = [...featuresResponse.data.audio_features];
+    let artistFeatures = await axios({
+      method: 'get',
+      url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+
+
+    trackFeatures = [...trackFeatures.data.audio_features];
+    artistFeatures = [...artistFeatures.data.artists];
+
     const splicedTracks = tracks.filter((item, index) => trackFeatures[index] != null)
         .map((item, index) => {
           return {
@@ -166,7 +182,16 @@ const Search = () => {
             "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
             "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
             "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
-            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : ""
+            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
+            "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
+            "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
+            "loudness": trackFeatures[index] != null ? trackFeatures[index].loudness : "",
+            "speechiness": trackFeatures[index] != null ? trackFeatures[index].speechiness : "",
+            "valence": trackFeatures[index] != null ? trackFeatures[index].valence : "",
+
+            "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
+            "track_popularity": item.popularity != null ? item.popularity : "",
+            "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
           }
         })
 
@@ -195,7 +220,7 @@ const Search = () => {
           const results = handleResultsChange("albums", response.data.albums.items);
           updateUrl('albums', results)
         } else if (searchOptionValues.searchType === 'track') {
-          getTrackFeatures(response.data.tracks.items);
+          getTrackAndArtistFeatures(response.data.tracks.items);
           updateUrl('tracks')
         } else {
           const results = handleResultsChange("playlistSearchResults", response.data.playlists.items);

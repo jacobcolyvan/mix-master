@@ -3,6 +3,11 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import UserContext from '../context/UserContext';
 
+import { withStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+
+
 const keyDict = {
   "0": "C",
   "1": "C#",
@@ -56,7 +61,7 @@ const TracksTable = styled.table`
 
   border-collapse: collapse;
 
-  tr  {
+  tr {
     width: 100%;
     margin: 0;
 
@@ -66,7 +71,14 @@ const TracksTable = styled.table`
 
     .table-data__name {
       text-align: left;
-      width: 70%;
+      width: 100%;
+
+      display: flex;
+      justify-content: space-between;
+
+      .table_data__artist-name {
+        font-style: italic;
+      }
     }
 
     .table-data__name-hover:hover {
@@ -101,7 +113,7 @@ const TracksTable = styled.table`
   }
 
   @media screen and (max-width: 600px) {
-    .table-data__attributes-energy {
+    .table-data__attributes-energy, .table-data__name__tooltip {
       display: none;
     }
 
@@ -111,6 +123,35 @@ const TracksTable = styled.table`
   }
 `
 
+const TooltipUl = styled.ul`
+  li {
+    margin: 6px 0;
+    display: flex;
+    justify-content: space-between;
+
+    span:first-child {
+      font-style: italic;
+    }
+    span:last-child {
+      margin-left: 4rem;
+    }
+  }
+
+  .table-date__tooltip-genres {
+    padding-bottom: 1rem;
+    line-height: 1.1;
+  }
+`
+
+const HtmlTooltip = withStyles(() => ({
+  tooltip: {
+    backgroundColor: '#484848',
+    maxWidth: 600,
+    width: "auto",
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
+
 
 const Tracks = ({keyOption, sortOption }) => {
   const {
@@ -118,7 +159,7 @@ const Tracks = ({keyOption, sortOption }) => {
     sortedTracks,
     setSortedTracks,
     resetStates,
-    lastClickedTrack, 
+    lastClickedTrack,
     setLastClickedTrack
   } = useContext(UserContext);
   const history = useHistory();
@@ -173,11 +214,11 @@ const Tracks = ({keyOption, sortOption }) => {
 
   const copyNameAndSaveAsCurrentTrack = (trackName, trackArtist, clickedTrackId) => {
     navigator.clipboard.writeText(`${trackName} ${trackArtist}`);
-  
+
     if (lastClickedTrack) {
       let currentlySelected = document.getElementById(lastClickedTrack);
       currentlySelected.classList.remove("currently-selected");
-    } 
+    }
 
     let nowSelected = document.getElementById(clickedTrackId);
     nowSelected.classList.add("currently-selected");
@@ -187,8 +228,8 @@ const Tracks = ({keyOption, sortOption }) => {
   const goToRecommended = (track) => {
     resetStates(false);
     const recommendedTrack = {
-      "id": track.id, 
-      "key": track.key, 
+      "id": track.id,
+      "key": track.key,
       "parsedKeys": [
         `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`,
         `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`,
@@ -196,11 +237,20 @@ const Tracks = ({keyOption, sortOption }) => {
         track.mode === 1 ? [Object.keys(camelotMinorKeyDict).find(key => camelotMinorKeyDict[key] === String(track.key)), 0] :
         [Object.keys(camelotMajorKeyDict).find(key => camelotMajorKeyDict[key] === String(track.key)), 1]
       ],
-      "mode": track.mode, 
+      "mode": track.mode,
       "name": track.name,
       "artists": track.artists,
       "energy": track.energy,
-      "tempo": track.tempo
+      "tempo": track.tempo,
+      "acousticness": track.acousticness,
+      "liveness": track.liveness,
+      "loudness": track.loudness,
+      "speechiness": track.speechiness,
+      "valence": track.valence,
+
+      "duration": track.duration,
+      "track_popularity": track.track_popularity,
+      "artist_genres": track.artist_genres,
     };
 
     history.push({
@@ -226,19 +276,47 @@ const Tracks = ({keyOption, sortOption }) => {
         <tbody>
           {(sortedTracks) && sortedTracks.map((track, index) => (
             <tr key={`track${index}`} className={`track-name-tr`}>
-              <td 
-                className="table-data__name table-data__name-hover"
-                onClick={() => copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`)}
-                id={`track-${track.id}`}
-              >
-                {track.name} – <i>{track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]}</i>
-              </td>
+                <td
+                  className="table-data__name table-data__name-hover"
+                  id={`track-${track.id}`}
+                  onClick={() => copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`)}
+                >
+                  <span>
+                    {track.name} – <span className="table_data__artist-name">
+                      {track.artists.length > 1 ? track.artists[0] + ', ' + track.artists[1] : track.artists[0]
+                    }</span>
+                  </span>
+
+                  <HtmlTooltip
+                    className="table-data__name__tooltip"
+                    placement="left"
+                    title={
+                      <TooltipUl>
+                        <li className="table-date__tooltip-genres">
+                          <span>Genres:</span>
+                          <span>{track.artist_genres.join(", ")}.</span>
+                        </li>
+
+                        <li><span>Acousticness:</span> <span>{track.acousticness}</span></li>
+                        <li><span>Duration:</span> <span>{track.duration}</span></li>
+                        <li><span>Danceability:</span> <span>{track.danceability}</span></li>
+                        <li><span>Liveness:</span> <span>{track.liveness}</span></li>
+                        <li><span>Loudness:</span> <span>{track.loudness}</span></li>
+                        <li><span>Popularity:</span> <span>{track.track_popularity}</span></li>
+                        <li><span>Speechiness:</span> <span>{track.speechiness}</span></li>
+                        <li><span>Valence:</span> <span>{track.valence}</span></li>
+                      </TooltipUl>
+                    }
+                  >
+                    <InfoOutlinedIcon fontSize="small" />
+                  </HtmlTooltip>
+                </td>
               <td
                 className="table-data__attributes key-data"
                 onClick={() => goToRecommended(track)}
               >
                 {keyOption === 'camelot' ?
-                  `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}` : 
+                  `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}` :
                   `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`}
               </td>
               <td className="table-data__attributes table-data__attributes-energy">{ track.energy && track.energy}</td>
