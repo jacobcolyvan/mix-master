@@ -124,17 +124,17 @@ const UserPlaylists = () => {
 
         {sortedPlaylists && (
           <div>
-            <PlaylistsTitle id="created-playlists"><h3>Created</h3></PlaylistsTitle>
+            <PlaylistsTitle id="created-playlists" tabIndex="0"><h3>Created</h3></PlaylistsTitle>
             <PlaylistList playlistsToRender={sortedPlaylists.created} />
 
             <br/>
-            <PlaylistsTitle id="followed-playlists"><h3>Followed</h3></PlaylistsTitle>
+            <PlaylistsTitle id="followed-playlists" tabIndex="0"><h3>Followed</h3></PlaylistsTitle>
             <PlaylistList playlistsToRender={sortedPlaylists.followed} />
 
             <br/>
             {sortedPlaylists.generated.length > 0 && (
               <>
-                <PlaylistsTitle id="generated-playlists"><h3>Gena</h3></PlaylistsTitle>
+                <PlaylistsTitle id="generated-playlists" tabIndex="0"><h3>Gena</h3></PlaylistsTitle>
                 <PlaylistList playlistsToRender={sortedPlaylists.generated} />
               </>
             )}

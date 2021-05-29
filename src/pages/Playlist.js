@@ -9,19 +9,84 @@ import Tracks from '../components/Tracks'
 import SortBy from '../components/SortBy';
 import KeySelect from '../components/KeySelect';
 
+import parse from 'html-react-parser';
+// import parse, { attributesToProps } from 'html-react-parser';
+
 
 const PlaylistName = styled.h3`
   text-decoration: underline;
   font-style: italic;
 `
 
+const PlaylistDescrition = styled.p`
+  span, a {
+    color: #7986cb;
+    cursor: pointer;
+  }
+`
+
 
 const Playlist = () => {
-  const { token, setTracks, setSortedTracks } = useContext(UserContext);
+  const { token, setTracks, setSortedTracks, pushPlaylistToState } = useContext(UserContext);
   const [ sortOption, setSortOption ] = useState('energyThenKey');
   const [ keyOption, setKeyOption ] = useState('camelot');
   const history = useHistory();
   const playlist = history.location.state.playlist;
+
+  const [ description, setDescription ] = useState(false);
+
+  useEffect(() => {
+
+    // for retrieving playlists referenced in the description
+    const getPlaylist = async (playlistId) => {
+      const newPlaylist = await axios({
+        method: 'get',
+        url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      pushPlaylistToState(history, newPlaylist.data)
+    }
+    // safely render a string to html
+    // and make any playlist links clickable
+    const parseDescription = (string) => {
+      let parsedDescription = string.replaceAll(/href="spotify:playlist:(\w+)"/g, 'href="$1" id="replace"');
+
+      parsedDescription = parse(parsedDescription, {
+        replace: domNode => {
+          if (domNode.name === "a" && domNode.attribs.id === "replace") {
+            return (
+              <span
+                onClick={() => { getPlaylist(domNode.attribs.href) }}
+              >
+                {[...domNode.children][0].data}
+              </span>
+            );
+        } else  if (domNode.name === "a") {
+          return (
+            <a
+              {...domNode.attribs}
+              target="_blank"
+            >
+              {[...domNode.children][0].data}
+            </a>
+          )
+        } else {
+          return;
+        }
+      }});
+
+      setDescription(parsedDescription)
+    }
+
+    parseDescription(playlist.description)
+
+
+  }, [playlist, history, pushPlaylistToState, token])
+
 
 
   useEffect(() => {
@@ -31,9 +96,7 @@ const Playlist = () => {
         let offset = 0;
         let tracklist = [];
         let trackFeatures = [];
-        let artistFeatures = []
-
-
+        let artistFeatures = [];
 
         while (trackTotalAmount > (tracklist.length)) {
           let tracksResponse, featuresResponse, artistsResponse;
@@ -123,7 +186,14 @@ const Playlist = () => {
     };
 
     getTracks();
-  }, [token, setTracks, setSortedTracks, playlist.href, playlist.tracks.total]);
+  }, [
+    token,
+    setTracks,
+    setSortedTracks,
+    playlist,
+    playlist.href,
+    playlist.tracks.total,
+  ]);
 
 
 
@@ -135,7 +205,11 @@ const Playlist = () => {
 
       {playlist && (
         <PlaylistName>{playlist.name}</PlaylistName>
+
       )}
+      {description && (
+        <PlaylistDescrition>{description} </PlaylistDescrition>
+      )  }
 
       <Tracks
         sortOption={sortOption}
