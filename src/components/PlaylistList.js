@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import UserContext from '../context/UserContext';
 
 const PlaylistLi = styled.li`
   border: 1px solid #424242;
@@ -23,20 +24,18 @@ const PlaylistLi = styled.li`
   }
 `
 
-const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
+const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks,  }) => {
   const history = useHistory();
+  const {pushPlaylistToState} = useContext(UserContext);
 
   const addPlaylistQuery = (playlist) => {
-    history.push({
-      pathname: '/playlist',
-      search: `?id=${playlist.id}`
-    },
-    { 
-      playlist: playlist
-    })
+    pushPlaylistToState(history, playlist);
 
+    // Playlist Search display cleaning
     showOnlyPlaylistTracks && showOnlyPlaylistTracks()
   }
+
+
 
   return (
       <ul>

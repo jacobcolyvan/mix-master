@@ -19,6 +19,21 @@ const PageTitle = styled.h2`
   font-style: italic;
 `
 
+const keyDict = {
+  "0": "C",
+  "1": "C#",
+  "2": "D",
+  "3": "D#",
+  "4": "E",
+  "5": "F",
+  "6": "F#",
+  "7": "G",
+  "8": "G#",
+  "9": "A",
+  "10": "A#",
+  "11": "B"
+};
+
 const RecommendedTrackDiv = styled.div`
   p {
     margin-bottom: 0;
@@ -72,8 +87,8 @@ const RecommendedTrackDiv = styled.div`
       margin: 0;
     }
 
-    @media screen and (max-width: 600px) {
-      .table-data__attributes-energy, .table-data__name__tooltip { {
+    @media screen and (max-width: 500px) {
+      .table-data__attributes-energy, .table-data__name__tooltip {
         display: none;
       }
 
@@ -115,7 +130,7 @@ const HtmlTooltip = withStyles(() => ({
 
 const RecommendedTracks = () => {
   const {token, setTracks, setSortedTracks} = useContext(UserContext);
-  const [sortOption, setSortOption] = useState('energyThenKey');
+  const [sortOption, setSortOption] = useState('original');
   const [keyOption, setKeyOption] = useState('camelot');
   const history = useHistory();
   const recommendedTrack = history.location.state.recommendedTrack;
@@ -125,24 +140,24 @@ const RecommendedTracks = () => {
     const getTracks = async () => {
       try {
         const tracks1 = await axios({
-        method: 'get',
-        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=20&`
-        +`target_key=${recommendedTrack.key}&target_mode=${recommendedTrack.mode}`,
-        headers: {
+          method: 'get',
+          url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=20&`
+          +`target_key=${recommendedTrack.key}&target_mode=${recommendedTrack.mode}`,
+          headers: {
             Authorization: 'Bearer ' + token,
             'Content-Type': 'application/json'
-        }
+          }
         });
 
         // minor/major alternative scale
         const tracks2 = await axios({
-        method: 'get',
-        url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=20&`
-        +`target_key=${recommendedTrack.parsedKeys[2][0]}&target_mode=${recommendedTrack.parsedKeys[2][1]}`,
-        headers: {
+          method: 'get',
+          url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=20&`
+          +`target_key=${recommendedTrack.parsedKeys[2][0]}&target_mode=${recommendedTrack.parsedKeys[2][1]}`,
+          headers: {
             Authorization: 'Bearer ' + token,
             'Content-Type': 'application/json'
-        }
+          }
         });
 
 
@@ -164,12 +179,12 @@ const RecommendedTracks = () => {
         });
 
         let trackFeatures = await axios({
-        method: 'get',
-        url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
-        headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
+          method: 'get',
+          url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
+          headers: {
+              Authorization: 'Bearer ' + token,
+              'Content-Type': 'application/json'
+          }
         });
 
         trackFeatures = [...trackFeatures.data.audio_features];
@@ -256,14 +271,15 @@ const RecommendedTracks = () => {
                           <span>{recommendedTrack.artist_genres.join(", ")}.</span>
                         </li>
 
-                        <li><span>Acousticness:</span> <span>{recommendedTrack.acousticness}</span></li>
                         <li><span>Duration:</span> <span>{recommendedTrack.duration}</span></li>
                         <li><span>Danceability:</span> <span>{recommendedTrack.danceability}</span></li>
+                        <li><span>Valence:</span> <span>{recommendedTrack.valence}</span></li>
+                        <li><span>Acousticness:</span> <span>{recommendedTrack.acousticness}</span></li>
                         <li><span>Liveness:</span> <span>{recommendedTrack.liveness}</span></li>
                         <li><span>Loudness:</span> <span>{recommendedTrack.loudness}</span></li>
                         <li><span>Popularity:</span> <span>{recommendedTrack.track_popularity}</span></li>
                         <li><span>Speechiness:</span> <span>{recommendedTrack.speechiness}</span></li>
-                        <li><span>Valence:</span> <span>{recommendedTrack.valence}</span></li>
+                        <li><span>key:</span> <span>{keyDict[recommendedTrack.key]}{recommendedTrack.mode === 1 ? "" : "m"}</span></li>
                       </TooltipUl>
                     }
                   >

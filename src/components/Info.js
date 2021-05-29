@@ -33,7 +33,7 @@ const Info = () => {
         – Works similarly to programs such as MixedInkey, but for the Spotify catalogue.
       </p>
       <p id="info-points">
-        – Click on track name to copy name to clipboard; clik on track key to go to recommended tracks.
+        – Click on track name to copy name to clipboard; click on track key to go to recommended tracks.
       </p>
     </InfoCont>
   )

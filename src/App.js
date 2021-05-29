@@ -56,6 +56,16 @@ function App() {
     resetRecommended && setRecommendedTrack(false);
   }
 
+  const pushPlaylistToState = (history, playlist) => {
+    history.push({
+      pathname: '/playlist',
+      search: `?id=${playlist.id}`
+    },
+    {
+      playlist: playlist
+    })
+  }
+
   return (
     <div>
       <Router>
@@ -73,12 +83,13 @@ function App() {
           resetStates,
           recommendedTrack,
           setRecommendedTrack,
-          lastClickedTrack, 
+          lastClickedTrack,
           setLastClickedTrack,
           searchOptionValues,
           setSearchOptionValues,
           searchResultValues,
-          setSearchResultValues
+          setSearchResultValues,
+          pushPlaylistToState
         }}
         >
           <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>
@@ -108,6 +119,9 @@ function App() {
                   <Redirect to='/' />
                 </Content>
               </Switch>
+
+              {/* Click tab to go to bootom (very bad for accesibility) */}
+              <div tabIndex="0" style={{display: "block", margin: "0", padding: "0"}}/>
             </div>
           </Container>
         </UserContext.Provider>

@@ -290,6 +290,7 @@ const Tracks = ({keyOption, sortOption }) => {
                   <HtmlTooltip
                     className="table-data__name__tooltip"
                     placement="left"
+                    tabIndex="0"
                     title={
                       <TooltipUl>
                         <li className="table-date__tooltip-genres">
@@ -297,14 +298,15 @@ const Tracks = ({keyOption, sortOption }) => {
                           <span>{track.artist_genres.join(", ")}.</span>
                         </li>
 
-                        <li><span>Acousticness:</span> <span>{track.acousticness}</span></li>
                         <li><span>Duration:</span> <span>{track.duration}</span></li>
                         <li><span>Danceability:</span> <span>{track.danceability}</span></li>
+                        <li><span>Valence:</span> <span>{track.valence}</span></li>
+                        <li><span>Acousticness:</span> <span>{track.acousticness}</span></li>
                         <li><span>Liveness:</span> <span>{track.liveness}</span></li>
                         <li><span>Loudness:</span> <span>{track.loudness}</span></li>
                         <li><span>Popularity:</span> <span>{track.track_popularity}</span></li>
                         <li><span>Speechiness:</span> <span>{track.speechiness}</span></li>
-                        <li><span>Valence:</span> <span>{track.valence}</span></li>
+                        <li><span>Key:</span> <span>{keyDict[track.key]}{track.mode === 1 ? "" : "m"}</span></li>
                       </TooltipUl>
                     }
                   >
