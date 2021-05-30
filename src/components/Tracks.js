@@ -6,6 +6,7 @@ import UserContext from '../context/UserContext';
 import { withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import Loading from '../components/Loading';
 
 
 const keyDict = {
@@ -113,12 +114,18 @@ const TracksTable = styled.table`
   }
 
   @media screen and (max-width: 600px) {
-    .table-data__attributes-energy, .table-data__name__tooltip {
+    .table-data__attributes-energy {
       display: none;
     }
 
     .table-data__attributes {
-      min-width: 15%;
+      width: 15%;
+    }
+  }
+
+  @media screen and (max-width: 400px) {
+    .table-data__name__tooltip {
+      display: none;
     }
   }
 `
@@ -160,7 +167,7 @@ const Tracks = ({keyOption, sortOption }) => {
     setSortedTracks,
     resetStates,
     lastClickedTrack,
-    setLastClickedTrack
+    setLastClickedTrack,
   } = useContext(UserContext);
   const history = useHistory();
 
@@ -188,15 +195,16 @@ const Tracks = ({keyOption, sortOption }) => {
 
     const sorter = (sort) => {
       if (tracks) {
-        if (sort === 'key') {
-          setSortedTracks(keyOption === 'camelot' ? camelotSort([...tracks]) : keySort([...tracks]));
-        } else if (sort === 'tempo') {
-          const temp = [...tracks].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
+        if (sort === 'tempo') {
+          const temp = [...tracks].sort((a, b) => parseInt(a.tempo) - parseInt(b.tempo));
 
           setSortedTracks(temp);
+        } else if (sort === 'durationThenKey') {
+          let temp = [...tracks].sort((a, b) => parseInt(b.duration) - parseInt(a.duration));
+
+          setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
         } else if (sort === 'tempoThenKey') {
-          let temp = [...tracks].sort((a, b) => parseInt(b.energy) - parseInt(a.energy));
-          temp = [...temp].sort((a, b) => parseInt(b.tempo) - parseInt(a.tempo));
+          let temp = [...tracks].sort((a, b) => parseInt(a.tempo) - parseInt(b.tempo));
 
           setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
         } else if (sort === 'energyThenKey') {
@@ -262,7 +270,8 @@ const Tracks = ({keyOption, sortOption }) => {
     })
   }
 
-  return (
+  if (sortedTracks) {
+    return (
       <TracksTable id="tracks-container">
         <thead>
           <tr>
@@ -326,8 +335,13 @@ const Tracks = ({keyOption, sortOption }) => {
             </tr>
           ))}
         </tbody>
-     </TracksTable>
-  )
-}
+      </TracksTable>
+    )
+  } else {
+    return (
+      <Loading/>
+    )
+  }
+};
 
-export default Tracks
+export default Tracks;

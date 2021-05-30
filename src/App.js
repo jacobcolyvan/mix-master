@@ -89,7 +89,7 @@ function App() {
           setSearchOptionValues,
           searchResultValues,
           setSearchResultValues,
-          pushPlaylistToState
+          pushPlaylistToState,
         }}
         >
           <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>

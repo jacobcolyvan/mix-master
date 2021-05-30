@@ -40,13 +40,13 @@ const SearchResults = ({
 
       {(!playlist && !searchResultValues.playlistSearchResults && tracks) && (
         <>
-          <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
-          <br/>
           {(albumName) ? (
             <AlbumsTitle>{albumName}</AlbumsTitle>
           ) : (
             <AlbumsTitle>Track Results</AlbumsTitle>
           )}
+          <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
+          <br/>
           <SortBy sortOption={sortOption} setSortOption={setSortOption} />
           <br/>
 

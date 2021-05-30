@@ -3,7 +3,9 @@ import axios from 'axios';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
-import PlaylistList from '../components/PlaylistList'
+import PlaylistList from '../components/PlaylistList';
+import Loading from '../components/Loading';
+
 
 // Add searchbar for filtering playlists (?)
 
@@ -144,9 +146,7 @@ const UserPlaylists = () => {
     );
   } else {
     return (
-      <div>
-        <p><i>Loading...</i></p>
-      </div>
+      <Loading/>
     );
   }
 }

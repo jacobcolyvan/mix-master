@@ -10,7 +10,6 @@ import SortBy from '../components/SortBy';
 import KeySelect from '../components/KeySelect';
 
 import parse from 'html-react-parser';
-// import parse, { attributesToProps } from 'html-react-parser';
 
 
 const PlaylistName = styled.h3`
@@ -28,7 +27,7 @@ const PlaylistDescrition = styled.p`
 
 const Playlist = () => {
   const { token, setTracks, setSortedTracks, pushPlaylistToState } = useContext(UserContext);
-  const [ sortOption, setSortOption ] = useState('energyThenKey');
+  const [ sortOption, setSortOption ] = useState('tempoThenKey');
   const [ keyOption, setKeyOption ] = useState('camelot');
   const history = useHistory();
   const playlist = history.location.state.playlist;
@@ -200,7 +199,6 @@ const Playlist = () => {
   return (
     <div>
       <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
-      <br />
       <SortBy sortOption={sortOption} setSortOption={setSortOption} />
 
       {playlist && (

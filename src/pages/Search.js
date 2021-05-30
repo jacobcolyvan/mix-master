@@ -5,9 +5,9 @@ import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
-import Button from '@material-ui/core/Button';
 import SearchOptions from '../components/SearchOptions';
 import SearchResults from '../components/SearchResults';
+import Loading from '../components/Loading';
 
 
 const SearchTitle = styled.h1`
@@ -15,6 +15,9 @@ const SearchTitle = styled.h1`
   font-style: italic;
 `;
 
+const ResultsBreak = styled.hr`
+  margin: 2rem 0;
+`
 
 
 const Search = () => {
@@ -31,6 +34,7 @@ const Search = () => {
   } = useContext(UserContext);
 
   const [currentSearchResults, setCurrentSearchResults] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [albumName, setAlbumName] = useState(false);
   const history = useHistory();
   const state = history.location.state;
@@ -122,6 +126,13 @@ const Search = () => {
 
 
   const handleOptionsChange = (key, value) => {
+    setCurrentSearchResults(false);
+    setSearchResultValues({
+      albums: false,
+      playlistSearchResults: '',
+      tracks: false
+    });
+
     setSearchOptionValues({ ...searchOptionValues, [key]: value });
   };
 
@@ -173,36 +184,36 @@ const Search = () => {
     artistFeatures = [...artistFeatures.data.artists];
 
     const splicedTracks = tracks.filter((item, index) => trackFeatures[index] != null)
-        .map((item, index) => {
-          return {
-            "name": item.name,
-            "artists": item.artists.length > 1 ? [item.artists[0].name, item.artists[1].name] : [item.artists[0].name],
-            "id": item.id && item.id,
-            "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
-            "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
-            "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
-            "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
-            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
-            "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
-            "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
-            "loudness": trackFeatures[index] != null ? trackFeatures[index].loudness : "",
-            "speechiness": trackFeatures[index] != null ? trackFeatures[index].speechiness : "",
-            "valence": trackFeatures[index] != null ? trackFeatures[index].valence : "",
+      .map((item, index) => {
+        return {
+          "name": item.name,
+          "artists": item.artists.length > 1 ? [item.artists[0].name, item.artists[1].name] : [item.artists[0].name],
+          "id": item.id && item.id,
+          "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
+          "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
+          "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
+          "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
+          "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
+          "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
+          "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
+          "loudness": trackFeatures[index] != null ? trackFeatures[index].loudness : "",
+          "speechiness": trackFeatures[index] != null ? trackFeatures[index].speechiness : "",
+          "valence": trackFeatures[index] != null ? trackFeatures[index].valence : "",
 
-            "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
-            "track_popularity": item.popularity != null ? item.popularity : "",
-            "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
-          }
-        })
+          "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
+          "track_popularity": item.popularity != null ? item.popularity : "",
+          "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
+        }
+      })
 
       setSortedTracks([...splicedTracks]);
       setTracks([...splicedTracks]);
-      // return([...splicedTracks])
   }
 
 
   const getResults = async () => {
     // updateUrl to save searchOption params
+    setSearching(true)
     updateUrl('')
 
     if (searchOptionValues.artist.length || searchOptionValues.albumSearchQuery.length || searchOptionValues.trackSearchQuery.length || searchOptionValues.playlistSearchQuery.length ) {
@@ -228,6 +239,7 @@ const Search = () => {
         }
 
         setCurrentSearchResults(true);
+        setSearching(false)
       } catch (err) {
         console.log(err.message);
       }
@@ -246,29 +258,17 @@ const Search = () => {
   return (
     <div>
       <SearchTitle>Search</SearchTitle>
+      <SearchOptions
+        getResults={getResults}
+        updateUrl={updateUrl}
+        handleOptionsChange={handleOptionsChange}
+        searchOptionValues={searchOptionValues}
+        history={history}
+      />
 
-      {!currentSearchResults ? (
-        <SearchOptions
-          getResults={getResults}
-          updateUrl={updateUrl}
-          handleOptionsChange={handleOptionsChange}
-          searchOptionValues={searchOptionValues}
-          history={history}
-        />
-      ) : (
+      {currentSearchResults && (
         <div>
-          <Button
-            variant='outlined'
-            color='primary'
-            onClick={() => { updateUrl(''); resetSearch(); }}
-            className="button"
-            fullWidth
-          >
-            Back to Search
-          </Button>
-
-          <br/><br/>
-
+          <ResultsBreak/>
           <SearchResults
             handleResultsChange={handleResultsChange}
             searchResultValues={searchResultValues}
@@ -280,6 +280,7 @@ const Search = () => {
           />
         </div>
       )}
+      {searching && <Loading/>}
     </div>
   )
 };

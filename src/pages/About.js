@@ -49,6 +49,7 @@ const CamelotInfo = styled.div`
   }
   .links {
     margin: 0;
+    color: #7986cb;
   }
 `
 
@@ -68,6 +69,7 @@ const Afterword = styled.div`
   }
   .links{
     margin: 0;
+    color: #7986cb;
   }
 `
 
