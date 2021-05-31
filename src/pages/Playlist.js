@@ -49,6 +49,7 @@ const Playlist = () => {
 
       pushPlaylistToState(history, newPlaylist.data)
     }
+
     // safely render a string to html
     // and make any playlist links clickable
     const parseDescription = (string) => {

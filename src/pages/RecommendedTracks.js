@@ -148,31 +148,32 @@ const RecommendedTracks = () => {
         const tracks1 = await axios({
           method: 'get',
           // conditional here to account for any missing track attributes
-          url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=20`
-          + `${recommendedTrack.key || recommendedTrack.key === 0 ? `&target_key=${recommendedTrack.key}`: ""}` + `${recommendedTrack.mode ? `&target_mode=${recommendedTrack.mode}` : ""}`,
+          url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=18`
+          + `${recommendedTrack.key || recommendedTrack.key === 0 ? `&target_key=${recommendedTrack.key}`: ""}` +
+          `${recommendedTrack.mode || recommendedTrack.mode === 0 ? `&target_mode=${recommendedTrack.mode}` : ""}`,
           headers: {
             Authorization: 'Bearer ' + token,
             'Content-Type': 'application/json'
           }
         });
 
-        // // FIX THIS
-        // // minor/major alternative scale
-        // const tracks2 = await axios({
-        //   method: 'get',
-        //   // conditional here to account for any missing track attributes
-        //   url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=10`
-        //   + `${recommendedTrack.parsedKeys[2][0] ? `&target_key=${recommendedTrack.parsedKeys[2][0]}`: ""}` + `${recommendedTrack.parsedKeys[2][1] || recommendedTrack.parsedKeys[2][1] === 0 ? `&target_mode=${recommendedTrack.parsedKeys[2][1]}` : ""}`,
-        //   headers: {
-        //     Authorization: 'Bearer ' + token,
-        //     'Content-Type': 'application/json'
-        //   }
-        // });
+        // minor/major alternative scale
+        const tracks2 = await axios({
+          method: 'get',
+          // conditional here to account for any missing track attributes
+          url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=9`
+          + `${recommendedTrack.parsedKeys[2][0] || recommendedTrack.parsedKeys[2][0] === 0 ?`&target_key=${recommendedTrack.parsedKeys[2][0]}`: ""}` +
+            `${recommendedTrack.parsedKeys[2][1] || recommendedTrack.parsedKeys[2][1] === 0 ? `&target_mode=${recommendedTrack.parsedKeys[2][1]}` : ""}`,
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
 
         // Recommendations based on just the song
         const tracks3 = await axios({
           method: 'get',
-          url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=10`,
+          url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=13`,
           headers: {
             Authorization: 'Bearer ' + token,
             'Content-Type': 'application/json'
@@ -182,7 +183,7 @@ const RecommendedTracks = () => {
 
 
 
-        let tracklist = tracks1.data.tracks.concat(tracks3.data.tracks)
+        let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks).concat(tracks3.data.tracks)
 
         // remove null items
         tracklist = tracklist.filter(Boolean);

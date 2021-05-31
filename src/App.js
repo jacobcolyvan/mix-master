@@ -57,13 +57,17 @@ function App() {
   }
 
   const pushPlaylistToState = (history, playlist) => {
+    resetStates();
     history.push({
       pathname: '/playlist',
       search: `?id=${playlist.id}`
     },
     {
-      playlist: playlist
+      playlist: playlist,
+      // tracks: tracks,
+      // sortedTracks: sortedTracks
     })
+
   }
 
   return (

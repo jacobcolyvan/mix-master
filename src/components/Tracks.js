@@ -54,7 +54,6 @@ const camelotMinorKeyDict = {
   "11": "10"
 };
 
-
 const TracksTable = styled.table`
   width: 100%;
   padding: 0;
@@ -242,8 +241,7 @@ const Tracks = ({keyOption, sortOption }) => {
         `${track.mode === 1 ? camelotMajorKeyDict[track.key]+"B" : camelotMinorKeyDict[track.key]+"A"}`,
         `${keyDict[track.key]}${track.mode === 1 ? "" : "m"}`,
         // find the inverse major/minor key
-        track.mode === 1 ? [Object.keys(camelotMinorKeyDict).find(key => camelotMinorKeyDict[key] === String(track.key)), 0] :
-        [Object.keys(camelotMajorKeyDict).find(key => camelotMajorKeyDict[key] === String(track.key)), 1]
+        track.mode === 1 ? [  (track.key+9)%12, 0] : [(track.key+3)%12, 1],
       ],
       "mode": track.mode,
       "name": track.name,
