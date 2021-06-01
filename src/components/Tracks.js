@@ -198,6 +198,10 @@ const Tracks = ({keyOption, sortOption }) => {
           const temp = [...tracks].sort((a, b) => parseInt(a.tempo) - parseInt(b.tempo));
 
           setSortedTracks(temp);
+        } else if (sort === 'duration') {
+          let temp = [...tracks].sort((a, b) => parseInt(b.duration) - parseInt(a.duration));
+
+          setSortedTracks([...temp])
         } else if (sort === 'durationThenKey') {
           let temp = [...tracks].sort((a, b) => parseInt(b.duration) - parseInt(a.duration));
 
