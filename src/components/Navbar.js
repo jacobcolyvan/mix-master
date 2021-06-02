@@ -30,7 +30,7 @@ const NavbarCont = styled.header`
 
 const Navbar = ({ resetStates }) => {
   const history = useHistory();
-  const { token } = useContext(UserContext);
+  const { token, authError } = useContext(UserContext);
   const pathname = history.location.pathname;
 
   const loadPage = (link) => {
@@ -42,7 +42,7 @@ const Navbar = ({ resetStates }) => {
     <NavbarCont>
       <h1 onClick={() => loadPage('/')} id="site-name">Mix Master</h1>
 
-      {token && (
+      {token && !authError && (
         <div id="nav-buttons">
 
           {pathname !== '/'  && (

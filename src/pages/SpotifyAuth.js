@@ -17,16 +17,17 @@ const SpotifyAuth = ({ location }) => {
   const { token, setToken } = useContext(UserContext);
 
   useEffect(() => {
-    if (location.hash.split('=')[1]) {
-      setToken(location.hash.split('=')[1].split('&token')[0]);
+    if (location && location.hash.split('=')[1]) {
+      const newToken = location.hash.split('=')[1].split('&token')[0]
+      setToken(newToken);
       history.replace('/');
     }
-  }, [setToken, token, history, location.hash]);
+  }, [setToken, token, history, location]);
 
   return (
     <div>
       <Info />
-      <p><i>Authorise Spotify to start: </i></p>
+      <p><i>Authorise Spotify: </i></p>
       <a
         href={`https://accounts.spotify.com/authorize?response_type=token&client_id=${
           process.env.REACT_APP_SPOTIFY_CLIENT_ID2

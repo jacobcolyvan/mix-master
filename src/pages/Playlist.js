@@ -26,7 +26,7 @@ const PlaylistDescrition = styled.p`
 
 
 const Playlist = () => {
-  const { token, setTracks, setSortedTracks, pushPlaylistToState } = useContext(UserContext);
+  const { token, setTracks, setSortedTracks, pushPlaylistToState, setAuthError } = useContext(UserContext);
   const [ sortOption, setSortOption ] = useState('tempoThenKey');
   const [ keyOption, setKeyOption ] = useState('camelot');
   const history = useHistory();
@@ -142,8 +142,9 @@ const Playlist = () => {
                 'Content-Type': 'application/json'
               }
             })
-          } catch (error) {
-            console.log(error)
+          } catch (err) {
+            if (err.response.status === 401) setAuthError(true);
+            console.log(err)
           }
 
           tracklist = [...tracklist, ...tracksResponse];
@@ -181,6 +182,7 @@ const Playlist = () => {
         setTracks([...splicedTracks]);
         setSortedTracks([...splicedTracks]);
       } catch (err) {
+        if (err.response.status === 401) setAuthError(true);
         console.log(err.message);
       }
     };
@@ -193,6 +195,7 @@ const Playlist = () => {
     playlist,
     playlist.href,
     playlist.tracks.total,
+    setAuthError
   ]);
 
 

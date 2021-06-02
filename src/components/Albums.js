@@ -31,7 +31,7 @@ const AlbumsTitle = styled.h3`
 `
 
 const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
-  const {token, setTracks, setSortedTracks, } = useContext(UserContext);
+  const {token, setTracks, setSortedTracks, setAuthError } = useContext(UserContext);
 
   const getAlbumTracks = async (album) => {
     try {
@@ -99,6 +99,7 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
       updateUrl('album-tracks', results)
 
     } catch (err) {
+      if (err.response.status === 401) setAuthError(true);
       console.log(err.message);
     }
   }

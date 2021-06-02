@@ -35,7 +35,7 @@ const InfoDiv = styled.div`
 
 
 const UserPlaylists = () => {
-  const {token, playlists, setPlaylists, username, setUsername} = useContext(UserContext);
+  const {token, playlists, setPlaylists, username, setUsername, setAuthError} = useContext(UserContext);
   const [sortedPlaylists, setSortedPlaylists ] = useState(false);
 
 
@@ -65,12 +65,13 @@ const UserPlaylists = () => {
 
         setPlaylists(tempPlaylistArray);
       } catch (err) {
+        if (err.response.status === 401) setAuthError(true);
         console.log(err.message);
       }
     };
 
     getAllPlaylists();
-  }, [token, setPlaylists]);
+  }, [token, setPlaylists, setAuthError]);
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -86,12 +87,13 @@ const UserPlaylists = () => {
 
         setUsername(userResponse.data.display_name);
       } catch (err) {
+        if (err.response.status === 401) setAuthError(true);
         console.log(err.message);
       }
     }
 
     getUserProfile()
-  }, [token, setUsername]);
+  }, [token, setUsername, setAuthError]);
 
   useEffect(() => {
     const sortPlaylists = () => {

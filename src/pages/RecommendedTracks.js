@@ -135,7 +135,7 @@ const HtmlTooltip = withStyles(() => ({
 
 
 const RecommendedTracks = () => {
-  const {token, setTracks, setSortedTracks} = useContext(UserContext);
+  const {token, setTracks, setSortedTracks, setAuthError} = useContext(UserContext);
   const [sortOption, setSortOption] = useState('default');
   const [keyOption, setKeyOption] = useState('camelot');
   const history = useHistory();
@@ -240,12 +240,13 @@ const RecommendedTracks = () => {
         setTracks([...splicedTracks]);
         setSortedTracks([...splicedTracks]);
       } catch (err) {
+        if (err.response.status === 401) setAuthError(true);
         console.log(err.message);
       }
     };
 
     getTracks();
-  }, [token, setTracks, setSortedTracks, recommendedTrack]);
+  }, [token, setTracks, setSortedTracks, recommendedTrack, setAuthError]);
 
 
 

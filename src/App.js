@@ -12,6 +12,7 @@ import UserContext from './context/UserContext';
 import './stylesheets/App.css';
 
 import Navbar from './components/Navbar'
+import TokenExpired from './components/TokenExpired'
 import SpotifyAuth from './pages/SpotifyAuth';
 import UserPlaylists from './pages/UserPlaylists';
 import Playlist from './pages/Playlist';
@@ -33,6 +34,7 @@ function App() {
   const [ username, setUsername ] = useState(false);
   const [ recommendedTrack, setRecommendedTrack ] = useState(false);
   const [ lastClickedTrack, setLastClickedTrack ] = useState(false);
+  const [ authError, setAuthError ] = useState(false);
 
   const [ searchOptionValues, setSearchOptionValues ] = useState({
     albumSearchQuery: '',
@@ -94,38 +96,47 @@ function App() {
           searchResultValues,
           setSearchResultValues,
           pushPlaylistToState,
+          setAuthError
         }}
         >
           <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>
-            <Navbar resetStates={resetStates} />
+            <Navbar resetStates={resetStates} authError />
             <div className='main-paper' style={{ border: "1px solid #424242"}}>
-              <Switch>
-                <Content>
-                  {!token ? (
-                      <Route
-                        exact path='/'
-                        render={(props) => (
-                          <SpotifyAuth
-                            location={props.location}
+                <>
+                  <Switch>
+                    <Content>
+                      {!token ? (
+                          <Route
+                            exact path='/'
+                            render={(props) => (
+                              <SpotifyAuth
+                                location={props.location}
+                              />
+                            )}
                           />
-                        )}
-                      />
-                  ) : (
-                    <>
-                      <Route exact path='/' component={UserPlaylists} />
-                      <Route exact path='/about' component={About} />
-                      <Route path='/search' component={Search} />
-                      <Route path='/playlist' component={Playlist} />
-                      <Route path='/recommended' component={RecommendedTracks} />
-                    </>
-                  )}
+                      ) : (
 
-                  <Redirect to='/' />
-                </Content>
-              </Switch>
+                        !authError ? (
 
-              {/* Click tab to go to bootom (very bad for accesibility) */}
-              <div tabIndex="0" style={{display: "block", margin: "0", padding: "0"}}/>
+                          <>
+                            <Route exact path='/' component={UserPlaylists} />
+                            <Route exact path='/about' component={About} />
+                            <Route path='/search' component={Search} />
+                            <Route path='/playlist' component={Playlist} />
+                            <Route path='/recommended' component={RecommendedTracks} />
+                          </>
+
+                        ) : (
+                          <TokenExpired/>
+                        )
+                      )}
+
+                      <Redirect to='/' />
+                    </Content>
+                  </Switch>
+                  {/* Tab to the bottom of the page */}
+                  <div tabIndex="0" style={{display: "block", margin: "0", padding: "0"}}/>
+                </>
             </div>
           </Container>
         </UserContext.Provider>
