@@ -175,8 +175,8 @@ const Tracks = ({keyOption, sortOption }) => {
     const camelotSort = (temp) => {
       temp = temp.sort((a, b) => { return a - b });
       temp = temp.sort((a, b) => {
-        a = (a.mode === 0 ? (parseInt(camelotMinorKeyDict[a.key])) : (parseInt(camelotMajorKeyDict[a.key])));
-        b = (b.mode === 0 ? (parseInt(camelotMinorKeyDict[b.key])) : (parseInt(camelotMajorKeyDict[b.key])));
+        a = (a.mode === 0 ? (parseInt(camelotMinorKeyDict[a.key])) : (parseInt(camelotMajorKeyDict[a.key]))+0.1);
+        b = (b.mode === 0 ? (parseInt(camelotMinorKeyDict[b.key])) : (parseInt(camelotMajorKeyDict[b.key]))+0.1);
 
         return a > b ? 1 : -1;
       });
@@ -201,7 +201,11 @@ const Tracks = ({keyOption, sortOption }) => {
         } else if (sort === 'duration') {
           let temp = [...tracks].sort((a, b) => parseInt(b.duration) - parseInt(a.duration));
 
-          setSortedTracks([...temp])
+          setSortedTracks(temp)
+        } else if (sort === 'popularity') {
+          let temp = [...tracks].sort((a, b) => parseInt(b.track_popularity) - parseInt(a.track_popularity));
+
+          setSortedTracks(temp)
         } else if (sort === 'durationThenKey') {
           let temp = [...tracks].sort((a, b) => parseInt(b.duration) - parseInt(a.duration));
 
