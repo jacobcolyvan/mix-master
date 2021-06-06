@@ -97,7 +97,7 @@ const RecommendedTrackDiv = styled.div`
       }
     }
 
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: 400px) {
       .table-data__name__tooltip {
         display: none;
       }
