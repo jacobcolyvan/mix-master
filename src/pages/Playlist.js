@@ -176,6 +176,7 @@ const Playlist = () => {
             "duration": item.track.duration_ms != null ? millisToMinutesAndSeconds(item.track.duration_ms) : "",
             "track_popularity": item.track.popularity != null ? item.track.popularity : "",
             "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
+            "album": item.track.album.name && item.track.album.name
           }
         })
 

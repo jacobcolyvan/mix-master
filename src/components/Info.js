@@ -3,7 +3,12 @@ import styled from 'styled-components';
 
 const InfoCont = styled.div`
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 2rem;
+
+  li {
+    font-size: 0.85rem;
+  }
+
 
   .info-header {
     font-style: italic;

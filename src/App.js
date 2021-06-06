@@ -35,6 +35,7 @@ function App() {
   const [ recommendedTrack, setRecommendedTrack ] = useState(false);
   const [ lastClickedTrack, setLastClickedTrack ] = useState(false);
   const [ authError, setAuthError ] = useState(false);
+  const [ activeParams, setActiveParams ] = useState([]);
 
   const [ searchOptionValues, setSearchOptionValues ] = useState({
     albumSearchQuery: '',
@@ -55,6 +56,7 @@ function App() {
     setSortedTracks(false);
     setRecommendedTrack(false);
     setLastClickedTrack(false);
+    setActiveParams([])
     resetRecommended && setRecommendedTrack(false);
   }
 
@@ -71,6 +73,7 @@ function App() {
     })
 
   }
+
 
   return (
     <div>
@@ -96,7 +99,9 @@ function App() {
           searchResultValues,
           setSearchResultValues,
           pushPlaylistToState,
-          setAuthError
+          setAuthError,
+          activeParams,
+          setActiveParams,
         }}
         >
           <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>

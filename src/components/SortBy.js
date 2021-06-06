@@ -20,6 +20,7 @@ const SortBy = ({sortOption, setSortOption }) => {
         <MenuItem value={'default'}>Original Order</MenuItem>
         <MenuItem value={'duration'}>Sort by Duration</MenuItem>
         <MenuItem value={'popularity'}>Sort by Popularity</MenuItem>
+        <MenuItem value={'valence'}>Sort by Valence</MenuItem>
         <MenuItem value={'tempo'}>Sort by Tempo</MenuItem>
         <MenuItem value={'durationThenKey'}>Sort by Duration, then Key</MenuItem>
         <MenuItem value={'energyThenKey'}>Sort by Energy, then Key</MenuItem>

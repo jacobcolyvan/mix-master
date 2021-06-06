@@ -50,8 +50,9 @@ const Navbar = ({ resetStates }) => {
               variant='outlined'
               color='primary'
               onClick={() => loadPage('/')}
-              className="button"
+              className="button nav-button"
               fullWidth
+              style={{ fontSize: "1rem", textTransform: "capitalize", fontStyle: "italic" }}
             >
               Playlists
             </ Button>
@@ -62,8 +63,9 @@ const Navbar = ({ resetStates }) => {
               variant='outlined'
               color='primary'
               onClick={() => loadPage('search')}
-              className="button"
+              className="button nav-button"
               fullWidth
+              style={{ fontSize: "1rem", textTransform: "capitalize", fontStyle: "italic" }}
             >
               Search
             </ Button>
@@ -76,8 +78,9 @@ const Navbar = ({ resetStates }) => {
               variant='outlined'
               color='primary'
               onClick={() => loadPage('/about')}
-              className="button"
+              className="button nav-button"
               fullWidth
+              style={{ fontSize: "1rem", textTransform: "capitalize", fontStyle: "italic" }}
             >
               About
             </ Button>

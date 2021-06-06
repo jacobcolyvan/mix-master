@@ -89,6 +89,7 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
             "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
             "track_popularity": item.popularity != null ? item.popularity : "",
             "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
+            "album": item.album.name && item.track.album.name
           }
         })
 

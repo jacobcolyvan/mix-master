@@ -206,6 +206,10 @@ const Tracks = ({keyOption, sortOption }) => {
           let temp = [...tracks].sort((a, b) => parseInt(b.track_popularity) - parseInt(a.track_popularity));
 
           setSortedTracks(temp)
+        } else if (sort === 'valence') {
+          let temp = [...tracks].sort((a, b) => parseFloat(b.valence) - parseFloat(a.valence));
+
+          setSortedTracks(temp)
         } else if (sort === 'durationThenKey') {
           let temp = [...tracks].sort((a, b) => parseInt(b.duration) - parseInt(a.duration));
 
@@ -215,7 +219,11 @@ const Tracks = ({keyOption, sortOption }) => {
 
           setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
         } else if (sort === 'energyThenKey') {
-          let temp = [...tracks].sort((a, b) => parseInt(b.energy) - parseInt(a.energy));
+          let temp = [...tracks].sort((a, b) => parseFloat(b.energy) - parseFloat(a.energy));
+
+          setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
+        } else if (sort === 'valenceThenKey') {
+          let temp = [...tracks].sort((a, b) => parseFloat(b.valence) - parseFloat(a.valence));
 
           setSortedTracks(keyOption === 'camelot' ? camelotSort(temp) : keySort(temp));
         } else {
@@ -265,6 +273,7 @@ const Tracks = ({keyOption, sortOption }) => {
       "duration": track.duration,
       "track_popularity": track.track_popularity,
       "artist_genres": track.artist_genres,
+      "album": track.album
     };
 
     history.push({
@@ -322,6 +331,7 @@ const Tracks = ({keyOption, sortOption }) => {
                         <li><span>Popularity:</span> <span>{track.track_popularity}</span></li>
                         <li><span>Speechiness:</span> <span>{track.speechiness}</span></li>
                         <li><span>Key:</span> <span>{keyDict[track.key]}{track.mode === 1 ? "" : "m"}</span></li>
+                        <li><span>Album:</span> <span>{track.album}</span></li>
                       </TooltipUl>
                     }
                   >

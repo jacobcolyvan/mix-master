@@ -16,3 +16,9 @@ br {
 a {
   color: #65D9EF;
 }
+
+.nav-button {
+  font-size: "1rem";
+  font-style: "italic";
+  text-transform: "capitalize";
+}
