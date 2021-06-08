@@ -5,7 +5,7 @@ import UserContext from '../context/UserContext';
 
 const PlaylistLi = styled.li`
   border: 1px solid #424242;
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 10px 4px;
 
   &:hover {

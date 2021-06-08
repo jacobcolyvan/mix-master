@@ -21,8 +21,7 @@ import Search from './pages/Search';
 import RecommendedTracks from './pages/RecommendedTracks';
 
 const Content = styled.div`
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 8px 10px 2rem 10px;
 `
 
 
@@ -106,7 +105,7 @@ function App() {
         >
           <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>
             <Navbar resetStates={resetStates} authError />
-            <div className='main-paper' style={{ border: "1px solid #424242"}}>
+            <div className='main-paper' style={{ border: "1px solid #424242", borderRadius: "0 0 4px 4px"}}>
                 <>
                   <Switch>
                     <Content>

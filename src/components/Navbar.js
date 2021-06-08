@@ -9,6 +9,7 @@ const NavbarCont = styled.header`
   display: flex;
   justify-content: space-between;
   border: 1px solid #424242;
+  border-radius: 4px 4px 0 0;
 
   h1 {
     margin-left: 8px;
@@ -43,29 +44,29 @@ const Navbar = ({ resetStates }) => {
       <h1 onClick={() => loadPage('/')} id="site-name">Mix Master</h1>
 
       {token && !authError && (
-        <div id="nav-buttons">
+        <div>
 
           {pathname !== '/'  && (
-            < Button
+            <Button
               variant='outlined'
               color='primary'
               onClick={() => loadPage('/')}
               className="button nav-button"
               fullWidth
-              style={{ fontSize: "1rem", textTransform: "capitalize", fontStyle: "italic" }}
+              style={{ fontSize: "1em", fontStyle: "italic" }}
             >
               Playlists
             </ Button>
           )}
 
           {pathname !== '/search' && (
-            < Button
+            <Button
               variant='outlined'
               color='primary'
               onClick={() => loadPage('search')}
               className="button nav-button"
               fullWidth
-              style={{ fontSize: "1rem", textTransform: "capitalize", fontStyle: "italic" }}
+              style={{ fontSize: "1em", fontStyle: "italic" }}
             >
               Search
             </ Button>
@@ -74,13 +75,13 @@ const Navbar = ({ resetStates }) => {
           {(pathname !== '/about' &&
             !(pathname.includes('/playlist')) &&
             pathname !== '/recommended') && (
-            < Button
+            <Button
               variant='outlined'
               color='primary'
               onClick={() => loadPage('/about')}
               className="button nav-button"
               fullWidth
-              style={{ fontSize: "1rem", textTransform: "capitalize", fontStyle: "italic" }}
+              style={{ fontSize: "1em", fontStyle: "italic" }}
             >
               About
             </ Button>

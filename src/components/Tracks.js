@@ -57,13 +57,20 @@ const camelotMinorKeyDict = {
 const TracksTable = styled.table`
   width: 100%;
   padding: 0;
-  margin-top: 24px;
+  margin-top: 2rem;
 
   border-collapse: collapse;
+
+  td, th  {
+    border-left: 1px solid #424242;
+    padding: 10px 4px;
+    margin: 0;
+  }
 
   tr {
     width: 100%;
     margin: 0;
+    border: 1px solid #424242;
 
     td {
       margin: 0;
@@ -72,6 +79,7 @@ const TracksTable = styled.table`
     .table-data__name {
       text-align: left;
       width: 100%;
+      border-left: none;
 
       display: flex;
       justify-content: space-between;
@@ -95,11 +103,7 @@ const TracksTable = styled.table`
     }
   }
 
-  td, th  {
-    border: 1px solid #424242;
-    padding: 10px 4px;
-    margin: 0;
-  }
+
 
   .key-data:hover {
     cursor: alias;

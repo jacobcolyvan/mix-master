@@ -353,7 +353,6 @@ const RecommendedTracks = () => {
           recommendedTrack={recommendedTrack}
         />
 
-        <hr/>
         <Tracks
             sortOption={sortOption}
             keyOption={keyOption}

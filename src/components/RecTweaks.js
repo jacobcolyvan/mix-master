@@ -21,12 +21,12 @@ const RecTweaksDiv = styled.div`
     }
 
     .rec-tweaks__tab-input {
-        margin: 1rem 0.4rem;
+        margin: 1rem;
     }
 
     .rec-tweaks__button {
         font-size: 0.85rem;
-        margin: 1.5rem 0.4rem;
+        margin: 0.6rem 1rem 2rem 1rem;
     }
 
     h4 {
