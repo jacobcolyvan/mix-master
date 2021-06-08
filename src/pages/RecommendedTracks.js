@@ -179,7 +179,7 @@ const RecommendedTracks = () => {
 
       const tracks1 = await axios({
         method: 'get',
-        url: generateUrl(url1, 18),
+        url: generateUrl(url1, 25),
         headers: {
           Authorization: 'Bearer ' + token,
           'Content-Type': 'application/json'
@@ -192,29 +192,39 @@ const RecommendedTracks = () => {
         `${recommendedTrack.parsedKeys[2][1] || recommendedTrack.parsedKeys[2][1] === 0 ? `&target_mode=${recommendedTrack.parsedKeys[2][1]}` : ""}`
       const tracks2 = await axios({
         method: 'get',
-        // conditional here to account for any missing track attributes
-        url: generateUrl(url2, 12),
+        url: generateUrl(url2, 15),
         headers: {
           Authorization: 'Bearer ' + token,
           'Content-Type': 'application/json'
         }
       });
 
-      // Recommendations without key param
-      const url3 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=10`
-      const tracks3 = await axios({
-        method: 'get',
-        url: generateUrl(url3, 10),
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        }
-      });
+      // // Recommendations without key param
+      // const url3 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=10`
+      // const tracks3 = await axios({
+      //   method: 'get',
+      //   url: generateUrl(url3, 10),
+      //   headers: {
+      //     Authorization: 'Bearer ' + token,
+      //     'Content-Type': 'application/json'
+      //   }
+      // });
 
 
-      let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks).concat(tracks3.data.tracks)
-      // remove null items
+      // let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks).concat(tracks3.data.tracks)
+      let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks)
+      // remove any null items
       tracklist = tracklist.filter(Boolean);
+
+      // remove duplicates (result of multiple calls)
+      tracklist = tracklist.reduce((accumulator, current) => {
+        if (!accumulator.find((el) => el.id === current.id)) {
+          accumulator.push(current);
+        }
+
+        return accumulator;
+      }, []);
+
       const trackIds = tracklist.map((track) => track.id)
       const artistIds = tracklist.map((track) => track.artists[0].id)
 
@@ -282,10 +292,18 @@ const RecommendedTracks = () => {
         <PageTitle>Recommended Tracks</PageTitle>
         <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
         <SortBy sortOption={sortOption} setSortOption={setSortOption} />
+
+        <RecTweaks
+          activeParams={activeParams}
+          setActiveParams={setActiveParams}
+          getTracks={getTracks}
+          recommendedTrack={recommendedTrack}
+        />
+
         <br/>
 
         <RecommendedTrackDiv>
-          <p>Tracks were recommended off this track:</p>
+          <p>Tracks were recommended from this track:</p>
           <table>
             <thead>
               <tr>
@@ -345,13 +363,6 @@ const RecommendedTracks = () => {
             </tbody>
           </table>
         </RecommendedTrackDiv>
-
-        <RecTweaks
-          activeParams={activeParams}
-          setActiveParams={setActiveParams}
-          getTracks={getTracks}
-          recommendedTrack={recommendedTrack}
-        />
 
         <Tracks
             sortOption={sortOption}

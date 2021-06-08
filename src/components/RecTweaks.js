@@ -59,6 +59,7 @@ const CustomTrackSeeds = ({ activeParams, setActiveParams, getTracks, recommende
 
         if (!value) {
           delete tempList[paramName];
+          setActiveParams(tempList);
         } else if (value >= 0 && value <= limit) {
             // convert seconds to ms
             if (paramName==="duration") value = value * 1000;
