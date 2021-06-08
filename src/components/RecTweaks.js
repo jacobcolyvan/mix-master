@@ -43,9 +43,9 @@ const inputChoices = [
     {input_name: "intrumentalness", extra_text: false, range_limit: 1, takes_whole_numbers: false},
     {input_name: "valence", extra_text: false, range_limit: 1, takes_whole_numbers: false},
     {input_name: "danceability", extra_text: false, range_limit: 1, takes_whole_numbers: false},
-    // {input_name: "acousticness", range_limit: 1, takes_whole_numbers: false},
-    // {input_name: "liveness", range_limit: 1, takes_whole_numbers: false},
-    // {input_name: "speechiness", range_limit: 1, takes_whole_numbers: false},
+    {input_name: "liveness", range_limit: 1, takes_whole_numbers: false},
+    {input_name: "speechiness", range_limit: 1, takes_whole_numbers: false},
+    {input_name: "acousticness", range_limit: 1, takes_whole_numbers: false},
     // // Loudness is an available param but has a weird input raneg (db's)
     // {input_name: "loudness", range_limit: 1, takes_whole_numbers: false},
 ]
@@ -54,13 +54,15 @@ const inputChoices = [
 const CustomTrackSeeds = ({ activeParams, setActiveParams, getTracks, recommendedTrack }) => {
     const [currentTab, setCurrentTab] = useState(0);
 
-    const saveActiveParam = (param_name, value, limit) => {
+    const saveActiveParam = (paramName, value, limit, maxOrMin) => {
         let tempList = activeParams;
 
         if (!value) {
-          delete tempList[param_name];
+          delete tempList[paramName];
         } else if (value >= 0 && value <= limit) {
-          tempList[param_name] = value;
+            // convert seconds to ms
+            if (paramName==="duration") value = value * 1000;
+            tempList[paramName] = [ value, maxOrMin ];
 
           setActiveParams(tempList);
         }

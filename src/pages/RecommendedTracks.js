@@ -153,17 +153,20 @@ const RecommendedTracks = () => {
   const generateUrl = useCallback((currentUrl, limit=10) => {
     currentUrl += `&limit=${limit}`
 
+    // // other available api seeds
     // if (genre) url += `&seed_genres=${ genre.join(',') }`;
     // if (artistSeed) url += `&seed_artists=${ artistSeed.map(artist => artist.id).join(',') }`;
     // if (trackSeed) url += `&seed_tracks=${ trackSeed.map(track => track.id).join(',') }`;
     // if (mode) url += `&target_mode=${mode}`
 
-    // param API options are between min/max/target
     Object.keys(activeParams).forEach((param) => {
-      if (activeParams[param]) currentUrl += `&min_${param}=${activeParams[param]}`;
+      if (activeParams[param]) currentUrl += `&${activeParams[param][1]}_${param}=${activeParams[param][0]}`;
     });
 
+    console.log(currentUrl)
     return currentUrl;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -176,7 +179,7 @@ const RecommendedTracks = () => {
 
       const tracks1 = await axios({
         method: 'get',
-        url: generateUrl(url1, 20),
+        url: generateUrl(url1, 18),
         headers: {
           Authorization: 'Bearer ' + token,
           'Content-Type': 'application/json'
@@ -190,25 +193,26 @@ const RecommendedTracks = () => {
       const tracks2 = await axios({
         method: 'get',
         // conditional here to account for any missing track attributes
-        url: generateUrl(url2, 10),
+        url: generateUrl(url2, 12),
         headers: {
           Authorization: 'Bearer ' + token,
           'Content-Type': 'application/json'
         }
       });
 
-      // // Recommendations without key param
-      // const tracks3 = await axios({
-      //   method: 'get',
-      //   url: `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=13`,
-      //   headers: {
-      //     Authorization: 'Bearer ' + token,
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
+      // Recommendations without key param
+      const url3 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=10`
+      const tracks3 = await axios({
+        method: 'get',
+        url: generateUrl(url3, 10),
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        }
+      });
 
 
-      let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks)
+      let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks).concat(tracks3.data.tracks)
       // remove null items
       tracklist = tracklist.filter(Boolean);
       const trackIds = tracklist.map((track) => track.id)
