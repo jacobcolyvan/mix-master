@@ -277,7 +277,8 @@ const Tracks = ({keyOption, sortOption }) => {
       "duration": track.duration,
       "track_popularity": track.track_popularity,
       "artist_genres": track.artist_genres,
-      "album": track.album
+      "album": track.album,
+      "release_date": track.release_date,
     };
 
     history.push({
@@ -334,8 +335,11 @@ const Tracks = ({keyOption, sortOption }) => {
                         <li><span>Loudness:</span> <span>{track.loudness}</span></li>
                         <li><span>Popularity:</span> <span>{track.track_popularity}</span></li>
                         <li><span>Speechiness:</span> <span>{track.speechiness}</span></li>
+
+                        <br/>
                         <li><span>Key:</span> <span>{keyDict[track.key]}{track.mode === 1 ? "" : "m"}</span></li>
                         <li><span>Album:</span> <span>{track.album}</span></li>
+                        <li><span>Released:</span> <span>{track.release_date}</span></li>
                       </TooltipUl>
                     }
                   >

@@ -269,7 +269,8 @@ const RecommendedTracks = () => {
           "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
           "track_popularity": item.popularity != null ? item.popularity : "",
           "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
-          "album": item.album.name ? item.album.name : ""
+          "album": item.album.name ? item.album.name : "",
+          "release_date": item.album.release_date ? item.album.release_date : "",
         }
       })
 
@@ -344,8 +345,11 @@ const RecommendedTracks = () => {
                         <li><span>Loudness:</span> <span>{recommendedTrack.loudness}</span></li>
                         <li><span>Popularity:</span> <span>{recommendedTrack.track_popularity}</span></li>
                         <li><span>Speechiness:</span> <span>{recommendedTrack.speechiness}</span></li>
+
+                        <br/>
                         <li><span>Key:</span> <span>{keyDict[recommendedTrack.key]}{recommendedTrack.mode === 1 ? "" : "m"}</span></li>
                         <li><span>Album:</span> <span>{recommendedTrack.album}</span></li>
+                        <li><span>Released:</span> <span>{recommendedTrack.release_date}</span></li>
                       </TooltipUl>
                     }
                   >

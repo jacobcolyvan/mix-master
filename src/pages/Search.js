@@ -204,7 +204,8 @@ const Search = () => {
           "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
           "track_popularity": item.popularity != null ? item.popularity : "",
           "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
-          "album": item.track.album.name && item.track.album.name
+          "album": item.track.album.name && item.track.album.name,
+          "release_date": item.track.album.release_date ? item.track.album.release_date : "",
         }
       })
 
