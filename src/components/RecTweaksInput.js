@@ -24,7 +24,7 @@ const RecTweaksInputDiv = styled.div`
 
 const Input = ({ title, saveParam, limit, wholeNumber, extra_text }) => {
     const [error, setError] = useState(false)
-    const [maxOrMin, setMaxOrMin] = useState("min")
+    const [maxOrMin, setMaxOrMin] = useState("target")
     const [inputValue, setInputValue] = useState(false)
     const [inputLabel, setInputLabel] = useState(`min ${title} (0 – ${limit}${extra_text || ""})`)
 
@@ -73,6 +73,11 @@ const Input = ({ title, saveParam, limit, wholeNumber, extra_text }) => {
                 value={maxOrMin}
                 onChange={handleRadioChange}
             >
+                <FormControlLabel
+                    value="target"
+                    control={<Radio color="primary" />}
+                    label="Target"
+                />
                 <FormControlLabel
                     value="min"
                     control={<Radio color="primary" />}
