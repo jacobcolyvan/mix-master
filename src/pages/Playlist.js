@@ -165,7 +165,7 @@ const Playlist = () => {
             "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
             "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
             "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
-            "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
+            "energy": trackFeatures[index] != null ? Math.round((trackFeatures[index].energy.toFixed(2)*100))/100 : "",
             "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
             "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
             "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",

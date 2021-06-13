@@ -34,7 +34,18 @@ function App() {
   const [ recommendedTrack, setRecommendedTrack ] = useState(false);
   const [ lastClickedTrack, setLastClickedTrack ] = useState(false);
   const [ authError, setAuthError ] = useState(false);
-  const [ activeParams, setActiveParams ] = useState([]);
+  const [ seedParams, setSeedParams ] = useState({
+    "tempo": false,
+    "energy": false,
+    "duration": false,
+    "popularity": false,
+    "intrumentalness": false,
+    "valence": false,
+    "danceability": false,
+    "liveness": false,
+    "speechiness": false,
+    "acousticness": false,
+  });
 
   const [ searchOptionValues, setSearchOptionValues ] = useState({
     albumSearchQuery: '',
@@ -55,7 +66,7 @@ function App() {
     setSortedTracks(false);
     setRecommendedTrack(false);
     setLastClickedTrack(false);
-    setActiveParams([])
+    // setSeedParams()
     resetRecommended && setRecommendedTrack(false);
   }
 
@@ -70,7 +81,6 @@ function App() {
       // tracks: tracks,
       // sortedTracks: sortedTracks
     })
-
   }
 
 
@@ -99,8 +109,8 @@ function App() {
           setSearchResultValues,
           pushPlaylistToState,
           setAuthError,
-          activeParams,
-          setActiveParams,
+          seedParams,
+          setSeedParams
         }}
         >
           <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>

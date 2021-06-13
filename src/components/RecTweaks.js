@@ -33,6 +33,23 @@ const RecTweaksDiv = styled.div`
         margin-left: 4px;
         font-style: italic;
     }
+
+    .currently-selected-params-div {
+        margin: 0 1rem 2rem 1rem;
+
+        label:first-child {
+            font-style: italic;
+        }
+
+        ul {
+            padding-left: 1rem;
+
+            li {
+                font-size: 1em;
+                text-transform: capitalize;
+            }
+        }
+    }
 `
 
 const inputChoices = [
@@ -51,21 +68,21 @@ const inputChoices = [
 ]
 
 
-const CustomTrackSeeds = ({ activeParams, setActiveParams, getTracks, recommendedTrack }) => {
+const RecTweaks = ({
+    recommendedTrack,
+    seedParams,
+    setSeedParams,
+    getTracks
+}) => {
     const [currentTab, setCurrentTab] = useState(0);
 
-    const saveActiveParam = (paramName, value, limit, maxOrMin) => {
-        let tempList = activeParams;
-
+    const saveSeedParam = (paramName, value, limit, maxOrMin) => {
         if (!value) {
-          delete tempList[paramName];
-          setActiveParams(tempList);
+            setSeedParams({ ...seedParams, [paramName]: false });
         } else if (value >= 0 && value <= limit) {
             // convert seconds to ms
             if (paramName==="duration") value = value * 1000;
-            tempList[paramName] = [ value, maxOrMin ];
-
-          setActiveParams(tempList);
+            setSeedParams({ ...seedParams, [paramName]: {"value": value, "maxOrMin": maxOrMin} });
         }
     };
 
@@ -83,8 +100,8 @@ const CustomTrackSeeds = ({ activeParams, setActiveParams, getTracks, recommende
                 scrollButtons="on"
                 className="rec-tweaks__tabs"
             >
-                {inputChoices.map((inputArray, index) => (
-                    <Tab label={inputArray.input_name} key={`tab-panel-${index}`}  className="rec-tweaks__tab"/>
+                {inputChoices.map((inputArray) => (
+                    <Tab label={inputArray.input_name} key={`tab-panel-${inputArray.input_name}`}  className="rec-tweaks__tab"/>
                 ))}
             </Tabs>
 
@@ -97,11 +114,14 @@ const CustomTrackSeeds = ({ activeParams, setActiveParams, getTracks, recommende
                     className="rec-tweaks__tab-input"
                 >
                     <RecTweaksInput
-                        saveParam={saveActiveParam}
+                        saveParam={saveSeedParam}
+                        paramValue={seedParams[`${inputArray.input_name}`]}
                         title={inputArray.input_name}
                         limit={inputArray.range_limit}
                         wholeNumber={inputArray.takes_whole_numbers}
                         extra_text={inputArray.extra_text}
+                        getTracks={getTracks}
+                        recommendedTrack={recommendedTrack}
                     />
                 </div>
             ))}
@@ -114,8 +134,19 @@ const CustomTrackSeeds = ({ activeParams, setActiveParams, getTracks, recommende
             >
                 Refresh Recommendations
             </Button>
+
+            <div className="currently-selected-params-div">
+                <label>Currently selected inputs are:</label>
+                <ul>
+                    {Object.keys(seedParams).map((param) => (
+                        seedParams[param]) && (
+                            <li key={`currently-selected-param-li__${param}`}>– {seedParams[param].maxOrMin} {param} {seedParams[param].value}</li>
+                        )
+                    )}
+                </ul>
+            </div>
         </RecTweaksDiv>
     )
 }
 
-export default CustomTrackSeeds
+export default RecTweaks

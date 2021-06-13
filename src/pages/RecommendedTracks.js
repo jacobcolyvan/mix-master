@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -141,37 +141,37 @@ const RecommendedTracks = () => {
     setTracks,
     setSortedTracks,
     setAuthError,
-    activeParams,
-    setActiveParams
+    setSeedParams,
+    seedParams,
   } = useContext(UserContext);
-  const [ sortOption, setSortOption ] = useState('default');
-  const [ keyOption, setKeyOption ] = useState('camelot');
   const history = useHistory();
   const recommendedTrack = history.location.state.recommendedTrack;
+  // const seedParams = history.location.state.seedParams;
+  const [ sortOption, setSortOption ] = useState('default');
+  const [ keyOption, setKeyOption ] = useState('camelot');
 
 
-  const generateUrl = useCallback((currentUrl, limit=10) => {
-    currentUrl += `&limit=${limit}`
 
-    // // other available api seeds
-    // if (genre) url += `&seed_genres=${ genre.join(',') }`;
-    // if (artistSeed) url += `&seed_artists=${ artistSeed.map(artist => artist.id).join(',') }`;
-    // if (trackSeed) url += `&seed_tracks=${ trackSeed.map(track => track.id).join(',') }`;
-    // if (mode) url += `&target_mode=${mode}`
-
-    Object.keys(activeParams).forEach((param) => {
-      if (activeParams[param]) currentUrl += `&${activeParams[param][1]}_${param}=${activeParams[param][0]}`;
-    });
-
-    console.log(currentUrl)
-    return currentUrl;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-
-  const getTracks = useCallback(async (recommendedTrack) => {
+  const getTracks = async (recommendedTrack) => {
     try {
+      const generateUrl = (currentUrl, limit=10) => {
+        currentUrl += `&limit=${limit}`
+
+        // // other available api seeds
+        // if (genre) url += `&seed_genres=${ genre.join(',') }`;
+        // if (artistSeed) url += `&seed_artists=${ artistSeed.map(artist => artist.id).join(',') }`;
+        // if (trackSeed) url += `&seed_tracks=${ trackSeed.map(track => track.id).join(',') }`;
+        // if (mode) url += `&target_mode=${mode}`
+
+        Object.keys(seedParams).forEach((param) => {
+          if (seedParams[param]) currentUrl += `&${seedParams[param].maxOrMin}_${param}=${seedParams[param].value}`;
+        });
+
+        console.log(currentUrl)
+        return currentUrl;
+      }
+
+
       const url1 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}`
       // conditional here to account for any missing track attributes
       + `${recommendedTrack.key || recommendedTrack.key === 0 ? `&target_key=${recommendedTrack.key}`: ""}` +
@@ -258,7 +258,7 @@ const RecommendedTracks = () => {
           "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
           "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
           "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
-          "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
+          "energy": trackFeatures[index] != null ? Math.round((trackFeatures[index].energy.toFixed(2)*100))/100 : "",
           "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
           "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
           "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
@@ -277,15 +277,18 @@ const RecommendedTracks = () => {
       setTracks([...splicedTracks]);
       setSortedTracks([...splicedTracks]);
     } catch (err) {
-      if (err.response.status === 401) setAuthError(true);
       console.log(err.message);
+      if (err.response.status === 401) setAuthError(true);
     }
-  }, [token, setTracks, setSortedTracks, setAuthError, generateUrl]);
+
+  }
 
 
   useEffect(() => {
+
     getTracks(recommendedTrack);
-  }, [recommendedTrack, getTracks]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recommendedTrack]);
 
 
   return (
@@ -295,10 +298,10 @@ const RecommendedTracks = () => {
         <SortBy sortOption={sortOption} setSortOption={setSortOption} />
 
         <RecTweaks
-          activeParams={activeParams}
-          setActiveParams={setActiveParams}
           getTracks={getTracks}
           recommendedTrack={recommendedTrack}
+          seedParams={seedParams}
+          setSeedParams={setSeedParams}
         />
 
         <br/>

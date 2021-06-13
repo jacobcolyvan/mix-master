@@ -78,7 +78,7 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
             "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
             "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
             "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
-            "energy": trackFeatures[index] != null ? Math.round((100-trackFeatures[index].energy.toFixed(2)*100))/100 : "",
+            "energy": trackFeatures[index] != null ? Math.round((trackFeatures[index].energy.toFixed(2)*100))/100 : "",
             "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
             "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
             "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
@@ -89,8 +89,8 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
             "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
             "track_popularity": item.popularity != null ? item.popularity : "",
             "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
-            "album": item.album.name && item.track.album.name,
-            "release_date": item.track.album.release_date ? item.track.album.release_date : "",
+            "album": album.name && album.name,
+            "release_date": album.release_date ? album.release_date : "",
           }
         })
 
@@ -101,8 +101,8 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
       updateUrl('album-tracks', results)
 
     } catch (err) {
-      if (err.response.status === 401) setAuthError(true);
       console.log(err.message);
+      if (err.response.status === 401) setAuthError(true);
     }
   }
 

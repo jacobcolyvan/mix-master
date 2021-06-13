@@ -22,10 +22,19 @@ const RecTweaksInputDiv = styled.div`
 `
 
 
-const Input = ({ title, saveParam, limit, wholeNumber, extra_text }) => {
+const Input = ({
+    title,
+    saveParam,
+    limit,
+    wholeNumber,
+    extra_text,
+    paramValue,
+    getTracks,
+    recommendedTrack
+}) => {
     const [error, setError] = useState(false)
-    const [maxOrMin, setMaxOrMin] = useState("target")
-    const [inputValue, setInputValue] = useState(false)
+    const [maxOrMin, setMaxOrMin] = useState(paramValue.maxOrMin || "target")
+    const [inputValue, setInputValue] = useState(paramValue.value || false)
     const [inputLabel, setInputLabel] = useState(`min ${title} (0 – ${limit}${extra_text || ""})`)
 
     const handleRadioChange = (event) => {
@@ -36,6 +45,12 @@ const Input = ({ title, saveParam, limit, wholeNumber, extra_text }) => {
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
     }
+
+    const searchOnEnter = (event) => {
+        if(event.key === 'Enter'){
+            getTracks(recommendedTrack)
+        }
+      }
 
     useEffect(() => {
         const validateInput = () => {
@@ -89,12 +104,15 @@ const Input = ({ title, saveParam, limit, wholeNumber, extra_text }) => {
                     label="Max"
                 />
             </RadioGroup>
+
             <TextField
                 fullWidth
                 label={inputLabel}
+                value={inputValue}
                 type='number'
                 className="rec-tweaks__textfield"
                 onChange={handleInputChange}
+                onKeyPress={searchOnEnter}
                 error={error}
                 helperText={error ? "Invalid range value" : false}
             />
