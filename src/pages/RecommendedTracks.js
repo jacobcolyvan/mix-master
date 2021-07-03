@@ -141,7 +141,7 @@ const RecommendedTracks = () => {
     setTracks,
     setSortedTracks,
     setAuthError,
-    setSeedParams,
+    matchRecsToSeedTrackKey,
     seedParams,
   } = useContext(UserContext);
   const history = useHistory();
@@ -153,6 +153,8 @@ const RecommendedTracks = () => {
 
 
   const getTracks = async (recommendedTrack) => {
+    setSortedTracks(false)
+
     try {
       const generateUrl = (currentUrl, limit=10) => {
         currentUrl += `&limit=${limit}`
@@ -171,48 +173,42 @@ const RecommendedTracks = () => {
         return currentUrl;
       }
 
+      const getTracksFromSpotify = async (url, limit) => {
+        const tracks = await axios({
+          method: 'get',
+          url: generateUrl(url, limit),
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
 
-      const url1 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}`
-      // conditional here to account for any missing track attributes
-      + `${recommendedTrack.key || recommendedTrack.key === 0 ? `&target_key=${recommendedTrack.key}`: ""}` +
-      `${recommendedTrack.mode || recommendedTrack.mode === 0 ? `&target_mode=${recommendedTrack.mode}` : ""}`;
+        return tracks.data.tracks
+      }
 
-      const tracks1 = await axios({
-        method: 'get',
-        url: generateUrl(url1, 25),
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        }
-      });
+      let tracklist;
+      if (matchRecsToSeedTrackKey) {
+        // macth key
+        const url1 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}`
+        // conditional here to account for any missing track attributes
+        + `${recommendedTrack.key || recommendedTrack.key === 0 ? `&target_key=${recommendedTrack.key}`: ""}` +
+        `${recommendedTrack.mode || recommendedTrack.mode === 0 ? `&target_mode=${recommendedTrack.mode}` : ""}`;
+        const tracks1 = await getTracksFromSpotify(url1, 25)
 
-      // minor/major alternative scale
-      const url2 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}`
-      + `${recommendedTrack.parsedKeys[2][0] || recommendedTrack.parsedKeys[2][0] === 0 ?`&target_key=${recommendedTrack.parsedKeys[2][0]}`: ""}` +
-        `${recommendedTrack.parsedKeys[2][1] || recommendedTrack.parsedKeys[2][1] === 0 ? `&target_mode=${recommendedTrack.parsedKeys[2][1]}` : ""}`
-      const tracks2 = await axios({
-        method: 'get',
-        url: generateUrl(url2, 15),
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        }
-      });
+        // minor/major alternative scale
+        const url2 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}`
+        + `${recommendedTrack.parsedKeys[2][0] || recommendedTrack.parsedKeys[2][0] === 0 ?`&target_key=${recommendedTrack.parsedKeys[2][0]}`: ""}` +
+          `${recommendedTrack.parsedKeys[2][1] || recommendedTrack.parsedKeys[2][1] === 0 ? `&target_mode=${recommendedTrack.parsedKeys[2][1]}` : ""}`
+        const tracks2 = await getTracksFromSpotify(url2, 15)
 
-      // // Recommendations without key param
-      // const url3 = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=10`
-      // const tracks3 = await axios({
-      //   method: 'get',
-      //   url: generateUrl(url3, 10),
-      //   headers: {
-      //     Authorization: 'Bearer ' + token,
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
+        tracklist = tracks1.concat(tracks2)
+      } else {
+        // Recommendations without key param
+        const url = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}`;
 
+        tracklist = await getTracksFromSpotify(url, 40);
+      }
 
-      // let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks).concat(tracks3.data.tracks)
-      let tracklist = tracks1.data.tracks.concat(tracks2.data.tracks)
       // remove any null items
       tracklist = tracklist.filter(Boolean);
 
@@ -288,7 +284,7 @@ const RecommendedTracks = () => {
 
     getTracks(recommendedTrack);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recommendedTrack]);
+  }, [recommendedTrack, matchRecsToSeedTrackKey]);
 
 
   return (
@@ -297,12 +293,7 @@ const RecommendedTracks = () => {
         <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
         <SortBy sortOption={sortOption} setSortOption={setSortOption} />
 
-        <RecTweaks
-          getTracks={getTracks}
-          recommendedTrack={recommendedTrack}
-          seedParams={seedParams}
-          setSeedParams={setSeedParams}
-        />
+        <RecTweaks getTracks={getTracks} recommendedTrack={recommendedTrack} />
 
         <br/>
 

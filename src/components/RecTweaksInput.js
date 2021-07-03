@@ -22,7 +22,7 @@ const RecTweaksInputDiv = styled.div`
 `
 
 
-const Input = ({
+const RecTweaksInput = ({
     title,
     saveParam,
     limit,
@@ -120,4 +120,4 @@ const Input = ({
     );
 };
 
-export default Input;
+export default RecTweaksInput;

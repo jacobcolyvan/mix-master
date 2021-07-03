@@ -46,6 +46,7 @@ function App() {
     "speechiness": false,
     "acousticness": false,
   });
+  const [ matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey ] = useState(true);
 
   const [ searchOptionValues, setSearchOptionValues ] = useState({
     albumSearchQuery: '',
@@ -110,7 +111,9 @@ function App() {
           pushPlaylistToState,
           setAuthError,
           seedParams,
-          setSeedParams
+          setSeedParams,
+          matchRecsToSeedTrackKey,
+          setMatchRecsToSeedTrackKey,
         }}
         >
           <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>
