@@ -43,5 +43,12 @@ const camelotMinorKeyDict = {
     "11": "10"
 };
 
+const scopes = [
+    'user-read-private',
+    'playlist-read-private',
+    'user-library-read',
+    'user-top-read'
+];
 
-export { keyDict, camelotMajorKeyDict, camelotMinorKeyDict };
+
+export { keyDict, camelotMajorKeyDict, camelotMinorKeyDict, scopes };

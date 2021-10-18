@@ -2,6 +2,7 @@ import React from 'react'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+
 const SortBy = ({sortOption, setSortOption }) => {
   const sortOptionChange = (event) => {
     setSortOption(event.target.value)

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-import styled from 'styled-components';
+import parse from 'html-react-parser';
 import UserContext from '../context/UserContext';
 import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
@@ -9,30 +9,15 @@ import Tracks from '../components/Tracks'
 import SortBy from '../components/SortBy';
 import KeySelect from '../components/KeySelect';
 
-import parse from 'html-react-parser';
-
-
-const PlaylistName = styled.h3`
-  text-decoration: underline;
-  font-style: italic;
-`
-
-const PlaylistDescrition = styled.p`
-  span, a {
-    color: #7986cb;
-    cursor: pointer;
-  }
-`
-
 
 const Playlist = () => {
   const { token, setTracks, setSortedTracks, pushPlaylistToState, setAuthError } = useContext(UserContext);
-  const [ sortOption, setSortOption ] = useState('tempoThenKey');
-  const [ keyOption, setKeyOption ] = useState('camelot');
+  const [sortOption, setSortOption] = useState('tempoThenKey');
+  const [keyOption, setKeyOption] = useState('camelot');
   const history = useHistory();
   const playlist = history.location.state.playlist;
 
-  const [ description, setDescription ] = useState(false);
+  const [description, setDescription] = useState(false);
 
   useEffect(() => {
 
@@ -65,19 +50,20 @@ const Playlist = () => {
                 {[...domNode.children][0].data}
               </span>
             );
-        } else  if (domNode.name === "a") {
-          return (
-            <a
-              {...domNode.attribs}
-              target="_blank"
-            >
-              {[...domNode.children][0].data}
-            </a>
-          )
-        } else {
-          return;
+          } else if (domNode.name === "a") {
+            return (
+              <a
+                {...domNode.attribs}
+                target="_blank"
+              >
+                {[...domNode.children][0].data}
+              </a>
+            )
+          } else {
+            return;
+          }
         }
-      }});
+      });
 
       setDescription(parsedDescription)
     }
@@ -110,11 +96,12 @@ const Playlist = () => {
               }
             });
 
+            // eslint-disable-next-line no-loop-func
             tracksResponse = tracksResponse.data.items.map((item) => {
               if (item.track) {
                 return item
               } else {
-                trackTotalAmount --;
+                trackTotalAmount--;
                 return undefined
               }
             })
@@ -143,8 +130,8 @@ const Playlist = () => {
               }
             })
           } catch (err) {
-            if (err.response.status === 401) setAuthError(true);
-            console.log(err)
+            if (err.response?.status === 401) setAuthError(true);
+            console.log(err);
           }
 
           tracklist = [...tracklist, ...tracksResponse];
@@ -157,34 +144,34 @@ const Playlist = () => {
 
         // expensive fix for null trackFeatures; flatMap?
         const splicedTracks = tracklist.filter((item, index) => trackFeatures[index] != null)
-        .map((item, index) => {
-          return {
-            "name": item.track.name,
-            "artists": item.track.artists.length > 1 ? [item.track.artists[0].name, item.track.artists[1].name] : [item.track.artists[0].name],
-            "id": item.track.id && item.track.id,
-            "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
-            "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
-            "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
-            "energy": trackFeatures[index] != null ? Math.round((trackFeatures[index].energy.toFixed(2)*100))/100 : "",
-            "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
-            "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
-            "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
-            "loudness": trackFeatures[index] != null ? trackFeatures[index].loudness : "",
-            "speechiness": trackFeatures[index] != null ? trackFeatures[index].speechiness : "",
-            "valence": trackFeatures[index] != null ? trackFeatures[index].valence : "",
+          .map((item, index) => {
+            return {
+              "name": item.track.name,
+              "artists": item.track.artists.length > 1 ? [item.track.artists[0].name, item.track.artists[1].name] : [item.track.artists[0].name],
+              "id": item.track.id && item.track.id,
+              "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
+              "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
+              "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
+              "energy": trackFeatures[index] != null ? Math.round((trackFeatures[index].energy.toFixed(2) * 100)) / 100 : "",
+              "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
+              "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
+              "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
+              "loudness": trackFeatures[index] != null ? trackFeatures[index].loudness : "",
+              "speechiness": trackFeatures[index] != null ? trackFeatures[index].speechiness : "",
+              "valence": trackFeatures[index] != null ? trackFeatures[index].valence : "",
 
-            "duration": item.track.duration_ms != null ? millisToMinutesAndSeconds(item.track.duration_ms) : "",
-            "track_popularity": item.track.popularity != null ? item.track.popularity : "",
-            "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
-            "album": item.track.album.name && item.track.album.name,
-            "release_date": item.track.album.release_date ? item.track.album.release_date : "",
-          }
-        })
+              "duration": item.track.duration_ms != null ? millisToMinutesAndSeconds(item.track.duration_ms) : "",
+              "track_popularity": item.track.popularity != null ? item.track.popularity : "",
+              "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres : "",
+              "album": item.track.album.name && item.track.album.name,
+              "release_date": item.track.album.release_date ? item.track.album.release_date : "",
+            }
+          })
 
         setTracks([...splicedTracks]);
         setSortedTracks([...splicedTracks]);
       } catch (err) {
-        if (err.response.status === 401) setAuthError(true);
+        if (err.response?.status === 401) setAuthError(true);
         console.log(err.message);
       }
     };
@@ -208,12 +195,15 @@ const Playlist = () => {
       <SortBy sortOption={sortOption} setSortOption={setSortOption} />
 
       {playlist && (
-        <PlaylistName>{playlist.name}</PlaylistName>
-
+        <h3 className="playlist-page-title">
+          {playlist.name}
+        </h3>
       )}
       {description && (
-        <PlaylistDescrition>{description} </PlaylistDescrition>
-      )  }
+        <p className="playlist-page-description">
+          {description}
+        </p>
+      )}
 
       <Tracks
         sortOption={sortOption}

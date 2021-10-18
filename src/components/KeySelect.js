@@ -8,7 +8,7 @@ const KeySelect = ({keyOption, setKeyOption}) => {
   }
 
   return (
-    <div style={{marginBottom: "6px"}}>
+    <div className="key-select__div">
       <Select
         labelId='Key Select'
         id='key-select'

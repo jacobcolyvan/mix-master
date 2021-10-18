@@ -1,32 +1,11 @@
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
-const PlaylistLi = styled.li`
-  border: 1px solid #424242;
-  border-radius: 2px;
-  padding: 10px 4px;
 
-  &:hover {
-    color: #2882e9;
-    cursor: pointer;
-  }
-
-  div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .playlist-name {
-    padding-left: 4px;
-  }
-`
-
-const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks,  }) => {
+const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
   const history = useHistory();
-  const {pushPlaylistToState} = useContext(UserContext);
+  const { pushPlaylistToState } = useContext(UserContext);
 
   const addPlaylistQuery = (playlist) => {
     pushPlaylistToState(history, playlist);
@@ -36,33 +15,30 @@ const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks,  }) => {
   }
 
 
-
   return (
-      <ul>
-        {playlistsToRender.map((playlist, index) => (
-          <PlaylistLi
-            className='playlist item'
-            key={`track${index}`}
-            onClick={() => {
-              addPlaylistQuery(playlist)
-            }}
-          >
-            <div className='single-playlist-div'>
-              <div className='playlist-name'>{playlist.name}</div>
-              {playlist.images[0] && (
-                <img
-                  src={playlist.images[0].url}
-                  alt={`playlist img`}
-                  width="60"
-                  height="60"
-                  className='playlist-image'
-                  style={{ border: "1px solid #424242" }}
-                />
-              )}
-            </div>
-          </PlaylistLi>
-        ))}
-      </ul>
+    <ul>
+      {playlistsToRender.map((playlist, index) => (
+        <li
+          className='playlist-list__li'
+          key={`track${index}`}
+          onClick={() => {
+            addPlaylistQuery(playlist)
+          }}
+        >
+          <div>
+            <div className='playlist-name'>{playlist.name}</div>
+            {playlist.images[0] && (
+              <img
+                src={playlist.images[0].url}
+                alt={`playlist img`}
+                width="60"
+                height="60"
+              />
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 };
 

@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
 import RecTweaksInput from './RecTweaksInput';
@@ -10,73 +9,17 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
 
-const RecTweaksDiv = styled.div`
-    margin: 2rem 0;
-    border: 1px solid #424242;
-
-    .rec-tweaks__tabs {
-        border-top: 1px solid #424242;
-        border-bottom: 1px solid #424242;
-    }
-
-    .rec-tweaks__tab {
-        font-size: 0.85rem;
-        text-transform: capitalize;
-    }
-
-    .rec-tweaks__tab-input {
-        margin: 1rem;
-    }
-
-    .match-key__switch {
-        margin: 0 4px 0.4rem 4px;
-
-        span:last-child {
-            font-size: 1em;
-            padding-left: 0.75rem;
-        }
-    }
-
-    .rec-tweaks__button {
-        font-size: 0.85rem;
-        margin: 0.6rem 1rem 2rem 1rem;
-    }
-
-    h4 {
-        margin-left: 0.5rem;
-        margin-right: 0.5rem;
-        font-style: italic;
-    }
-
-    .currently-selected-params-div {
-        margin: 0 1rem 2rem 1rem;
-
-        label:first-child {
-            font-style: italic;
-        }
-
-        ul {
-            padding-left: 1rem;
-
-            li {
-                font-size: 1em;
-                text-transform: capitalize;
-            }
-        }
-    }
-`
-
 const inputChoices = [
-    {input_name: "tempo", extra_text: false, range_limit: 240, takes_whole_numbers: true},
-    {input_name: "energy", extra_text: false, range_limit: 1, takes_whole_numbers: false},
-    {input_name: "duration", extra_text: " seconds", range_limit: 3600, takes_whole_numbers: true},
-    {input_name: "popularity", extra_text: false, range_limit: 100, takes_whole_numbers: true},
-    {input_name: "intrumentalness", extra_text: false, range_limit: 1, takes_whole_numbers: false},
-    {input_name: "valence", extra_text: false, range_limit: 1, takes_whole_numbers: false},
-    {input_name: "danceability", extra_text: false, range_limit: 1, takes_whole_numbers: false},
-    {input_name: "liveness", range_limit: 1, takes_whole_numbers: false},
-    {input_name: "speechiness", range_limit: 1, takes_whole_numbers: false},
-    {input_name: "acousticness", range_limit: 1, takes_whole_numbers: false},
+    { input_name: "tempo", extra_text: false, range_limit: 240, takes_whole_numbers: true },
+    { input_name: "energy", extra_text: false, range_limit: 1, takes_whole_numbers: false },
+    { input_name: "duration", extra_text: " seconds", range_limit: 3600, takes_whole_numbers: true },
+    { input_name: "popularity", extra_text: false, range_limit: 100, takes_whole_numbers: true },
+    { input_name: "intrumentalness", extra_text: false, range_limit: 1, takes_whole_numbers: false },
+    { input_name: "valence", extra_text: false, range_limit: 1, takes_whole_numbers: false },
+    { input_name: "danceability", extra_text: false, range_limit: 1, takes_whole_numbers: false },
+    { input_name: "liveness", range_limit: 1, takes_whole_numbers: false },
+    { input_name: "speechiness", range_limit: 1, takes_whole_numbers: false },
+    { input_name: "acousticness", range_limit: 1, takes_whole_numbers: false },
     // // Loudness is an available param but has a weird input raneg (db's)
     // {input_name: "loudness", range_limit: 1, takes_whole_numbers: false},
 ]
@@ -96,8 +39,8 @@ const RecTweaks = ({ getTracks, recommendedTrack }) => {
             setSeedParams({ ...seedParams, [paramName]: false });
         } else if (value >= 0 && value <= limit) {
             // convert seconds to ms
-            if (paramName==="duration") value = value * 1000;
-            setSeedParams({ ...seedParams, [paramName]: {"value": value, "maxOrMin": maxOrMin} });
+            if (paramName === "duration") value = value * 1000;
+            setSeedParams({ ...seedParams, [paramName]: { "value": value, "maxOrMin": maxOrMin } });
         }
     };
 
@@ -116,10 +59,10 @@ const RecTweaks = ({ getTracks, recommendedTrack }) => {
 
     const handleTabChange = (event, newValue) => {
         setCurrentTab(newValue);
-      };
+    };
 
     return (
-        <RecTweaksDiv>
+        <div className="rec-tweaks__div">
             <h4>Tweak the recommendations below:</h4>
             <FormControlLabel
                 control={
@@ -170,10 +113,10 @@ const RecTweaks = ({ getTracks, recommendedTrack }) => {
             ))}
 
             <Button
-              variant='outlined'
-              color='primary'
-              onClick={() => getTracks(recommendedTrack)}
-              className="button rec-tweaks__button"
+                variant='outlined'
+                color='primary'
+                onClick={() => getTracks(recommendedTrack)}
+                className="button rec-tweaks__button"
             >
                 Refresh Recommendations
             </Button>
@@ -190,7 +133,7 @@ const RecTweaks = ({ getTracks, recommendedTrack }) => {
                     )}
                 </ul>
             </div>
-        </RecTweaksDiv>
+        </div>
     )
 }
 

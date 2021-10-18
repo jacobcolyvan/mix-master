@@ -5,12 +5,9 @@ import {
   Route,
   Redirect
 } from 'react-router-dom';
-import styled from 'styled-components';
 import { Container } from '@material-ui/core';
 
 import UserContext from './context/UserContext';
-import './stylesheets/App.css';
-
 import Navbar from './components/Navbar'
 import TokenExpired from './components/TokenExpired'
 import SpotifyAuth from './pages/SpotifyAuth';
@@ -19,10 +16,6 @@ import Playlist from './pages/Playlist';
 import About from './pages/About';
 import Search from './pages/Search';
 import RecommendedTracks from './pages/RecommendedTracks';
-
-const Content = styled.div`
-  padding: 8px 10px 2rem 10px;
-`
 
 
 function App() {
@@ -121,7 +114,7 @@ function App() {
             <div className='main-paper' style={{ border: "1px solid #424242", borderRadius: "0 0 4px 4px"}}>
                 <>
                   <Switch>
-                    <Content>
+                    <div className="main-content__div">
                       {!token ? (
                           <Route
                             exact path='/'
@@ -149,7 +142,7 @@ function App() {
                       )}
 
                       <Redirect to='/' />
-                    </Content>
+                    </div>
                   </Switch>
                   {/* Tab to the bottom of the page */}
                   <div tabIndex="0" style={{display: "block", margin: "0", padding: "0"}}/>

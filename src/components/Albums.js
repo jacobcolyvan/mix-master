@@ -1,37 +1,11 @@
-import React, { useContext }  from 'react';
-import styled from 'styled-components';
+import React, { useContext } from 'react';
 import axios from 'axios';
 import UserContext from '../context/UserContext';
 import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
-const AlbumList = styled.li`
-  border: 1px solid #c4c4c4;
-  border-radius: 4px;
-  padding: 10px 4px;
-
-  &:hover {
-    color: #2882e9;
-    cursor: pointer;
-  }
-
-  div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .playlist-name {
-    padding-left: 4px;
-  }
-`
-
-const AlbumsTitle = styled.h3`
-  text-decoration: underline;
-  font-style: italic;
-`
 
 const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
-  const {token, setTracks, setSortedTracks, setAuthError } = useContext(UserContext);
+  const { token, setTracks, setSortedTracks, setAuthError } = useContext(UserContext);
 
   const getAlbumTracks = async (album) => {
     try {
@@ -78,7 +52,7 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
             "tempo": trackFeatures[index] != null ? Math.round(trackFeatures[index].tempo) : "",
             "key": trackFeatures[index] != null ? trackFeatures[index].key : "",
             "mode": trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : "",
-            "energy": trackFeatures[index] != null ? Math.round((trackFeatures[index].energy.toFixed(2)*100))/100 : "",
+            "energy": trackFeatures[index] != null ? Math.round((trackFeatures[index].energy.toFixed(2) * 100)) / 100 : "",
             "danceability": trackFeatures[index] != null ? trackFeatures[index].danceability : "",
             "acousticness": trackFeatures[index] != null ? trackFeatures[index].acousticness : "",
             "liveness": trackFeatures[index] != null ? trackFeatures[index].liveness : "",
@@ -88,7 +62,7 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
 
             "duration": item.duration_ms != null ? millisToMinutesAndSeconds(item.duration_ms) : "",
             "track_popularity": item.popularity != null ? item.popularity : "",
-            "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres: "",
+            "artist_genres": artistFeatures[index] != null ? artistFeatures[index].genres : "",
             "album": album.name && album.name,
             "release_date": album.release_date ? album.release_date : "",
           }
@@ -102,19 +76,19 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
 
     } catch (err) {
       console.log(err.message);
-      if (err.response.status === 401) setAuthError(true);
+      if (err.response?.status === 401) setAuthError(true);
     }
   }
 
 
   return (
     <div>
-      <AlbumsTitle>Album Results</AlbumsTitle>
+      <h3 className="album-page-title">Album Results</h3>
       {albums.length > 0 && (
         <ul>
           {albums.map((album, index) => (
-            <AlbumList
-              className='album item'
+            <li
+              className='album-list__li album item'
               key={`track${index}`}
               onClick={() => getAlbumTracks(album)}
             >
@@ -123,12 +97,19 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
                   {album.name} –
                   <i>
                     {album.artists.length > 1 ? album.artists[0].name + ', ' + album.artists[1].name :
-                    album.artists[0].name}{" (" + album.release_date.slice(0, 4) + ")"}
+                      album.artists[0].name}{" (" + album.release_date.slice(0, 4) + ")"}
                   </i>
                 </p>
-                {album.images[0] && <img src={album.images[0].url} alt={`playlist img`} width="60" height="60" className='playlist-image'/>}
+                {album.images[0] &&
+                  <img
+                    src={album.images[0].url}
+                    alt={`playlist img`}
+                    width="60"
+                    height="60"
+                  />
+                }
               </div>
-            </AlbumList>
+            </li>
           ))}
         </ul>
       )}

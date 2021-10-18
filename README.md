@@ -12,7 +12,7 @@ This is basic project intended to help users make better playlists and mixes, by
 <ins>Note:</ins> that all data comes from Spotify, and will only be as accurate as Spotify's analysis algorithms'. \
 <ins>Note#2:</ins> (for music nerds) Spotify only provides estimations for major/minor, and as such at this point will not tell you whether the key is in a different Mode to those.
 
-It is built with React, and styled using styled-components & Material-UI. Requests are done using axios, and Spotify-auth is done completely client-side using the <a href="https://developer.spotify.com/documentation/general/guides/authorization-guide/">Client Credentials Authorisation Flow</a>. This means none of your personal data ever actually leaves your browser.
+It is built with React, and styled using SCSS/Material-UI. Requests are done using axios, and Spotify-auth is done completely client-side using the <a href="https://developer.spotify.com/documentation/general/guides/authorization-guide/">Client Credentials Authorisation Flow</a>. This means none of your personal data ever actually leaves your browser.
 
 
 

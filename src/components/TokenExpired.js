@@ -1,14 +1,9 @@
-import React from 'react'
-import Button from '@material-ui/core/Button'
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import { scopes } from '../utils/CommonVariables';
 
 
 const AuthError = () => {
-    const scopes = [
-        'user-read-private',
-        'playlist-read-private',
-        'user-library-read',
-        'user-top-read'
-    ];
 
     return (
         <div>
@@ -28,6 +23,6 @@ const AuthError = () => {
             </a>
         </div>
     )
-}
+};
 
-export default AuthError
+export default AuthError;

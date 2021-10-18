@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './stylesheets/index.css';
+import './stylesheets/index.scss';
+import './stylesheets/pages.scss';
+import './stylesheets/components.scss';
+
 import App from './App';
 import dotenv from 'dotenv';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -26,7 +29,7 @@ const theme = createMuiTheme({
 dotenv.config();
 ReactDOM.render(
     <ThemeProvider theme={theme}>
-        <CssBaseline/>
+        <CssBaseline />
         <App />
     </ThemeProvider>,
     document.getElementById('root')

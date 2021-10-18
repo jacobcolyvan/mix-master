@@ -1,93 +1,11 @@
 import React from 'react';
-
 import Info from '../components/Info';
-import styled from 'styled-components';
-
 import CamelotWheel from '../media/camelot-wheel.jpg';
-
-const AboutMainDiv = styled.div`
-  p, li {
-    font-size: 0.85rem;
-  }
-
-  li span {
-    font-style: italic;
-  }
-
-  .camelot-info {
-    hr {
-      margin-top: 40px;
-    }
-
-    h3 {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-
-    p {
-      margin-top: 6px;
-    }
-
-    img {
-      display: block;
-      margin: 40px 0 48px 0;
-      margin-left: auto;
-      margin-right: auto;
-      width: 400px;
-      max-width: 100%;
-    }
-
-    .info-header {
-      margin-bottom: 8px;
-      margin-top: px;
-    }
-
-    .info-points {
-      margin: 0;
-      margin-left: 1rem;
-
-      span {
-        font-style: italic;
-      }
-    }
-
-
-    .links-header {
-      margin-bottom: 4px;
-      text-decoration: underline;
-    }
-    .links {
-      margin: 0;
-      color: #7986cb;
-    }
-  }
-
-  .afterword {
-    hr {
-      margin-top: 64px;
-    }
-    p {
-      margin: 0;
-    }
-
-    br {
-      margin-bottom: 16px;
-    }
-    #links-header {
-      margin-bottom: 4px;
-    }
-    .links{
-      margin: 0;
-    }
-  }
-`
-
 
 const About = () => {
   return (
-    <AboutMainDiv>
+    <div className="about-page__div">
       <Info />
-
 
       <p>Note that all info comes from Spotify, and may not always be 100% accurate.</p>
       <ul>
@@ -97,7 +15,7 @@ const About = () => {
       </ul>
 
       <div className="camelot-info">
-        <hr/>
+        <hr />
         <h3>Camelot Key/Wheel</h3>
         <p>
           This site uses the <i>Camelot</i> key system, which is an alternative tool to the circle of fifths for understanding how keys work together harmonically.
@@ -121,12 +39,12 @@ const About = () => {
           <li>– Those tracks with similar BPM/Tempo are going to sound more natural when mixed close to one another.</li>
         </ul>
 
-        <br/>
+        <br />
         <p className="links-header">Some links for more info: </p>
         <p className="links"><a target="_blank" rel="noopener noreferrer" href="https://mixedinkey.com/harmonic-mixing-guide/">
           https://mixedinkey.com/harmonic-mixing-guide/
         </a></p>
-        <p className="links"><a target="_blank" rel="noopener noreferrer"href="http://www.harmonic-mixing.com/howto.aspx">
+        <p className="links"><a target="_blank" rel="noopener noreferrer" href="http://www.harmonic-mixing.com/howto.aspx">
           http://www.harmonic-mixing.com/howto.aspx
         </a></p>
       </div>
@@ -137,16 +55,16 @@ const About = () => {
         <p className="links"><a target="_blank" rel="noopener noreferrer" href="https://spotify-metadata.netlify.app/">
           Spotify Metadata
         </a>, a site for exploring your listening habits, and</p>
-        <p className="links"><a target="_blank" rel="noopener noreferrer"href="https://seed-playlists.netlify.app/">
+        <p className="links"><a target="_blank" rel="noopener noreferrer" href="https://seed-playlists.netlify.app/">
           Seed Playlists
         </a>, a site for building your own daily mixes/playlists.</p>
 
-        <br/>
+        <br />
 
         <p className="afterword"><i>Good times ahead.</i></p>
         <p className="afterword"><i>Enjoy!</i></p>
       </ div>
-    </AboutMainDiv>
+    </div>
   )
 };
 

@@ -1,25 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import styled from 'styled-components';
-
+import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-
-const RecTweaksInputDiv = styled.div`
-    .rec-tweaks__radio-group {
-        margin-top: 2rem;
-
-        .MuiTypography-root {
-            font-size: 1.1em;
-        }
-    }
-
-    .rec-tweaks__textfield {
-        margin-top: 0.8rem;
-        color: white;
-    }
-`
 
 
 const RecTweaksInput = ({
@@ -47,10 +30,10 @@ const RecTweaksInput = ({
     }
 
     const searchOnEnter = (event) => {
-        if(event.key === 'Enter'){
+        if (event.key === 'Enter') {
             getTracks(recommendedTrack)
         }
-      }
+    }
 
     useEffect(() => {
         const validateInput = () => {
@@ -80,7 +63,7 @@ const RecTweaksInput = ({
 
 
     return (
-        <RecTweaksInputDiv>
+        <div className="rec-tweaks-input__div">
             <RadioGroup
                 aria-label="maxOrMinValueGroup"
                 className="rec-tweaks__radio-group"
@@ -116,7 +99,7 @@ const RecTweaksInput = ({
                 error={error}
                 helperText={error ? "Invalid range value" : false}
             />
-        </RecTweaksInputDiv>
+        </div>
     );
 };
 

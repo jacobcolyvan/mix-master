@@ -1,23 +1,12 @@
 import React, {useState, useContext, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
 import SearchOptions from '../components/SearchOptions';
 import SearchResults from '../components/SearchResults';
 import Loading from '../components/Loading';
-
-
-const SearchTitle = styled.h1`
-  text-decoration: underline;
-  font-style: italic;
-`;
-
-const ResultsBreak = styled.hr`
-  margin: 2rem 0;
-`
 
 
 const Search = () => {
@@ -244,7 +233,7 @@ const Search = () => {
         setCurrentSearchResults(true);
         setSearching(false)
       } catch (err) {
-        if (err.response.status === 401) setAuthError(true);
+        if (err.response?.status === 401) setAuthError(true);
         console.log(err.message);
       }
     }
@@ -261,7 +250,7 @@ const Search = () => {
 
   return (
     <div>
-      <SearchTitle>Search</SearchTitle>
+      <h1 className="search-page-title">Search</h1>
       <SearchOptions
         getResults={getResults}
         updateUrl={updateUrl}
@@ -272,7 +261,7 @@ const Search = () => {
 
       {currentSearchResults && (
         <div>
-          <ResultsBreak/>
+          <hr className="search-page-results__hr"/>
           <SearchResults
             handleResultsChange={handleResultsChange}
             searchResultValues={searchResultValues}
