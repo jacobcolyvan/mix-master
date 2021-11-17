@@ -1,242 +1,239 @@
-@import "./variables";
-
+@import './variables';
 
 .main-div {
-    margin: 24px 0;
-    padding: 0;
+  margin: 24px 0;
+  padding: 0;
 
-    @media screen and (max-width: 1200px) {
-        padding: 0 0.5rem;
-    }
+  @media screen and (max-width: 1200px) {
+    padding: 0 0.5rem;
+  }
 
-    .main-div__inner {
-        border: 1px solid $border-colour;
-        border-radius: 0 0 4px 4px;
-    }
-    .main-content__div {
-        padding: 8px 10px 2rem 10px;
-    }
+  .main-div__inner {
+    border: 1px solid $border-colour;
+    border-radius: 0 0 4px 4px;
+  }
+  .main-content__div {
+    padding: 8px 10px 2rem 10px;
+  }
 }
 
 // about page
 .about-page__div {
-    p, li {
-        font-size: 0.85rem;
-    }
+  p,
+  li {
+    font-size: 0.85rem;
+  }
 
-    li span {
-        font-style: italic;
-    }
-
-    .camelot-info {
-        hr {
-            margin-top: 40px;
-        }
-
-        h3 {
-            margin-top: 0;
-            margin-bottom: 0;
-        }
-
-        p {
-            margin-top: 6px;
-        }
-
-        img {
-            display: block;
-            margin: 40px 0 48px 0;
-            margin-left: auto;
-            margin-right: auto;
-            width: 400px;
-            max-width: 100%;
-            border: 1px solid $border-colour;
-        }
-
-        .info-header {
-            margin-bottom: 8px;
-            margin-top: px;
-        }
-
-        .info-points {
-            margin: 0;
-            margin-left: 1rem;
-
-            span {
-                font-style: italic;
-            }
-        }
-
-
-        .links-header {
-            margin-bottom: 4px;
-            text-decoration: underline;
-        }
-        .links {
-            margin: 0;
-            color: $link-colour1;
-        }
-    }
-
-    .afterword {
-        hr {
-            margin-top: 64px;
-        }
-        p {
-            margin: 0;
-        }
-
-        br {
-            margin-bottom: 16px;
-        }
-        .links-header {
-            margin-bottom: 4px;
-        }
-        .links{
-            margin: 0;
-        }
-    }
-}
-
-
-// single playlist page
-.playlist-page-description {
-    span, a {
-        color: $link-colour1;
-        cursor: pointer;
-    }
-}
-
-
-// recommended tracks page
-.recommended-page-title {
-    text-decoration: underline;
+  li span {
     font-style: italic;
-}
+  }
 
-.recommended-track__div {
-    p {
-        margin-bottom: 0;
-        font-style: italic;
-    }
-
-    table {
-        margin-top: 12px;
-        width: 100%;
-        padding: 0;
-
-        border-collapse: collapse;
-
-        tr  {
-            width: 100%;
-            margin: 0;
-
-            td {
-                margin: 0;
-            }
-
-            .table-data__name {
-                text-align: left;
-                width: 100%;
-
-                display: flex;
-                justify-content: space-between;
-
-                .table_data__artist-name {
-                    font-style: italic;
-                }
-            }
-
-            .table-data__name-hover:hover {
-                cursor: pointer;
-                background-color: 	$border-colour;
-                * {
-                    background-color: 	$border-colour;
-                }
-            }
-
-            .table-data__attributes {
-                text-align: center;
-                width: 10%;
-            }
-        }
-
-        td, th  {
-            border: 1px solid $border-colour;
-            padding: 10px 4px;
-            margin: 0;
-        }
-
-        @media screen and (max-width: 600px) {
-            .table-data__attributes-energy {
-                display: none;
-            }
-
-            .table-data__attributes {
-                width: 15%;
-            }
-        }
-
-        @media screen and (max-width: 400px) {
-            .table-data__name__tooltip {
-                display: none;
-            }
-        }
-    }
-}
-
-.recommended-tooltip__ul {
-    li {
-        margin: 6px 0;
-        display: flex;
-        justify-content: space-between;
-
-        span:first-child {
-            font-style: italic;
-        }
-        span:last-child {
-            margin-left: 4rem;
-        }
-    }
-
-    .table-date__tooltip-genres {
-        padding-bottom: 1rem;
-        line-height: 1.1;
-    }
-}
-
-
-// search page
-.search-page-title {
-    text-decoration: underline;
-    font-style: italic;
-}
-
-.search-page-results__hr {
-    margin: 2rem 0;
-}
-
-
-// playlists page
-.playlists-title__div {
-    text-decoration: underline;
-
-    h2 {
-      font-style: italic;
+  .camelot-info {
+    hr {
+      margin-top: 40px;
     }
 
     h3 {
-      padding-top: 24px;
+      margin-top: 0;
+      margin-bottom: 0;
     }
+
+    p {
+      margin-top: 6px;
+    }
+
+    img {
+      display: block;
+      margin: 40px 0 48px 0;
+      margin-left: auto;
+      margin-right: auto;
+      width: 400px;
+      max-width: 100%;
+      border: 1px solid $border-colour;
+    }
+
+    .info-header {
+      margin-bottom: 8px;
+      margin-top: px;
+    }
+
+    .info-points {
+      margin: 0;
+      margin-left: 1rem;
+
+      span {
+        font-style: italic;
+      }
+    }
+
+    .links-header {
+      margin-bottom: 4px;
+      text-decoration: underline;
+    }
+    .links {
+      margin: 0;
+      color: $link-colour1;
+    }
+  }
+
+  .afterword {
+    hr {
+      margin-top: 64px;
+    }
+    p {
+      margin: 0;
+    }
+
+    br {
+      margin-bottom: 16px;
+    }
+    .links-header {
+      margin-bottom: 4px;
+    }
+    .links {
+      margin: 0;
+    }
+  }
+}
+
+// single playlist page
+.playlist-page-description {
+  span,
+  a {
+    color: $link-colour1;
+    cursor: pointer;
+  }
+}
+
+// recommended tracks page
+.recommended-page-title {
+  text-decoration: underline;
+  font-style: italic;
+}
+
+.recommended-track__div {
+  p {
+    margin-bottom: 0;
+    font-style: italic;
+  }
+
+  table {
+    margin-top: 12px;
+    width: 100%;
+    padding: 0;
+
+    border-collapse: collapse;
+
+    tr {
+      width: 100%;
+      margin: 0;
+
+      td {
+        margin: 0;
+      }
+
+      .table-data__name {
+        text-align: left;
+        width: 100%;
+
+        display: flex;
+        justify-content: space-between;
+
+        .table_data__artist-name {
+          font-style: italic;
+        }
+      }
+
+      .table-data__name-hover:hover {
+        cursor: pointer;
+        background-color: $border-colour;
+        * {
+          background-color: $border-colour;
+        }
+      }
+
+      .table-data__attributes {
+        text-align: center;
+        width: 10%;
+      }
+    }
+
+    td,
+    th {
+      border: 1px solid $border-colour;
+      padding: 10px 4px;
+      margin: 0;
+    }
+
+    @media screen and (max-width: 600px) {
+      .table-data__attributes-energy {
+        display: none;
+      }
+
+      .table-data__attributes {
+        width: 15%;
+      }
+    }
+
+    @media screen and (max-width: 400px) {
+      .table-data__name__tooltip {
+        display: none;
+      }
+    }
+  }
+}
+
+.recommended-tooltip__ul {
+  li {
+    margin: 6px 0;
+    display: flex;
+    justify-content: space-between;
+
+    span:first-child {
+      font-style: italic;
+    }
+    span:last-child {
+      margin-left: 4rem;
+    }
+  }
+
+  .table-date__tooltip-genres {
+    padding-bottom: 1rem;
+    line-height: 1.1;
+  }
+}
+
+// search page
+.search-page-title {
+  text-decoration: underline;
+  font-style: italic;
+}
+
+.search-page-results__hr {
+  margin: 2rem 0;
+}
+
+// playlists page
+.playlists-title__div {
+  text-decoration: underline;
+
+  h2 {
+    font-style: italic;
+  }
+
+  h3 {
+    padding-top: 24px;
+  }
 }
 
 .playlists-info__div {
-    margin-bottom: 24px;
-    p {
-      margin-top: 0;
-      margin-bottom: 8px;
-    }
+  margin-bottom: 24px;
+  p {
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
 
-    a {
-      color: $link-colour2;
-    }
+  a {
+    color: $link-colour2;
+  }
 }

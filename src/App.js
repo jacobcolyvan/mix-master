@@ -3,20 +3,19 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect
+  Redirect,
 } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 
 import UserContext from './context/UserContext';
-import Navbar from './components/Navbar'
-import TokenExpired from './components/TokenExpired'
+import Navbar from './components/Navbar';
+import TokenExpired from './components/TokenExpired';
 import SpotifyAuth from './pages/SpotifyAuth';
 import UserPlaylists from './pages/UserPlaylists';
 import Playlist from './pages/Playlist';
 import About from './pages/About';
 import Search from './pages/Search';
 import RecommendedTracks from './pages/RecommendedTracks';
-
 
 function App() {
   const [token, setToken] = useState(false);
@@ -28,16 +27,16 @@ function App() {
   const [lastClickedTrack, setLastClickedTrack] = useState(false);
   const [authError, setAuthError] = useState(false);
   const [seedParams, setSeedParams] = useState({
-    "tempo": false,
-    "energy": false,
-    "duration": false,
-    "popularity": false,
-    "intrumentalness": false,
-    "valence": false,
-    "danceability": false,
-    "liveness": false,
-    "speechiness": false,
-    "acousticness": false,
+    tempo: false,
+    energy: false,
+    duration: false,
+    popularity: false,
+    intrumentalness: false,
+    valence: false,
+    danceability: false,
+    liveness: false,
+    speechiness: false,
+    acousticness: false,
   });
   const [matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey] = useState(true);
 
@@ -62,90 +61,92 @@ function App() {
     setLastClickedTrack(false);
     // setSeedParams()
     resetRecommended && setRecommendedTrack(false);
-  }
+  };
 
   const pushPlaylistToState = (history, playlist) => {
     resetStates();
-    history.push({
-      pathname: '/playlist',
-      search: `?id=${playlist.id}`
-    },
+    history.push(
+      {
+        pathname: '/playlist',
+        search: `?id=${playlist.id}`,
+      },
       {
         playlist: playlist,
         // tracks: tracks,
         // sortedTracks: sortedTracks
-      })
-  }
-
+      }
+    );
+  };
 
   return (
     <div>
       <Router>
-        <UserContext.Provider value={{
-          token,
-          setToken,
-          playlists,
-          setPlaylists,
-          tracks,
-          setTracks,
-          sortedTracks,
-          setSortedTracks,
-          username,
-          setUsername,
-          resetStates,
-          recommendedTrack,
-          setRecommendedTrack,
-          lastClickedTrack,
-          setLastClickedTrack,
-          searchOptionValues,
-          setSearchOptionValues,
-          searchResultValues,
-          setSearchResultValues,
-          pushPlaylistToState,
-          setAuthError,
-          seedParams,
-          setSeedParams,
-          matchRecsToSeedTrackKey,
-          setMatchRecsToSeedTrackKey,
-        }}
+        <UserContext.Provider
+          value={{
+            token,
+            setToken,
+            playlists,
+            setPlaylists,
+            tracks,
+            setTracks,
+            sortedTracks,
+            setSortedTracks,
+            username,
+            setUsername,
+            resetStates,
+            recommendedTrack,
+            setRecommendedTrack,
+            lastClickedTrack,
+            setLastClickedTrack,
+            searchOptionValues,
+            setSearchOptionValues,
+            searchResultValues,
+            setSearchResultValues,
+            pushPlaylistToState,
+            setAuthError,
+            seedParams,
+            setSeedParams,
+            matchRecsToSeedTrackKey,
+            setMatchRecsToSeedTrackKey,
+          }}
         >
-          <Container maxWidth='lg' className="main-div" id='main'>
+          <Container maxWidth="lg" className="main-div" id="main">
             <Navbar resetStates={resetStates} authError />
-            <div className='main-div__inner'>
+            <div className="main-div__inner">
               <>
                 <Switch>
                   <div className="main-content__div">
                     {!token ? (
                       <Route
-                        exact path='/'
+                        exact
+                        path="/"
                         render={(props) => (
-                          <SpotifyAuth
-                            location={props.location}
-                          />
+                          <SpotifyAuth location={props.location} />
                         )}
                       />
+                    ) : !authError ? (
+                      <>
+                        <Route exact path="/" component={UserPlaylists} />
+                        <Route exact path="/about" component={About} />
+                        <Route path="/search" component={Search} />
+                        <Route path="/playlist" component={Playlist} />
+                        <Route
+                          path="/recommended"
+                          component={RecommendedTracks}
+                        />
+                      </>
                     ) : (
-
-                      !authError ? (
-
-                        <>
-                          <Route exact path='/' component={UserPlaylists} />
-                          <Route exact path='/about' component={About} />
-                          <Route path='/search' component={Search} />
-                          <Route path='/playlist' component={Playlist} />
-                          <Route path='/recommended' component={RecommendedTracks} />
-                        </>
-
-                      ) : (
-                        <TokenExpired />
-                      )
+                      <TokenExpired />
                     )}
 
-                    <Redirect to='/' />
+                    <Redirect to="/" />
                   </div>
                 </Switch>
                 {/* Tab to the bottom of the page */}
-                <div tabIndex="0" style={{ display: "block", margin: "0", padding: "0" }} />
+                <div
+                  tabIndex="0"
+                  style={{ display: 'block', margin: '0', padding: '0' }}
+                />
               </>
             </div>
           </Container>

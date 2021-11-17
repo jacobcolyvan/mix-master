@@ -10,27 +10,26 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 const theme = createMuiTheme({
-    palette: {
-        type: 'dark',
-        background: {
-            default: "#1E2327"
-        },
-        text: {
-            primary: "#C1CFDE",
-            secondary: "#C1CFDE",
-        },
-        primary: {
-            main: '#7986CB',
-        },
+  palette: {
+    type: 'dark',
+    background: {
+      default: '#1E2327',
     },
+    text: {
+      primary: '#C1CFDE',
+      secondary: '#C1CFDE',
+    },
+    primary: {
+      main: '#7986CB',
+    },
+  },
 });
-
 
 dotenv.config();
 ReactDOM.render(
-    <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-    </ThemeProvider>,
-    document.getElementById('root')
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <App />
+  </ThemeProvider>,
+  document.getElementById('root')
 );

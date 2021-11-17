@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import UserContext from '../context/UserContext';
 
-
 const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
   const history = useHistory();
   const { pushPlaylistToState } = useContext(UserContext);
@@ -11,22 +10,21 @@ const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
     pushPlaylistToState(history, playlist);
 
     // Playlist Search display cleaning
-    showOnlyPlaylistTracks && showOnlyPlaylistTracks()
-  }
-
+    showOnlyPlaylistTracks && showOnlyPlaylistTracks();
+  };
 
   return (
     <ul>
       {playlistsToRender.map((playlist, index) => (
         <li
-          className='playlist-list__li'
+          className="playlist-list__li"
           key={`track${index}`}
           onClick={() => {
-            addPlaylistQuery(playlist)
+            addPlaylistQuery(playlist);
           }}
         >
           <div>
-            <div className='playlist-name'>{playlist.name}</div>
+            <div className="playlist-name">{playlist.name}</div>
             {playlist.images[0] && (
               <img
                 src={playlist.images[0].url}
@@ -39,7 +37,7 @@ const PlaylistItems = ({ playlistsToRender, showOnlyPlaylistTracks }) => {
         </li>
       ))}
     </ul>
-  )
+  );
 };
 
 export default PlaylistItems;

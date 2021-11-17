@@ -1,287 +1,282 @@
-@import "./variables";
+@import './variables';
 
 .playlist-page-title,
 .album-page-title,
 .results-page-title {
-    text-decoration: underline;
-    font-style: italic;
+  text-decoration: underline;
+  font-style: italic;
 }
 
 .album-list__li,
 .playlist-list__li {
+  border: 1px solid $border-colour;
+  border-radius: 2px;
+  padding: 10px 4px;
+
+  &:hover {
+    color: $text-hover-colour;
+    cursor: pointer;
+  }
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .playlist-name {
+    padding-left: 4px;
+  }
+
+  img {
     border: 1px solid $border-colour;
-    border-radius: 2px;
-    padding: 10px 4px;
-
-    &:hover {
-        color: $text-hover-colour;
-        cursor: pointer;
-    }
-
-    div {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .playlist-name {
-        padding-left: 4px;
-    }
-
-    img {
-        border: 1px solid $border-colour;
-    }
+  }
 }
 
 .info-container {
-    width: 100%;
-    margin-bottom: 2rem;
+  width: 100%;
+  margin-bottom: 2rem;
 
-    li {
-        font-size: 0.85rem;
-    }
+  li {
+    font-size: 0.85rem;
+  }
 
+  .info-header {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    margin-top: 16px;
+  }
 
-    .info-header {
-        font-style: italic;
-        margin-bottom: 0.5rem;
-        margin-top: 16px;
-    }
-
-    .info-points {
-        margin: 0;
-        margin-left: 1rem;
-    }
-
+  .info-points {
+    margin: 0;
+    margin-left: 1rem;
+  }
 }
 
 .key-select__div {
-    margin-bottom: 6px;
+  margin-bottom: 6px;
 }
 
 .loading-animation__div {
-    width: 100%;
-    margin: 3rem 0 2rem 0;
+  width: 100%;
+  margin: 3rem 0 2rem 0;
 }
 
 .navbar {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    border: 1px solid $border-colour;
-    border-radius: 4px 4px 0 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid $border-colour;
+  border-radius: 4px 4px 0 0;
 
-    h1 {
-        margin-left: 8px;
-        text-decoration: underline;
+  h1 {
+    margin-left: 8px;
+    text-decoration: underline;
 
-        &:hover {
-            cursor: pointer;
-        }
+    &:hover {
+      cursor: pointer;
     }
+  }
 
-    .nav-buttons {
-        width: 25%;
-    }
+  .nav-buttons {
+    width: 25%;
+  }
 
-    .nav-button {
-        height: 50%;
-        font-size: 1em;
-        font-style: italic !important
-    }
+  .nav-button {
+    height: 50%;
+    font-size: 1em;
+    font-style: italic !important;
+  }
 }
 
 .rec-tweaks__div {
-    margin: 2rem 0;
-    border: 1px solid $border-colour;
+  margin: 2rem 0;
+  border: 1px solid $border-colour;
 
-    .rec-tweaks__tabs {
-        border-top: 1px solid $border-colour;
-        border-bottom: 1px solid $border-colour;
+  .rec-tweaks__tabs {
+    border-top: 1px solid $border-colour;
+    border-bottom: 1px solid $border-colour;
+  }
+
+  .rec-tweaks__tab {
+    font-size: 0.85rem;
+    text-transform: capitalize;
+  }
+
+  .rec-tweaks__tab-input {
+    margin: 1rem;
+  }
+
+  .match-key__switch {
+    margin: 0 4px 0.4rem 4px;
+
+    span:last-child {
+      font-size: 1em;
+      padding-left: 0.75rem;
+    }
+  }
+
+  .rec-tweaks__button {
+    font-size: 0.85rem;
+    margin: 0.6rem 1rem 2rem 1rem;
+  }
+
+  h4 {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    font-style: italic;
+  }
+
+  .currently-selected-params-div {
+    margin: 0 1rem 2rem 1rem;
+
+    label:first-child {
+      font-style: italic;
     }
 
-    .rec-tweaks__tab {
-        font-size: 0.85rem;
+    ul {
+      padding-left: 1rem;
+
+      li {
+        font-size: 1em;
         text-transform: capitalize;
+      }
     }
-
-    .rec-tweaks__tab-input {
-        margin: 1rem;
-    }
-
-    .match-key__switch {
-        margin: 0 4px 0.4rem 4px;
-
-        span:last-child {
-            font-size: 1em;
-            padding-left: 0.75rem;
-        }
-    }
-
-    .rec-tweaks__button {
-        font-size: 0.85rem;
-        margin: 0.6rem 1rem 2rem 1rem;
-    }
-
-    h4 {
-        margin-left: 0.5rem;
-        margin-right: 0.5rem;
-        font-style: italic;
-    }
-
-    .currently-selected-params-div {
-        margin: 0 1rem 2rem 1rem;
-
-        label:first-child {
-            font-style: italic;
-        }
-
-        ul {
-            padding-left: 1rem;
-
-            li {
-                font-size: 1em;
-                text-transform: capitalize;
-            }
-        }
-    }
+  }
 }
 
 .rec-tweaks-input__div {
-    .rec-tweaks__radio-group {
-        margin-top: 2rem;
+  .rec-tweaks__radio-group {
+    margin-top: 2rem;
 
-        .MuiTypography-root {
-            font-size: 1.1em;
-        }
+    .MuiTypography-root {
+      font-size: 1.1em;
     }
+  }
 
-    .rec-tweaks__textfield {
-        margin-top: 0.8rem;
-        color: white;
-    }
+  .rec-tweaks__textfield {
+    margin-top: 0.8rem;
+    color: white;
+  }
 }
 
 .searchbar-textfield {
-    flex: 1;
-    margin: '4px 20px 0 0';
-    color: 'white';
+  flex: 1;
+  margin: '4px 20px 0 0';
+  color: 'white';
 }
-
 
 .search-options__div {
-    .searchbar__div {
-        margin-top: 24px;
-        padding-left: 4px;
-        padding-right: 4px;
+  .searchbar__div {
+    margin-top: 24px;
+    padding-left: 4px;
+    padding-right: 4px;
 
-        div {
-            margin-bottom: 12px;
-        }
+    div {
+      margin-bottom: 12px;
     }
+  }
 
-    .searchbar-button__div {
-        margin-top: 48px;
-    }
+  .searchbar-button__div {
+    margin-top: 48px;
+  }
 }
 
-
 .tracks-table {
+  width: 100%;
+  padding: 0;
+  margin-top: 2rem;
+
+  border-collapse: collapse;
+
+  td,
+  th {
+    border-left: 1px solid $border-colour;
+    padding: 10px 4px;
+    margin: 0;
+  }
+
+  tr {
     width: 100%;
-    padding: 0;
-    margin-top: 2rem;
+    margin: 0;
+    border: 1px solid $border-colour;
 
-    border-collapse: collapse;
-
-    td, th  {
-        border-left: 1px solid $border-colour;
-        padding: 10px 4px;
-        margin: 0;
+    td {
+      margin: 0;
     }
 
-    tr {
-        width: 100%;
-        margin: 0;
-        border: 1px solid $border-colour;
+    .table-data__name {
+      text-align: left;
+      width: 100%;
+      border-left: none;
 
-        td {
-            margin: 0;
-        }
+      display: flex;
+      justify-content: space-between;
 
-        .table-data__name {
-            text-align: left;
-            width: 100%;
-            border-left: none;
-
-            display: flex;
-            justify-content: space-between;
-
-            .table_data__artist-name {
-                font-style: italic;
-            }
-        }
-
-        .table-data__name-hover:hover {
-            cursor: pointer;
-            background-color: 	$border-colour;
-            * {
-                background-color: 	$border-colour;
-            }
-        }
-
-        .table-data__attributes {
-            text-align: center;
-            width: 10%;
-        }
+      .table_data__artist-name {
+        font-style: italic;
+      }
     }
 
-
-
-    .key-data:hover {
-        cursor: alias;
+    .table-data__name-hover:hover {
+      cursor: pointer;
+      background-color: $border-colour;
+      * {
+        background-color: $border-colour;
+      }
     }
 
-    .currently-selected {
-        background-color: 	$selected-colour;
+    .table-data__attributes {
+      text-align: center;
+      width: 10%;
+    }
+  }
 
-        * {
-            background-color: 	$selected-colour;
-        }
+  .key-data:hover {
+    cursor: alias;
+  }
+
+  .currently-selected {
+    background-color: $selected-colour;
+
+    * {
+      background-color: $selected-colour;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .table-data__attributes-energy {
+      display: none;
     }
 
-    @media screen and (max-width: 600px) {
-        .table-data__attributes-energy {
-            display: none;
-        }
-
-        .table-data__attributes {
-            width: 15%;
-        }
+    .table-data__attributes {
+      width: 15%;
     }
+  }
 
-    @media screen and (max-width: 400px) {
-        .table-data__name__tooltip {
-            display: none;
-        }
+  @media screen and (max-width: 400px) {
+    .table-data__name__tooltip {
+      display: none;
     }
+  }
 }
 
 .tooltip-ul {
-    li {
-        margin: 6px 0;
-        display: flex;
-        justify-content: space-between;
+  li {
+    margin: 6px 0;
+    display: flex;
+    justify-content: space-between;
 
-        span:first-child {
-            font-style: italic;
-        }
-        span:last-child {
-            margin-left: 4rem;
-        }
+    span:first-child {
+      font-style: italic;
     }
+    span:last-child {
+      margin-left: 4rem;
+    }
+  }
 
-    .table-date__tooltip-genres {
-        padding-bottom: 1rem;
-        line-height: 1.1;
-    }
+  .table-date__tooltip-genres {
+    padding-bottom: 1rem;
+    line-height: 1.1;
+  }
 }

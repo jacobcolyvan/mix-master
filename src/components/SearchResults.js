@@ -7,14 +7,13 @@ import PlaylistList from './PlaylistList';
 import SortBy from './SortBy';
 import KeySelect from './KeySelect';
 
-
 const SearchResults = ({
   handleResultsChange,
   showOnlyPlaylistTracks,
   searchResultValues,
   updateUrl,
   albumName,
-  setAlbumName
+  setAlbumName,
 }) => {
   const { tracks, playlist } = useContext(UserContext);
   const [sortOption, setSortOption] = useState('default');
@@ -22,7 +21,7 @@ const SearchResults = ({
 
   return (
     <div>
-      {(searchResultValues.albums && !searchResultValues.tracks) && (
+      {searchResultValues.albums && !searchResultValues.tracks && (
         <Albums
           albums={searchResultValues.albums}
           handleResultsChange={handleResultsChange}
@@ -31,9 +30,9 @@ const SearchResults = ({
         />
       )}
 
-      {(!playlist && !searchResultValues.playlistSearchResults && tracks) && (
+      {!playlist && !searchResultValues.playlistSearchResults && tracks && (
         <>
-          {(albumName) ? (
+          {albumName ? (
             <h3 className="results-page-title">{albumName}</h3>
           ) : (
             <h3 className="results-page-title">Track Results</h3>
@@ -43,10 +42,7 @@ const SearchResults = ({
           <SortBy sortOption={sortOption} setSortOption={setSortOption} />
           <br />
 
-          <Tracks
-            sortOption={sortOption}
-            keyOption={keyOption}
-          />
+          <Tracks sortOption={sortOption} keyOption={keyOption} />
         </>
       )}
 
@@ -59,9 +55,8 @@ const SearchResults = ({
           />
         </>
       )}
-
     </div>
-  )
+  );
 };
 
 export default SearchResults;

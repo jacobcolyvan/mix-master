@@ -4,91 +4,88 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import SearchBar from '../components/SearchBar';
 
-
 const SearchOptions = ({
   getResults,
   handleOptionsChange,
-  searchOptionValues
+  searchOptionValues,
 }) => {
-
   const createSearchBars = () => {
     let searchBars;
-    if (searchOptionValues.searchType === "playlist") {
-      searchBars =
+    if (searchOptionValues.searchType === 'playlist') {
+      searchBars = (
         <SearchBar
-          label={"playlist name"}
+          label={'playlist name'}
           setParam={handleOptionsChange}
           param={searchOptionValues.playlistSearchQuery}
-          paramName={"playlistSearchQuery"}
+          paramName={'playlistSearchQuery'}
           getResults={getResults}
         />
+      );
     } else {
-      searchBars =
+      searchBars = (
         <div>
           <SearchBar
-            label={"artist"}
+            label={'artist'}
             setParam={handleOptionsChange}
             param={searchOptionValues.artist}
-            paramName={"artist"}
+            paramName={'artist'}
             getResults={getResults}
           />
 
-          {searchOptionValues.searchType === "album" ? (
+          {searchOptionValues.searchType === 'album' ? (
             <SearchBar
-              label={"album name"}
+              label={'album name'}
               setParam={handleOptionsChange}
-              paramName={"albumSearchQuery"}
+              paramName={'albumSearchQuery'}
               param={searchOptionValues.albumSearchQuery}
               getResults={getResults}
             />
           ) : (
             <SearchBar
-              label={"track name"}
+              label={'track name'}
               setParam={handleOptionsChange}
               param={searchOptionValues.trackSearchQuery}
-              paramName={"trackSearchQuery"}
+              paramName={'trackSearchQuery'}
               getResults={getResults}
             />
           )}
         </div>
+      );
     }
 
     return searchBars;
-  }
-
+  };
 
   return (
     <div className="search-options__div">
       <Select
-        labelId='Search Type'
-        id='search-type'
+        labelId="Search Type"
+        id="search-type"
         value={searchOptionValues.searchType}
-        onChange={(e) => handleOptionsChange("searchType", e.target.value)}
+        onChange={(e) => handleOptionsChange('searchType', e.target.value)}
         fullWidth
-        variant='outlined'
+        variant="outlined"
       >
         <MenuItem value={'track'}>Tracks</MenuItem>
         <MenuItem value={'album'}>Albums</MenuItem>
         <MenuItem value={'playlist'}>Playlists</MenuItem>
       </Select>
 
-      <div className="searchbar__div">
-        {createSearchBars()}
-      </div>
+      <div className="searchbar__div">{createSearchBars()}</div>
 
       <div className="search-button__div">
         <Button
-          variant='outlined'
-          color='primary'
+          variant="outlined"
+          color="primary"
           onClick={getResults}
           className="button"
           fullWidth
         >
           Search
-        </ Button>
+        </Button>
       </div>
     </div>
-  )
+  );
 };
 
 export default SearchOptions;

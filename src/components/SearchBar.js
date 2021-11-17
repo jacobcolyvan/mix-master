@@ -1,13 +1,10 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 
-
 const SearchBar = ({ label, param, paramName, setParam, getResults }) => {
-
   const searchOnEnter = (e) => {
-    if (e.key === "Enter") getResults();
+    if (e.key === 'Enter') getResults();
   };
-
 
   return (
     <>
@@ -22,6 +19,5 @@ const SearchBar = ({ label, param, paramName, setParam, getResults }) => {
     </>
   );
 };
-
 
 export default SearchBar;
