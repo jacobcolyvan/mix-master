@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './stylesheets/index.scss';
+import './stylesheets/global.scss';
 import './stylesheets/pages.scss';
 import './stylesheets/components.scss';
 
@@ -16,11 +16,11 @@ const theme = createMuiTheme({
             default: "#1E2327"
         },
         text: {
-            primary: "#c1cfde",
-            secondary: "#c1cfde",
+            primary: "#C1CFDE",
+            secondary: "#C1CFDE",
         },
         primary: {
-            main: '#7986cb',
+            main: '#7986CB',
         },
     },
 });

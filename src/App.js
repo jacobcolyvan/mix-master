@@ -19,15 +19,15 @@ import RecommendedTracks from './pages/RecommendedTracks';
 
 
 function App() {
-  const [ token, setToken ] = useState(false);
-  const [ playlists, setPlaylists] = useState([]);
-  const [ tracks, setTracks ] = useState(false);
-  const [ sortedTracks, setSortedTracks ] = useState(false);
-  const [ username, setUsername ] = useState(false);
-  const [ recommendedTrack, setRecommendedTrack ] = useState(false);
-  const [ lastClickedTrack, setLastClickedTrack ] = useState(false);
-  const [ authError, setAuthError ] = useState(false);
-  const [ seedParams, setSeedParams ] = useState({
+  const [token, setToken] = useState(false);
+  const [playlists, setPlaylists] = useState([]);
+  const [tracks, setTracks] = useState(false);
+  const [sortedTracks, setSortedTracks] = useState(false);
+  const [username, setUsername] = useState(false);
+  const [recommendedTrack, setRecommendedTrack] = useState(false);
+  const [lastClickedTrack, setLastClickedTrack] = useState(false);
+  const [authError, setAuthError] = useState(false);
+  const [seedParams, setSeedParams] = useState({
     "tempo": false,
     "energy": false,
     "duration": false,
@@ -39,9 +39,9 @@ function App() {
     "speechiness": false,
     "acousticness": false,
   });
-  const [ matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey ] = useState(true);
+  const [matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey] = useState(true);
 
-  const [ searchOptionValues, setSearchOptionValues ] = useState({
+  const [searchOptionValues, setSearchOptionValues] = useState({
     albumSearchQuery: '',
     artist: '',
     playlistSearchQuery: '',
@@ -49,13 +49,13 @@ function App() {
     trackSearchQuery: '',
   });
 
-  const [ searchResultValues, setSearchResultValues ] = useState({
+  const [searchResultValues, setSearchResultValues] = useState({
     albums: false,
     playlistSearchResults: '',
     tracks: false,
   });
 
-  const resetStates = (resetRecommended=false) => {
+  const resetStates = (resetRecommended = false) => {
     setTracks(false);
     setSortedTracks(false);
     setRecommendedTrack(false);
@@ -70,11 +70,11 @@ function App() {
       pathname: '/playlist',
       search: `?id=${playlist.id}`
     },
-    {
-      playlist: playlist,
-      // tracks: tracks,
-      // sortedTracks: sortedTracks
-    })
+      {
+        playlist: playlist,
+        // tracks: tracks,
+        // sortedTracks: sortedTracks
+      })
   }
 
 
@@ -109,44 +109,44 @@ function App() {
           setMatchRecsToSeedTrackKey,
         }}
         >
-          <Container maxWidth='md' id='main' style={{ marginBottom: "24px", marginTop: "24px" }}>
+          <Container maxWidth='lg' className="main-div" id='main'>
             <Navbar resetStates={resetStates} authError />
-            <div className='main-paper' style={{ border: "1px solid #424242", borderRadius: "0 0 4px 4px"}}>
-                <>
-                  <Switch>
-                    <div className="main-content__div">
-                      {!token ? (
-                          <Route
-                            exact path='/'
-                            render={(props) => (
-                              <SpotifyAuth
-                                location={props.location}
-                              />
-                            )}
+            <div className='main-div__inner'>
+              <>
+                <Switch>
+                  <div className="main-content__div">
+                    {!token ? (
+                      <Route
+                        exact path='/'
+                        render={(props) => (
+                          <SpotifyAuth
+                            location={props.location}
                           />
+                        )}
+                      />
+                    ) : (
+
+                      !authError ? (
+
+                        <>
+                          <Route exact path='/' component={UserPlaylists} />
+                          <Route exact path='/about' component={About} />
+                          <Route path='/search' component={Search} />
+                          <Route path='/playlist' component={Playlist} />
+                          <Route path='/recommended' component={RecommendedTracks} />
+                        </>
+
                       ) : (
+                        <TokenExpired />
+                      )
+                    )}
 
-                        !authError ? (
-
-                          <>
-                            <Route exact path='/' component={UserPlaylists} />
-                            <Route exact path='/about' component={About} />
-                            <Route path='/search' component={Search} />
-                            <Route path='/playlist' component={Playlist} />
-                            <Route path='/recommended' component={RecommendedTracks} />
-                          </>
-
-                        ) : (
-                          <TokenExpired/>
-                        )
-                      )}
-
-                      <Redirect to='/' />
-                    </div>
-                  </Switch>
-                  {/* Tab to the bottom of the page */}
-                  <div tabIndex="0" style={{display: "block", margin: "0", padding: "0"}}/>
-                </>
+                    <Redirect to='/' />
+                  </div>
+                </Switch>
+                {/* Tab to the bottom of the page */}
+                <div tabIndex="0" style={{ display: "block", margin: "0", padding: "0" }} />
+              </>
             </div>
           </Container>
         </UserContext.Provider>

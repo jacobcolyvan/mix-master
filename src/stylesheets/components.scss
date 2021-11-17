@@ -1,3 +1,5 @@
+@import "./variables";
+
 .playlist-page-title,
 .album-page-title,
 .results-page-title {
@@ -7,12 +9,12 @@
 
 .album-list__li,
 .playlist-list__li {
-    border: 1px solid #424242;
+    border: 1px solid $border-colour;
     border-radius: 2px;
     padding: 10px 4px;
 
     &:hover {
-        color: #2882e9;
+        color: $text-hover-colour;
         cursor: pointer;
     }
 
@@ -27,7 +29,7 @@
     }
 
     img {
-        border: "1px solid #424242"
+        border: 1px solid $border-colour;
     }
 }
 
@@ -66,7 +68,7 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
-    border: 1px solid #424242;
+    border: 1px solid $border-colour;
     border-radius: 4px 4px 0 0;
 
     h1 {
@@ -91,11 +93,11 @@
 
 .rec-tweaks__div {
     margin: 2rem 0;
-    border: 1px solid #424242;
+    border: 1px solid $border-colour;
 
     .rec-tweaks__tabs {
-        border-top: 1px solid #424242;
-        border-bottom: 1px solid #424242;
+        border-top: 1px solid $border-colour;
+        border-bottom: 1px solid $border-colour;
     }
 
     .rec-tweaks__tab {
@@ -192,7 +194,7 @@
     border-collapse: collapse;
 
     td, th  {
-        border-left: 1px solid #424242;
+        border-left: 1px solid $border-colour;
         padding: 10px 4px;
         margin: 0;
     }
@@ -200,7 +202,7 @@
     tr {
         width: 100%;
         margin: 0;
-        border: 1px solid #424242;
+        border: 1px solid $border-colour;
 
         td {
             margin: 0;
@@ -221,9 +223,9 @@
 
         .table-data__name-hover:hover {
             cursor: pointer;
-            background-color: 	#424242;
+            background-color: 	$border-colour;
             * {
-                background-color: 	#424242;
+                background-color: 	$border-colour;
             }
         }
 
@@ -240,9 +242,10 @@
     }
 
     .currently-selected {
-        background-color: 	#484848;
+        background-color: 	$selected-colour;
+
         * {
-            background-color: 	#484848;
+            background-color: 	$selected-colour;
         }
     }
 

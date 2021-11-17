@@ -1,7 +1,22 @@
-.main-content__div {
-    padding: 8px 10px 2rem 10px;
-}
+@import "./variables";
 
+
+.main-div {
+    margin: 24px 0;
+    padding: 0;
+
+    @media screen and (max-width: 1200px) {
+        padding: 0 0.5rem;
+    }
+
+    .main-div__inner {
+        border: 1px solid $border-colour;
+        border-radius: 0 0 4px 4px;
+    }
+    .main-content__div {
+        padding: 8px 10px 2rem 10px;
+    }
+}
 
 // about page
 .about-page__div {
@@ -34,6 +49,7 @@
             margin-right: auto;
             width: 400px;
             max-width: 100%;
+            border: 1px solid $border-colour;
         }
 
         .info-header {
@@ -57,7 +73,7 @@
         }
         .links {
             margin: 0;
-            color: #7986cb;
+            color: $link-colour1;
         }
     }
 
@@ -72,7 +88,7 @@
         br {
             margin-bottom: 16px;
         }
-        #links-header {
+        .links-header {
             margin-bottom: 4px;
         }
         .links{
@@ -85,7 +101,7 @@
 // single playlist page
 .playlist-page-description {
     span, a {
-        color: #7986cb;
+        color: $link-colour1;
         cursor: pointer;
     }
 }
@@ -132,9 +148,9 @@
 
             .table-data__name-hover:hover {
                 cursor: pointer;
-                background-color: 	#424242;
+                background-color: 	$border-colour;
                 * {
-                    background-color: 	#424242;
+                    background-color: 	$border-colour;
                 }
             }
 
@@ -145,7 +161,7 @@
         }
 
         td, th  {
-            border: 1px solid #424242;
+            border: 1px solid $border-colour;
             padding: 10px 4px;
             margin: 0;
         }
@@ -221,6 +237,6 @@
     }
 
     a {
-      color: #65D9EF;
+      color: $link-colour2;
     }
 }
