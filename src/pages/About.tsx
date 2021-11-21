@@ -13,14 +13,14 @@ const About = () => {
       </p>
       <ul>
         <li>
-          – The track name{' '}
+          – The track name
           <b>
             <span>copies to clipboard</span>
           </b>{' '}
           on pressing the name.
         </li>
         <li>
-          – Click on the key of any track to go to{' '}
+          – Click on the key of any track to go to
           <b>
             <span>recommended tracks</span>
           </b>
@@ -62,20 +62,21 @@ const About = () => {
         <ul className="info-points">
           <li>
             – Those that share the same number but different letter can be mixed
-            together easily, (they share the same notes but have a different{' '}
+            together easily, (they share the same notes but have a different
             <span>root</span> note // major to minor scale).
           </li>
           <li>
             – Those that are one number away from one another will be easy to
             mix together,
           </li>
-          <li>> (eg. 12a will be easy to mix with 1a and 11a).</li>
+          <li>{'>'} (eg. 12a will be easy to mix with 1a and 11a).</li>
           <li>
             – The further two numbers are away from another the harder they will
             be to mix 'naturally',
           </li>
           <li>
-            > eg. where 1a is hardest to mix with 7a/7b and 3b with 9b/9a, etc.
+            {'>'} eg. where 1a is hardest to mix with 7a/7b and 3b with 9b/9a,
+            etc.
           </li>
           <li>
             – Those tracks with similar BPM/Tempo are going to sound more
