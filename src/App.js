@@ -113,41 +113,35 @@ function App() {
           <Container maxWidth="lg" className="main-div" id="main">
             <Navbar resetStates={resetStates} authError />
             <div className="main-div__inner">
-              <>
+              {/* TODO: rethink switch logic */}
+              <div className="main-content__div">
                 <Switch>
-                  <div className="main-content__div">
-                    {!token ? (
+                  {!token ? (
+                    <Route
+                      exact
+                      path="/"
+                      render={(props) => (
+                        <SpotifyAuth location={props.location} />
+                      )}
+                    />
+                  ) : !authError ? (
+                    <Switch>
+                      <Route exact path="/" component={UserPlaylists} />
+                      <Route exact path="/about" component={About} />
+                      <Route path="/search" component={Search} />
+                      <Route path="/playlist" component={Playlist} />
                       <Route
-                        exact
-                        path="/"
-                        render={(props) => (
-                          <SpotifyAuth location={props.location} />
-                        )}
+                        path="/recommended"
+                        component={RecommendedTracks}
                       />
-                    ) : !authError ? (
-                      <>
-                        <Route exact path="/" component={UserPlaylists} />
-                        <Route exact path="/about" component={About} />
-                        <Route path="/search" component={Search} />
-                        <Route path="/playlist" component={Playlist} />
-                        <Route
-                          path="/recommended"
-                          component={RecommendedTracks}
-                        />
-                      </>
-                    ) : (
-                      <TokenExpired />
-                    )}
+                    </Switch>
+                  ) : (
+                    <Route path="/" component={TokenExpired} />
+                  )}
 
-                    <Redirect to="/" />
-                  </div>
+                  <Redirect to="/" />
                 </Switch>
-                {/* Tab to the bottom of the page */}
-                <div
-                  tabIndex="0"
-                  style={{ display: 'block', margin: '0', padding: '0' }}
-                />
-              </>
+              </div>
             </div>
           </Container>
         </UserContext.Provider>

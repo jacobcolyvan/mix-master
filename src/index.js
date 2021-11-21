@@ -6,10 +6,10 @@ import './stylesheets/components.scss';
 
 import App from './App';
 import dotenv from 'dotenv';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     type: 'dark',
     background: {
