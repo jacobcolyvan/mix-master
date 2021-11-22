@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "checkJs": false,
     "skipLibCheck": true,
@@ -25,18 +21,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "incremental": true,
     "noFallthroughCasesInSwitch": false,
     "removeComments": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "build"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "build"]
 }

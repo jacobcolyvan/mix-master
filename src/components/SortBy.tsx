@@ -2,8 +2,15 @@ import React from 'react';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-const SortBy = ({ sortOption, setSortOption }) => {
-  const sortOptionChange = (event) => {
+interface Props {
+  sortOption: string;
+  setSortOption: React.Dispatch<React.SetStateAction<string | unknown>>;
+}
+
+const SortBy: React.FC<Props> = ({ sortOption, setSortOption }) => {
+  const sortOptionChange = (
+    event: React.ChangeEvent<{ value: string | unknown }>
+  ): void => {
     setSortOption(event.target.value);
   };
 
@@ -20,6 +27,7 @@ const SortBy = ({ sortOption, setSortOption }) => {
         <MenuItem value={'default'}>Original Order</MenuItem>
         <MenuItem value={'duration'}>Sort by Duration</MenuItem>
         <MenuItem value={'popularity'}>Sort by Popularity</MenuItem>
+
         <MenuItem value={'valence'}>Sort by Valence</MenuItem>
         <MenuItem value={'tempo'}>Sort by Tempo</MenuItem>
         <MenuItem value={'durationThenKey'}>

@@ -1,4 +1,4 @@
-const keyDict = {
+const keyDict: { [key: number]: string } = {
   0: 'C',
   1: 'C#',
   2: 'D',
@@ -13,7 +13,7 @@ const keyDict = {
   11: 'B',
 };
 
-const camelotMajorKeyDict = {
+const camelotMajorKeyDict: { [key: number]: string } = {
   0: '8',
   1: '3',
   2: '10',
@@ -28,7 +28,7 @@ const camelotMajorKeyDict = {
   11: '1',
 };
 
-const camelotMinorKeyDict = {
+const camelotMinorKeyDict: { [key: number]: string } = {
   0: '5',
   1: '12',
   2: '7',
@@ -43,7 +43,7 @@ const camelotMinorKeyDict = {
   11: '10',
 };
 
-const scopes = [
+const scopes: string[] = [
   'user-read-private',
   'playlist-read-private',
   'user-library-read',

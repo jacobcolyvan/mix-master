@@ -3,12 +3,16 @@ import Button from '@material-ui/core/Button';
 import UserContext from '../context/UserContext';
 import { useHistory } from 'react-router-dom';
 
-const Navbar = ({ resetStates }) => {
+interface NavbarProps {
+  resetStates: any; // TODO
+}
+
+const Navbar: React.FC<NavbarProps> = ({ resetStates }) => {
   const history = useHistory();
   const { token, authError } = useContext(UserContext);
   const pathname = history.location.pathname;
 
-  const loadPage = (link) => {
+  const loadPage = (link: string) => {
     resetStates();
     history.push(link);
   };
