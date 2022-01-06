@@ -2,16 +2,17 @@ import React from 'react';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-interface Props {
+interface SortByProps {
   sortOption: string;
-  setSortOption: React.Dispatch<React.SetStateAction<string | unknown>>;
+  setSortOption: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const SortBy: React.FC<Props> = ({ sortOption, setSortOption }) => {
+const SortBy = ({ sortOption, setSortOption }: SortByProps) => {
   const sortOptionChange = (
-    event: React.ChangeEvent<{ value: string | unknown }>
-  ): void => {
-    setSortOption(event.target.value);
+    event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
+    if (event && typeof event.target.value === 'string')
+      setSortOption(event.target.value);
   };
 
   return (

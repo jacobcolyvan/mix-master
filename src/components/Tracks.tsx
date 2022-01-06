@@ -5,7 +5,7 @@ import UserContext from '../context/UserContext';
 import { withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import Loading from '../components/Loading';
+import Loading from './Loading';
 
 import {
   keyDict,
@@ -22,7 +22,12 @@ const HtmlTooltip = withStyles(() => ({
   },
 }))(Tooltip);
 
-const Tracks = ({ keyOption, sortOption }) => {
+interface TracksProps {
+  keyOption: any;
+  sortOption: any;
+}
+
+const Tracks = ({ keyOption, sortOption }: TracksProps) => {
   const {
     tracks,
     sortedTracks,
@@ -34,11 +39,11 @@ const Tracks = ({ keyOption, sortOption }) => {
   const history = useHistory();
 
   useEffect(() => {
-    const camelotSort = (temp) => {
-      temp = temp.sort((a, b) => {
-        return a - b;
-      });
-      temp = temp.sort((a, b) => {
+    const camelotSort = (tempTracks: Array<{ [key: string]: any }>) => {
+      // tempTracks = tempTracks.sort((a, b) => {
+      //   return a - b;
+      // });
+      tempTracks = tempTracks.sort((a: any, b: any) => {
         a =
           a.mode === 0
             ? parseInt(camelotMinorKeyDict[a.key])
@@ -51,75 +56,84 @@ const Tracks = ({ keyOption, sortOption }) => {
         return a > b ? 1 : -1;
       });
 
-      return temp;
+      return tempTracks;
     };
 
     // This is a function for standard non-camelot key sort
-    const keySort = (temp) => {
-      temp.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
-      temp = temp.sort((a, b) => parseInt(a.key) - parseInt(b.key));
+    const keySort = (tempTracks: Array<{ [key: string]: any }>) => {
+      tempTracks.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
+      tempTracks = tempTracks.sort((a, b) => parseInt(a.key) - parseInt(b.key));
 
-      return temp;
+      return tempTracks;
     };
 
-    const sorter = (sort) => {
+    // TODO: improve the trash heap sort logic below (case(?))
+    const sorter = (sortType: string) => {
       if (tracks) {
-        if (sort === 'tempo') {
-          const temp = [...tracks].sort(
+        if (sortType === 'tempo') {
+          const tempTracks = [...tracks].sort(
             (a, b) => parseInt(a.tempo) - parseInt(b.tempo)
           );
 
-          setSortedTracks(temp);
-        } else if (sort === 'duration') {
-          let temp = [...tracks].sort(
+          setSortedTracks(tempTracks);
+        } else if (sortType === 'duration') {
+          let tempTracks = [...tracks].sort(
             (a, b) => parseInt(b.duration) - parseInt(a.duration)
           );
 
-          setSortedTracks(temp);
-        } else if (sort === 'popularity') {
-          let temp = [...tracks].sort(
+          setSortedTracks(tempTracks);
+        } else if (sortType === 'popularity') {
+          let tempTracks = [...tracks].sort(
             (a, b) =>
               parseInt(b.track_popularity) - parseInt(a.track_popularity)
           );
 
-          setSortedTracks(temp);
-        } else if (sort === 'valence') {
-          let temp = [...tracks].sort(
+          setSortedTracks(tempTracks);
+        } else if (sortType === 'valence') {
+          let tempTracks = [...tracks].sort(
             (a, b) => parseFloat(b.valence) - parseFloat(a.valence)
           );
 
-          setSortedTracks(temp);
-        } else if (sort === 'durationThenKey') {
-          let temp = [...tracks].sort(
+          setSortedTracks(tempTracks);
+        } else if (sortType === 'durationThenKey') {
+          let tempTracks = [...tracks].sort(
             (a, b) => parseInt(b.duration) - parseInt(a.duration)
           );
 
           setSortedTracks(
-            keyOption === 'camelot' ? camelotSort(temp) : keySort(temp)
+            keyOption === 'camelot'
+              ? camelotSort(tempTracks)
+              : keySort(tempTracks)
           );
-        } else if (sort === 'tempoThenKey') {
-          let temp = [...tracks].sort(
+        } else if (sortType === 'tempoThenKey') {
+          let tempTracks = [...tracks].sort(
             (a, b) => parseInt(a.tempo) - parseInt(b.tempo)
           );
 
           setSortedTracks(
-            keyOption === 'camelot' ? camelotSort(temp) : keySort(temp)
+            keyOption === 'camelot'
+              ? camelotSort(tempTracks)
+              : keySort(tempTracks)
           );
-        } else if (sort === 'energyThenKey') {
-          let temp = [...tracks].sort(
+        } else if (sortType === 'energyThenKey') {
+          let tempTracks = [...tracks].sort(
             (a, b) => parseFloat(b.energy) - parseFloat(a.energy)
           );
 
           setSortedTracks(
-            keyOption === 'camelot' ? camelotSort(temp) : keySort(temp)
+            keyOption === 'camelot'
+              ? camelotSort(tempTracks)
+              : keySort(tempTracks)
           );
-        } else if (sort === 'valenceThenKey') {
-          let temp = [...tracks].sort(
+        } else if (sortType === 'valenceThenKey') {
+          let tempTracks = [...tracks].sort(
             (a, b) => parseFloat(b.valence) - parseFloat(a.valence)
           );
 
           setSortedTracks(
-            keyOption === 'camelot' ? camelotSort(temp) : keySort(temp)
+            keyOption === 'camelot'
+              ? camelotSort(tempTracks)
+              : keySort(tempTracks)
           );
         } else {
           setSortedTracks([...tracks]);
@@ -131,23 +145,24 @@ const Tracks = ({ keyOption, sortOption }) => {
   }, [sortOption, tracks, keyOption, setSortedTracks]);
 
   const copyNameAndSaveAsCurrentTrack = (
-    trackName,
-    trackArtist,
-    clickedTrackId
+    trackName: string,
+    trackArtist: string,
+    clickedTrackId: string
   ) => {
     navigator.clipboard.writeText(`${trackName} ${trackArtist}`);
 
     if (lastClickedTrack) {
-      let currentlySelected = document.getElementById(lastClickedTrack);
-      currentlySelected.classList.remove('currently-selected');
+      const currentlySelected = document.getElementById(lastClickedTrack);
+      if (currentlySelected)
+        currentlySelected.classList.remove('currently-selected');
     }
 
-    let nowSelected = document.getElementById(clickedTrackId);
-    nowSelected.classList.add('currently-selected');
+    const nowSelected = document.getElementById(clickedTrackId);
+    if (nowSelected) nowSelected.classList.add('currently-selected');
     setLastClickedTrack(clickedTrackId);
   };
 
-  const goToRecommended = (track) => {
+  const goToRecommended = (track: { [key: string]: any }) => {
     resetStates(false);
     const recommendedTrack = {
       id: track.id,
@@ -182,11 +197,13 @@ const Tracks = ({ keyOption, sortOption }) => {
       release_date: track.release_date,
     };
 
+    // TODO: check this is stil working properly
     history.push(
-      {
-        pathname: '/recommended',
-        search: `?id=${track.id}`,
-      },
+      `/recommended/?id=${track.id}`,
+      // {
+      //   pathname: '/recommended',
+      //   search: `?id=${track.id}`,
+      // },
       {
         recommendedTrack: recommendedTrack,
       }
@@ -209,7 +226,7 @@ const Tracks = ({ keyOption, sortOption }) => {
 
         <tbody>
           {sortedTracks &&
-            sortedTracks.map((track, index) => (
+            sortedTracks.map((track: { [key: string]: any }, index: number) => (
               <tr key={`track${index}`} className={`track-name-tr`}>
                 <td
                   className="table-data__name table-data__name-hover"
@@ -234,7 +251,7 @@ const Tracks = ({ keyOption, sortOption }) => {
                   <HtmlTooltip
                     className="table-data__name__tooltip"
                     placement="left"
-                    tabIndex="0"
+                    tabIndex={0}
                     title={
                       <ul className="tooltip-ul">
                         <li className="table-date__tooltip-genres">

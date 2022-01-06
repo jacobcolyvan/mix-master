@@ -2,21 +2,27 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import SearchBar from '../components/SearchBar';
+import SearchBar from './SearchBar';
+
+interface SearchOptionsProps {
+  getResults: () => void;
+  handleOptionsChange: (key: string, value: any) => void;
+  searchOptionValues: { [key: string]: string };
+}
 
 const SearchOptions = ({
   getResults,
   handleOptionsChange,
   searchOptionValues,
-}) => {
+}: SearchOptionsProps) => {
   const createSearchBars = () => {
     let searchBars;
     if (searchOptionValues.searchType === 'playlist') {
       searchBars = (
         <SearchBar
           label={'playlist name'}
-          setParam={handleOptionsChange}
           param={searchOptionValues.playlistSearchQuery}
+          setParam={handleOptionsChange}
           paramName={'playlistSearchQuery'}
           getResults={getResults}
         />

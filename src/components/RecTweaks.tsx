@@ -51,14 +51,34 @@ const inputChoices = [
     range_limit: 1,
     takes_whole_numbers: false,
   },
-  { input_name: 'liveness', range_limit: 1, takes_whole_numbers: false },
-  { input_name: 'speechiness', range_limit: 1, takes_whole_numbers: false },
-  { input_name: 'acousticness', range_limit: 1, takes_whole_numbers: false },
+  {
+    input_name: 'liveness',
+    extra_text: false,
+    range_limit: 1,
+    takes_whole_numbers: false,
+  },
+  {
+    input_name: 'speechiness',
+    extra_text: false,
+    range_limit: 1,
+    takes_whole_numbers: false,
+  },
+  {
+    input_name: 'acousticness',
+    extra_text: false,
+    range_limit: 1,
+    takes_whole_numbers: false,
+  },
   // // Loudness is an available param but has a weird input raneg (db's)
   // {input_name: "loudness", range_limit: 1, takes_whole_numbers: false},
 ];
 
-const RecTweaks = ({ getTracks, recommendedTrack }) => {
+interface RecTweakProps {
+  getTracks: (recommendedTrack: { [key: string]: any }) => void;
+  recommendedTrack: { [key: string]: any };
+}
+
+const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
   const {
     setSeedParams,
     seedParams,
@@ -67,7 +87,12 @@ const RecTweaks = ({ getTracks, recommendedTrack }) => {
   } = useContext(UserContext);
   const [currentTab, setCurrentTab] = useState(0);
 
-  const saveSeedParam = (paramName, value, limit, maxOrMin) => {
+  const saveSeedParam = (
+    paramName: string,
+    value: any,
+    limit: number,
+    maxOrMin: string
+  ) => {
     if (!value) {
       setSeedParams({ ...seedParams, [paramName]: false });
     } else if (value >= 0 && value <= limit) {
@@ -93,7 +118,7 @@ const RecTweaks = ({ getTracks, recommendedTrack }) => {
     setMatchRecsToSeedTrackKey(!matchRecsToSeedTrackKey);
   };
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (_: any, newValue: React.SetStateAction<number>) => {
     setCurrentTab(newValue);
   };
 
@@ -118,16 +143,16 @@ const RecTweaks = ({ getTracks, recommendedTrack }) => {
         scrollButtons="on"
         className="rec-tweaks__tabs"
       >
-        {inputChoices.map((inputArray) => (
+        {inputChoices.map((inputItem) => (
           <Tab
-            label={inputArray.input_name}
-            key={`tab-panel-${inputArray.input_name}`}
+            label={inputItem.input_name}
+            key={`tab-panel-${inputItem.input_name}`}
             className="rec-tweaks__tab"
           />
         ))}
       </Tabs>
 
-      {inputChoices.map((inputArray, index) => (
+      {inputChoices.map((inputItem, index) => (
         <div
           role="tabpanel"
           hidden={currentTab !== index}
@@ -136,12 +161,13 @@ const RecTweaks = ({ getTracks, recommendedTrack }) => {
           className="rec-tweaks__tab-input"
         >
           <RecTweaksInput
+            // TODO: pass whole inputItem instead of breaking it up
+            title={inputItem.input_name}
+            extra_text={inputItem.extra_text}
+            limit={inputItem.range_limit}
+            wholeNumber={inputItem.takes_whole_numbers}
+            paramValue={seedParams[`${inputItem.input_name}`]}
             saveParam={saveSeedParam}
-            paramValue={seedParams[`${inputArray.input_name}`]}
-            title={inputArray.input_name}
-            limit={inputArray.range_limit}
-            wholeNumber={inputArray.takes_whole_numbers}
-            extra_text={inputArray.extra_text}
             getTracks={getTracks}
             recommendedTrack={recommendedTrack}
           />

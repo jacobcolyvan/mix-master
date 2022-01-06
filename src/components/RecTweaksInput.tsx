@@ -4,6 +4,22 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+interface InputProps {
+  title: string;
+  limit: number;
+  wholeNumber: boolean;
+  extra_text: string | boolean;
+  paramValue: any;
+  saveParam: (
+    paramName: string,
+    value: any,
+    limit: number,
+    maxOrMin: string
+  ) => void;
+  getTracks: (recommendedTrack: { [key: string]: any }) => void;
+  recommendedTrack: { [key: string]: any };
+}
+
 const RecTweaksInput = ({
   title,
   saveParam,
@@ -13,7 +29,7 @@ const RecTweaksInput = ({
   paramValue,
   getTracks,
   recommendedTrack,
-}) => {
+}: InputProps) => {
   const [error, setError] = useState(false);
   const [maxOrMin, setMaxOrMin] = useState(paramValue.maxOrMin || 'target');
   const [inputValue, setInputValue] = useState(paramValue.value || false);
@@ -21,18 +37,22 @@ const RecTweaksInput = ({
     `min ${title} (0 – ${limit}${extra_text || ''})`
   );
 
-  const handleRadioChange = (event) => {
+  const handleRadioChange = (
+    event: React.ChangeEvent<{ [key: string]: any }>
+  ) => {
     setMaxOrMin(event.target.value);
     setInputLabel(
       `${event.target.value} ${title} (0 – ${limit}${extra_text || ''})`
     );
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (
+    event: React.ChangeEvent<{ [key: string]: any }>
+  ) => {
     setInputValue(event.target.value);
   };
 
-  const searchOnEnter = (event) => {
+  const searchOnEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       getTracks(recommendedTrack);
     }

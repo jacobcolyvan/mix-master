@@ -7,6 +7,19 @@ import PlaylistList from './PlaylistList';
 import SortBy from './SortBy';
 import KeySelect from './KeySelect';
 
+interface SearchResultsProps {
+  handleResultsChange: (key: string, value: any) => any;
+  showOnlyPlaylistTracks: () => void;
+  searchResultValues: {
+    albums: boolean;
+    playlistSearchResults: string;
+    tracks: boolean;
+  };
+  updateUrl: (slug: string, results: any) => void;
+  albumName: string | boolean;
+  setAlbumName: React.Dispatch<React.SetStateAction<string | unknown>>;
+}
+
 const SearchResults = ({
   handleResultsChange,
   showOnlyPlaylistTracks,
@@ -14,7 +27,7 @@ const SearchResults = ({
   updateUrl,
   albumName,
   setAlbumName,
-}) => {
+}: SearchResultsProps) => {
   const { tracks, playlist } = useContext(UserContext);
   const [sortOption, setSortOption] = useState('default');
   const [keyOption, setKeyOption] = useState('camelot');

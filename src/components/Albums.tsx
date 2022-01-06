@@ -3,11 +3,23 @@ import axios from 'axios';
 import UserContext from '../context/UserContext';
 import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
-const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
+interface AlbumsProps {
+  albums: Array<{ [key: string]: any }> | boolean;
+  handleResultsChange: (key: string, value: any) => any;
+  updateUrl: (slug: string, results: any) => void;
+  setAlbumName: React.Dispatch<React.SetStateAction<string | unknown>>;
+}
+
+const Albums = ({
+  albums,
+  handleResultsChange,
+  updateUrl,
+  setAlbumName,
+}: AlbumsProps) => {
   const { token, setTracks, setSortedTracks, setAuthError } =
     useContext(UserContext);
 
-  const getAlbumTracks = async (album) => {
+  const getAlbumTracks = async (album: { [key: string]: any }) => {
     try {
       const tracksResponse = await axios({
         method: 'get',
@@ -19,10 +31,14 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
       });
 
       const tracklist = [tracksResponse.data.tracks.items][0];
-      const trackIds = tracklist.map((track) => track.id);
-      const artistIds = tracklist.map((track) => track.artists[0].id);
+      const trackIds = tracklist.map(
+        (track: { [key: string]: any }) => track.id
+      );
+      const artistIds = tracklist.map(
+        (track: { [key: string]: any }) => track.artists[0].id
+      );
 
-      let trackFeatures = await axios({
+      const trackFeaturesResponse = await axios({
         method: 'get',
         url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(
           ','
@@ -33,7 +49,7 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
         },
       });
 
-      let artistFeatures = await axios({
+      const artistFeaturesResponse = await axios({
         method: 'get',
         url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
         headers: {
@@ -42,12 +58,12 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
         },
       });
 
-      trackFeatures = [...trackFeatures.data.audio_features];
-      artistFeatures = [...artistFeatures.data.artists];
+      let trackFeatures = [...trackFeaturesResponse.data.audio_features];
+      let artistFeatures = [...artistFeaturesResponse.data.artists];
 
       const splicedTracks = tracklist
-        .filter((item, index) => trackFeatures[index] != null)
-        .map((item, index) => {
+        .filter((_: any, index: number) => trackFeatures[index] != null)
+        .map((item: { [key: string]: any }, index: number) => {
           return {
             name: item.name,
             artists:
@@ -119,7 +135,7 @@ const Albums = ({ albums, handleResultsChange, updateUrl, setAlbumName }) => {
   return (
     <div>
       <h3 className="album-page-title">Album Results</h3>
-      {albums.length > 0 && (
+      {Array.isArray(albums) && albums.length > 0 && (
         <ul>
           {albums.map((album, index) => (
             <li

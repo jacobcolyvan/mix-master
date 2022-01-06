@@ -2,17 +2,17 @@ import React from 'react';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-interface Props {
-  keyOption: string,
-  setKeyOption: React.Dispatch<React.SetStateAction<string | unknown>>
+interface KeySelectProps {
+  keyOption: string;
+  setKeyOption: React.Dispatch<React.SetStateAction<string>>;
 }
 
-
-const KeySelect: React.FC<Props> = ({ keyOption, setKeyOption }) => {
+const KeySelect = ({ keyOption, setKeyOption }: KeySelectProps) => {
   const keyOptionChange = (
-    event: React.ChangeEvent<{ value: string | unknown }>
+    event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
-    setKeyOption(event.target.value);
+    if (event && typeof event.target.value === 'string')
+      setKeyOption(event.target.value);
   };
 
   return (
