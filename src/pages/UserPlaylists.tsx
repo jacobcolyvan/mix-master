@@ -13,12 +13,14 @@ const UserPlaylists = () => {
     setUsername,
     setAuthError,
   } = useContext(UserContext);
-  const [sortedPlaylists, setSortedPlaylists] = useState(false);
+  const [sortedPlaylists, setSortedPlaylists] = useState<
+    boolean | { [key: string]: any[] }
+  >(false);
 
   useEffect(() => {
     let playlistTotalAmount = 0;
     let allPlaylists = false;
-    let tempPlaylistArray = [];
+    let tempPlaylistArray: [][] = [];
     let offset = 0;
 
     const getAllPlaylists = async () => {
@@ -75,9 +77,13 @@ const UserPlaylists = () => {
 
   useEffect(() => {
     const sortPlaylists = () => {
-      let tempSortedPlaylists = { created: [], followed: [], generated: [] };
+      let tempSortedPlaylists: { [key: string]: any[] } = {
+        created: [],
+        followed: [],
+        generated: [],
+      };
 
-      playlists.forEach((playlist, index) => {
+      playlists.forEach((playlist: { [key: string]: any }) => {
         if (playlist.name.slice(0, 4) === 'gena') {
           tempSortedPlaylists.generated.push(playlist);
         } else if (playlist.owner.display_name === username) {
@@ -116,12 +122,12 @@ const UserPlaylists = () => {
           </p>
         </div>
 
-        {sortedPlaylists && (
+        {typeof sortedPlaylists === 'object' && (
           <div>
             <div
               className="playlists-title__div"
               id="created-playlists"
-              tabIndex="0"
+              tabIndex={0}
             >
               <h3>Created</h3>
             </div>
@@ -131,7 +137,7 @@ const UserPlaylists = () => {
             <div
               className="playlists-title__div"
               id="followed-playlists"
-              tabIndex="0"
+              tabIndex={0}
             >
               <h3>Followed</h3>
             </div>
@@ -143,7 +149,7 @@ const UserPlaylists = () => {
                 <div
                   className="playlists-title__div"
                   id="generated-playlists"
-                  tabIndex="0"
+                  tabIndex={0}
                 >
                   <h3>Gena</h3>
                 </div>

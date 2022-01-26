@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import UserContext from '../context/UserContext';
 import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 
@@ -24,9 +24,9 @@ const Search = () => {
 
   const [currentSearchResults, setCurrentSearchResults] = useState(false);
   const [searching, setSearching] = useState(false);
-  const [albumName, setAlbumName] = useState(false);
-  const history = useHistory();
-  const state = history.location.state;
+  const [albumName, setAlbumName] = useState<boolean | string>(false);
+  const history: any = useHistory();
+  const browserState: any = history.location.state;
 
   const resetSearch = useCallback(() => {
     setCurrentSearchResults(false);
@@ -56,12 +56,12 @@ const Search = () => {
   ]);
 
   const updateHooksFromState = useCallback(() => {
-    if (state) {
-      setSearchOptionValues(state.searchOptionValues);
+    if (browserState) {
+      setSearchOptionValues(browserState.searchOptionValues);
 
       if (history.location.search === '?' || history.location.search === '') {
         setCurrentSearchResults(false);
-        // Reset searchValues witout resetting searchOptions
+        // Reset searchValues without resetting searchOptions
         setSearchResultValues({
           albums: false,
           playlistSearchResults: '',
@@ -71,15 +71,15 @@ const Search = () => {
         setSortedTracks(false);
         setTracks(false);
       } else {
-        setTracks(state.searchResultValues['tracks']);
+        setTracks(browserState.searchResultValues['tracks']);
         setCurrentSearchResults(true);
-        setSearchResultValues(state.searchResultValues);
+        setSearchResultValues(browserState.searchResultValues);
       }
     } else {
       resetSearch();
     }
   }, [
-    state,
+    browserState,
     history.location.search,
     resetSearch,
     setSearchResultValues,
@@ -154,7 +154,7 @@ const Search = () => {
     const trackIds = tracks.map((item) => item.id);
     const artistIds = tracks.map((track) => track.artists[0].id);
 
-    let trackFeatures = await axios({
+    let trackFeatures: any[] | AxiosResponse<any> = await axios({
       method: 'get',
       url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(
         ','
@@ -165,7 +165,7 @@ const Search = () => {
       },
     });
 
-    let artistFeatures = await axios({
+    let artistFeatures: any[] | AxiosResponse<any> = await axios({
       method: 'get',
       url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
       headers: {
@@ -178,7 +178,7 @@ const Search = () => {
     artistFeatures = [...artistFeatures.data.artists];
 
     const splicedTracks = tracks
-      .filter((item, index) => trackFeatures[index] != null)
+      .filter((_, index) => trackFeatures[index] != null)
       .map((item, index) => {
         return {
           name: item.name,
@@ -286,19 +286,17 @@ const Search = () => {
     handleResultsChange('playlistSearchResults', false);
   };
 
-  const showOnlyPlaylists = () => {
-    handleResultsChange('albums', false);
-  };
+  // const showOnlyPlaylists = () => {
+  //   handleResultsChange('albums', false);
+  // };
 
   return (
     <div>
       <h1 className="search-page-title">Search</h1>
       <SearchOptions
         getResults={getResults}
-        updateUrl={updateUrl}
         handleOptionsChange={handleOptionsChange}
         searchOptionValues={searchOptionValues}
-        history={history}
       />
 
       {currentSearchResults && (
@@ -307,7 +305,6 @@ const Search = () => {
           <SearchResults
             handleResultsChange={handleResultsChange}
             searchResultValues={searchResultValues}
-            showOnlyPlaylists={showOnlyPlaylists}
             showOnlyPlaylistTracks={showOnlyPlaylistTracks}
             updateUrl={updateUrl}
             albumName={albumName}

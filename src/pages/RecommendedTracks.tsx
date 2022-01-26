@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import UserContext from '../context/UserContext';
 import millisToMinutesAndSeconds from '../utils/CommonFunctions';
 import { keyDict } from '../utils/CommonVariables';
@@ -31,17 +31,17 @@ const RecommendedTracks = () => {
     matchRecsToSeedTrackKey,
     seedParams,
   } = useContext(UserContext);
-  const history = useHistory();
+  const history: any = useHistory();
   const recommendedTrack = history.location.state.recommendedTrack;
   // const seedParams = history.location.state.seedParams;
   const [sortOption, setSortOption] = useState('default');
   const [keyOption, setKeyOption] = useState('camelot');
 
-  const getTracks = async (recommendedTrack) => {
+  const getTracks = async (recommendedTrack: { [key: string]: any[] }) => {
     setSortedTracks(false);
 
     try {
-      const generateUrl = (currentUrl, limit = 10) => {
+      const generateUrl = (currentUrl: string, limit = 10) => {
         currentUrl += `&limit=${limit}`;
 
         // // other available api seeds
@@ -59,7 +59,7 @@ const RecommendedTracks = () => {
         return currentUrl;
       };
 
-      const getTracksFromSpotify = async (url, limit) => {
+      const getTracksFromSpotify = async (url: string, limit: number) => {
         const tracks = await axios({
           method: 'get',
           url: generateUrl(url, limit),
@@ -130,7 +130,7 @@ const RecommendedTracks = () => {
       const trackIds = tracklist.map((track) => track.id);
       const artistIds = tracklist.map((track) => track.artists[0].id);
 
-      let artistFeatures = await axios({
+      let artistFeatures: any[] | AxiosResponse<any> = await axios({
         method: 'get',
         url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
         headers: {
@@ -139,7 +139,7 @@ const RecommendedTracks = () => {
         },
       });
 
-      let trackFeatures = await axios({
+      let trackFeatures: any[] | AxiosResponse<any> = await axios({
         method: 'get',
         url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(
           ','
@@ -150,11 +150,11 @@ const RecommendedTracks = () => {
         },
       });
 
-      trackFeatures = [...trackFeatures.data.audio_features];
       artistFeatures = [...artistFeatures.data.artists];
+      trackFeatures = [...trackFeatures.data.audio_features];
 
       const splicedTracks = tracklist
-        .filter((item, index) => trackFeatures[index] != null)
+        .filter((_, index) => trackFeatures[index] != null)
         .map((item, index) => {
           return {
             name: item.name,

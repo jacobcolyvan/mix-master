@@ -17,7 +17,7 @@ interface SearchResultsProps {
   };
   updateUrl: (slug: string, results: any) => void;
   albumName: string | boolean;
-  setAlbumName: React.Dispatch<React.SetStateAction<string | unknown>>;
+  setAlbumName: React.Dispatch<React.SetStateAction<string | boolean>>;
 }
 
 const SearchResults = ({

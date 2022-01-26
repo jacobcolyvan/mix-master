@@ -4,7 +4,7 @@ import UserContext from '../context/UserContext';
 
 interface Props {
   playlistsToRender: Array<{ [key: string]: any }> | string;
-  showOnlyPlaylistTracks: () => void;
+  showOnlyPlaylistTracks?: () => void;
 }
 
 const PlaylistItems: React.FC<Props> = ({

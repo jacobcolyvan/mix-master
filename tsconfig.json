@@ -21,7 +21,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     // "noImplicitReturns": true,
-    // "noImplicitAny": true,
+    "noImplicitAny": false,
     "useUnknownInCatchVariables": false,
     "incremental": true,
     "noFallthroughCasesInSwitch": false,

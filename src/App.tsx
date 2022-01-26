@@ -17,7 +17,7 @@ import About from './pages/About';
 import Search from './pages/Search';
 import RecommendedTracks from './pages/RecommendedTracks';
 
-function App() {
+const App = () => {
   const [token, setToken] = useState(false);
   const [playlists, setPlaylists] = useState([]);
   const [tracks, setTracks] = useState(false);
@@ -111,7 +111,7 @@ function App() {
           }}
         >
           <Container maxWidth="lg" className="main-div" id="main">
-            <Navbar resetStates={resetStates} authError />
+            <Navbar resetStates={resetStates} />
             <div className="main-div__inner">
               {/* TODO: rethink switch logic */}
               <div className="main-content__div">
@@ -148,6 +148,6 @@ function App() {
       </Router>
     </div>
   );
-}
+};
 
 export default App;

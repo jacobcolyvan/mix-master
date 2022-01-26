@@ -7,7 +7,7 @@ interface AlbumsProps {
   albums: Array<{ [key: string]: any }> | boolean;
   handleResultsChange: (key: string, value: any) => any;
   updateUrl: (slug: string, results: any) => void;
-  setAlbumName: React.Dispatch<React.SetStateAction<string | unknown>>;
+  setAlbumName: React.Dispatch<React.SetStateAction<string | boolean>>;
 }
 
 const Albums = ({

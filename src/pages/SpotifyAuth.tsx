@@ -6,7 +6,11 @@ import UserContext from '../context/UserContext';
 import Info from '../components/Info';
 import { scopes } from '../utils/CommonVariables';
 
-const SpotifyAuth = ({ location }) => {
+interface AuthProps {
+  location: { hash: string };
+}
+
+const SpotifyAuth = ({ location }: AuthProps) => {
   const history = useHistory();
   const { token, setToken } = useContext(UserContext);
 
@@ -28,7 +32,7 @@ const SpotifyAuth = ({ location }) => {
         href={`https://accounts.spotify.com/authorize?response_type=token&client_id=${
           process.env.REACT_APP_SPOTIFY_CLIENT_ID2
         }&scope=${scopes.join('%20')}&redirect_uri=${encodeURIComponent(
-          process.env.REACT_APP_SPOTIFY_CALLBACK_URI
+          process.env.REACT_APP_SPOTIFY_CALLBACK_URI || ''
         )}&show_dialog=false`}
       >
         <Button variant="outlined" color="primary" fullWidth>

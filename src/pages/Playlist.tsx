@@ -19,14 +19,14 @@ const Playlist = () => {
   } = useContext(UserContext);
   const [sortOption, setSortOption] = useState('tempoThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
-  const history = useHistory();
+  const history: any = useHistory();
   const playlist = history.location.state.playlist;
 
   const [description, setDescription] = useState(false);
 
   useEffect(() => {
     // for retrieving playlists referenced in the description
-    const getPlaylist = async (playlistId) => {
+    const getPlaylist = async (playlistId: string) => {
       const newPlaylist = await axios({
         method: 'get',
         url: `https://api.spotify.com/v1/playlists/${playlistId}`,
@@ -41,14 +41,14 @@ const Playlist = () => {
 
     // safely render a string to html
     // and make any playlist links clickable
-    const parseDescription = (string) => {
-      let parsedDescription = string.replaceAll(
+    const parseDescription = (description: string) => {
+      let parsedDescription: any = description.replaceAll(
         /href="spotify:playlist:(\w+)"/g,
         'href="$1" id="replace"'
       );
 
       parsedDescription = parse(parsedDescription, {
-        replace: (domNode) => {
+        replace: (domNode: any) => {
           if (domNode.name === 'a' && domNode.attribs.id === 'replace') {
             return (
               <span
@@ -82,9 +82,9 @@ const Playlist = () => {
       try {
         let trackTotalAmount = playlist.tracks.total;
         let offset = 0;
-        let tracklist = [];
-        let trackFeatures = [];
-        let artistFeatures = [];
+        let tracklist: any[] = [];
+        let trackFeatures: any[] = [];
+        let artistFeatures: any[] = [];
 
         while (trackTotalAmount > tracklist.length) {
           let tracksResponse, featuresResponse, artistsResponse;
@@ -99,20 +99,25 @@ const Playlist = () => {
             });
 
             // eslint-disable-next-line no-loop-func
-            tracksResponse = tracksResponse.data.items.map((item) => {
-              if (item.track) {
-                return item;
-              } else {
-                trackTotalAmount--;
-                return undefined;
+            tracksResponse = tracksResponse.data.items.map(
+              (item: { [key: string]: any[] }) => {
+                if (item.track) {
+                  return item;
+                } else {
+                  trackTotalAmount--;
+                  return undefined;
+                }
               }
-            });
+            );
 
             // remove null items
             tracksResponse = tracksResponse.filter(Boolean);
-            const trackIds = tracksResponse.map((item) => item.track.id);
+            // TODO: improve this mapping logic
+            const trackIds = tracksResponse.map(
+              (item: { [key: string]: any }) => item.track.id
+            );
             const artistIds = tracksResponse.map(
-              (item) => item.track.artists[0].id
+              (item: { [key: string]: any }) => item.track.artists[0].id
             );
 
             artistsResponse = await axios({
@@ -144,16 +149,19 @@ const Playlist = () => {
           tracklist = [...tracklist, ...tracksResponse];
           trackFeatures = [
             ...trackFeatures,
-            ...featuresResponse.data.audio_features,
+            ...featuresResponse?.data.audio_features,
           ];
-          artistFeatures = [...artistFeatures, ...artistsResponse.data.artists];
+          artistFeatures = [
+            ...artistFeatures,
+            ...artistsResponse?.data.artists,
+          ];
 
           offset += 50;
         }
 
         // expensive fix for null trackFeatures; flatMap?
         const splicedTracks = tracklist
-          .filter((item, index) => trackFeatures[index] != null)
+          .filter((_, index) => trackFeatures[index] != null)
           .map((item, index) => {
             return {
               name: item.track.name,
