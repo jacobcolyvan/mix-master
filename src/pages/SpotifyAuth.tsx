@@ -12,12 +12,22 @@ interface AuthProps {
 
 const SpotifyAuth = ({ location }: AuthProps) => {
   const history = useHistory();
-  const { token, setToken } = useContext(UserContext);
+  const { token, setToken, setCookie, cookies } = useContext(UserContext);
+
+  useEffect(() => {
+    if (cookies.token) setToken(cookies.token);
+  }, []);
 
   useEffect(() => {
     if (location && location.hash.split('=')[1]) {
       const newToken = location.hash.split('=')[1].split('&token')[0];
       setToken(newToken);
+      setCookie('token', newToken, {
+        path: '/',
+        maxAge: 3600,
+        secure: false,
+        sameSite: 'lax',
+      });
       history.replace('/');
     }
   }, [setToken, token, history, location]);

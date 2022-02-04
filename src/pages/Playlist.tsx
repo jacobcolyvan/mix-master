@@ -15,7 +15,7 @@ const Playlist = () => {
     setTracks,
     setSortedTracks,
     pushPlaylistToState,
-    setAuthError,
+    handleAuthError,
   } = useContext(UserContext);
   const [sortOption, setSortOption] = useState('tempoThenKey');
   const [keyOption, setKeyOption] = useState('camelot');
@@ -142,7 +142,7 @@ const Playlist = () => {
               },
             });
           } catch (err) {
-            if (err.response?.status === 401) setAuthError(true);
+            if (err.response?.status === 401) handleAuthError();
             console.log(err);
           }
 
@@ -229,7 +229,7 @@ const Playlist = () => {
         setTracks([...splicedTracks]);
         setSortedTracks([...splicedTracks]);
       } catch (err) {
-        if (err.response?.status === 401) setAuthError(true);
+        if (err.response?.status === 401) handleAuthError();
         console.log(err.message);
       }
     };
@@ -242,7 +242,7 @@ const Playlist = () => {
     playlist,
     playlist.href,
     playlist.tracks.total,
-    setAuthError,
+    handleAuthError,
   ]);
 
   return (

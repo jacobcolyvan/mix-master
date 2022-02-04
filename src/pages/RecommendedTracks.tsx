@@ -27,7 +27,7 @@ const RecommendedTracks = () => {
     token,
     setTracks,
     setSortedTracks,
-    setAuthError,
+    handleAuthError,
     matchRecsToSeedTrackKey,
     seedParams,
   } = useContext(UserContext);
@@ -213,7 +213,7 @@ const RecommendedTracks = () => {
       setSortedTracks([...splicedTracks]);
     } catch (err) {
       console.log(err.message);
-      if (err.response?.status === 401) setAuthError(true);
+      if (err.response?.status === 401) handleAuthError();
     }
   };
 

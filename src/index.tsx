@@ -8,6 +8,7 @@ import App from './App';
 import dotenv from 'dotenv';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { CookiesProvider } from 'react-cookie';
 
 const theme = createTheme({
   palette: {
@@ -27,9 +28,11 @@ const theme = createTheme({
 
 dotenv.config();
 ReactDOM.render(
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <App />
-  </ThemeProvider>,
+  <CookiesProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
+  </CookiesProvider>,
   document.getElementById('root')
 );

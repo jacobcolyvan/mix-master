@@ -19,7 +19,7 @@ const Search = () => {
     setSearchOptionValues,
     searchResultValues,
     setSearchResultValues,
-    setAuthError,
+    handleAuthError,
   } = useContext(UserContext);
 
   const [currentSearchResults, setCurrentSearchResults] = useState(false);
@@ -276,7 +276,7 @@ const Search = () => {
         setCurrentSearchResults(true);
         setSearching(false);
       } catch (err) {
-        if (err.response?.status === 401) setAuthError(true);
+        if (err.response?.status === 401) handleAuthError();
         console.log(err.message);
       }
     }

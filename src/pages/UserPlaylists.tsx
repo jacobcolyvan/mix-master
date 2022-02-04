@@ -11,7 +11,7 @@ const UserPlaylists = () => {
     setPlaylists,
     username,
     setUsername,
-    setAuthError,
+    handleAuthError,
   } = useContext(UserContext);
   const [sortedPlaylists, setSortedPlaylists] = useState<
     boolean | { [key: string]: any[] }
@@ -42,16 +42,17 @@ const UserPlaylists = () => {
 
           tempPlaylistArray = [...tempPlaylistArray, ...response.data.items];
         }
+        console.log('tempPlaylistArray :>> ', tempPlaylistArray);
 
         setPlaylists(tempPlaylistArray);
       } catch (err) {
-        if (err.response?.status === 401) setAuthError(true);
+        if (err.response?.status === 401) handleAuthError();
         console.log(err.message);
       }
     };
 
     getAllPlaylists();
-  }, [token, setPlaylists, setAuthError]);
+  }, [token, setPlaylists, handleAuthError]);
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -67,13 +68,13 @@ const UserPlaylists = () => {
 
         setUsername(userResponse.data.display_name);
       } catch (err) {
-        if (err.response?.status === 401) setAuthError(true);
+        if (err.response?.status === 401) handleAuthError();
         console.log(err.message);
       }
     };
 
     getUserProfile();
-  }, [token, setUsername, setAuthError]);
+  }, [token, setUsername, handleAuthError]);
 
   useEffect(() => {
     const sortPlaylists = () => {

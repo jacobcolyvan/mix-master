@@ -6,6 +6,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { Container } from '@material-ui/core';
+import { useCookies } from 'react-cookie';
 
 import UserContext from './context/UserContext';
 import Navbar from './components/Navbar';
@@ -39,6 +40,7 @@ const App = () => {
     acousticness: false,
   });
   const [matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey] = useState(true);
+  const [cookies, setCookie] = useCookies(['token']);
 
   const [searchOptionValues, setSearchOptionValues] = useState({
     albumSearchQuery: '',
@@ -78,6 +80,15 @@ const App = () => {
     );
   };
 
+  const handleAuthError = () => {
+    if (cookies.token && cookies.token !== token) {
+      setToken(cookies.token);
+      setAuthError(false);
+    } else {
+      setAuthError(true);
+    }
+  };
+
   return (
     <div>
       <Router>
@@ -103,11 +114,13 @@ const App = () => {
             searchResultValues,
             setSearchResultValues,
             pushPlaylistToState,
-            setAuthError,
+            handleAuthError,
             seedParams,
             setSeedParams,
             matchRecsToSeedTrackKey,
             setMatchRecsToSeedTrackKey,
+            cookies,
+            setCookie,
           }}
         >
           <Container maxWidth="lg" className="main-div" id="main">

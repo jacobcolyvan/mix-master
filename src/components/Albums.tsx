@@ -16,7 +16,7 @@ const Albums = ({
   updateUrl,
   setAlbumName,
 }: AlbumsProps) => {
-  const { token, setTracks, setSortedTracks, setAuthError } =
+  const { token, setTracks, setSortedTracks, handleAuthError } =
     useContext(UserContext);
 
   const getAlbumTracks = async (album: { [key: string]: any }) => {
@@ -128,7 +128,7 @@ const Albums = ({
       updateUrl('album-tracks', results);
     } catch (err) {
       console.log(err.message);
-      if (err.response?.status === 401) setAuthError(true);
+      if (err.response?.status === 401) handleAuthError();
     }
   };
 
