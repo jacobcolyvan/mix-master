@@ -34,6 +34,7 @@ const SortBy = ({ sortOption, setSortOption }: SortByProps) => {
         <MenuItem value={'durationThenKey'}>
           Sort by Duration, then Key
         </MenuItem>
+        <MenuItem value={'major/minor'}>Sort by Major/Minor</MenuItem>
         <MenuItem value={'energyThenKey'}>Sort by Energy, then Key</MenuItem>
         <MenuItem value={'tempoThenKey'}>Sort by Tempo, then Key</MenuItem>
       </Select>

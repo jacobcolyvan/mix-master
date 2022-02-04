@@ -23,8 +23,8 @@ const HtmlTooltip = withStyles(() => ({
 }))(Tooltip);
 
 interface TracksProps {
-  keyOption: any;
-  sortOption: any;
+  keyOption: string;
+  sortOption: string;
 }
 
 const Tracks = ({ keyOption, sortOption }: TracksProps) => {
@@ -135,6 +135,17 @@ const Tracks = ({ keyOption, sortOption }: TracksProps) => {
               ? camelotSort(tempTracks)
               : keySort(tempTracks)
           );
+        } else if (sortType === 'major/minor') {
+          let tempTracks =
+            keyOption === 'camelot'
+              ? camelotSort([...tracks])
+              : keySort([...tracks]);
+
+          tempTracks = tempTracks.sort(
+            (a, b) => parseInt(a.mode) - parseInt(b.mode)
+          );
+
+          setSortedTracks(tempTracks);
         } else {
           setSortedTracks([...tracks]);
         }

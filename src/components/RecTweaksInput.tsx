@@ -5,13 +5,13 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 interface InputProps {
+  paramValue: any;
   inputItem: {
     input_name: string;
     extra_text: string | boolean;
     range_limit: number;
     takes_whole_numbers: boolean;
   };
-  paramValue: any;
   saveParam: (
     paramName: string,
     value: any,
