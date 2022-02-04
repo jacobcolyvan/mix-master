@@ -243,7 +243,6 @@ const Playlist = () => {
     playlist,
     playlist.href,
     playlist.tracks.total,
-    handleAuthError,
   ]);
 
   return (

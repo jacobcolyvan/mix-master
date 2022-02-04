@@ -51,7 +51,7 @@ const UserPlaylists = () => {
     };
 
     getAllPlaylists();
-  }, [token, setPlaylists, handleAuthError]);
+  }, [token, setPlaylists]);
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -110,7 +110,7 @@ const UserPlaylists = () => {
             See <i>About</i> for more info about how to use this site.
           </p>
           <p>
-            Playlists are automatically seperated into ones you've{' '}
+            Playlists are automatically separated into ones you've{' '}
             <a href="#created-playlists" className="subpage-link">
               created
             </a>

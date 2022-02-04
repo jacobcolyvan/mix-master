@@ -16,6 +16,7 @@ const SpotifyAuth = ({ location }: AuthProps) => {
 
   useEffect(() => {
     if (cookies.token) setToken(cookies.token);
+    console.log('cocaine');
   }, []);
 
   useEffect(() => {
