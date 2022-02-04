@@ -133,8 +133,8 @@ const Search = () => {
       }${
         searchOptionValues.artist
           ? 'artist%3A$' + encodeURI(searchOptionValues.artist) + '%20'
-          : encodeURI('')
-      }&type=album`;
+          : ''
+      }&type=album&limit=50`;
     } else if (searchOptionValues.searchType === 'track') {
       return `https://api.spotify.com/v1/search?q=${
         searchOptionValues.trackSearchQuery
@@ -143,10 +143,12 @@ const Search = () => {
       }${
         searchOptionValues.artist
           ? 'artist%3A$' + encodeURI(searchOptionValues.artist) + '%20'
-          : encodeURI('')
+          : ''
       }&type=track&limit=50`;
     } else {
-      return `https://api.spotify.com/v1/search?q=${searchOptionValues.playlistSearchQuery}&type=playlist`;
+      return `https://api.spotify.com/v1/search?q=${encodeURI(
+        searchOptionValues.playlistSearchQuery
+      )}&type=playlist&limit=50`;
     }
   };
 
@@ -247,6 +249,7 @@ const Search = () => {
       searchOptionValues.playlistSearchQuery.length
     ) {
       try {
+        console.log(createRequestUrl());
         const response = await axios({
           method: 'get',
           url: createRequestUrl(),
@@ -263,7 +266,10 @@ const Search = () => {
           );
           updateUrl('albums', results);
         } else if (searchOptionValues.searchType === 'track') {
-          getTrackAndArtistFeatures(response.data.tracks.items);
+          if (response.data.tracks.items.length) {
+            console.log(response.data.tracks.items);
+            getTrackAndArtistFeatures(response.data.tracks.items);
+          }
           updateUrl('tracks');
         } else {
           const results = handleResultsChange(
@@ -285,10 +291,6 @@ const Search = () => {
   const showOnlyPlaylistTracks = () => {
     handleResultsChange('playlistSearchResults', false);
   };
-
-  // const showOnlyPlaylists = () => {
-  //   handleResultsChange('albums', false);
-  // };
 
   return (
     <div>

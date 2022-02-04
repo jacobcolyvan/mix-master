@@ -16,6 +16,7 @@ const Playlist = () => {
     setSortedTracks,
     pushPlaylistToState,
     handleAuthError,
+    username,
   } = useContext(UserContext);
   const [sortOption, setSortOption] = useState('default');
   const [keyOption, setKeyOption] = useState('camelot');
@@ -254,7 +255,11 @@ const Playlist = () => {
       {description && (
         <p className="playlist-page-description">{description}</p>
       )}
-
+      {playlist.owner.display_name !== username && (
+        <p className="playlist-page-description">
+          ({playlist.owner.display_name}).
+        </p>
+      )}
       <Tracks sortOption={sortOption} keyOption={keyOption} />
     </div>
   );
