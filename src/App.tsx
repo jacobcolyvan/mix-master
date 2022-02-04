@@ -124,7 +124,7 @@ const App = () => {
           }}
         >
           <Container maxWidth="lg" className="main-div" id="main">
-            <Navbar resetStates={resetStates} />
+            <Navbar />
             <div className="main-div__inner">
               {/* TODO: rethink switch logic */}
               <div className="main-content__div">

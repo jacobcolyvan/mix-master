@@ -42,7 +42,6 @@ const UserPlaylists = () => {
 
           tempPlaylistArray = [...tempPlaylistArray, ...response.data.items];
         }
-        console.log('tempPlaylistArray :>> ', tempPlaylistArray);
 
         setPlaylists(tempPlaylistArray);
       } catch (err) {

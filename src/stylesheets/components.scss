@@ -66,12 +66,14 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border: 1px solid $border-colour;
   border-radius: 4px 4px 0 0;
 
   h1 {
     margin-left: 8px;
     text-decoration: underline;
+    height: 100%;
 
     &:hover {
       cursor: pointer;
@@ -79,13 +81,31 @@
   }
 
   .nav-buttons {
-    width: 25%;
+    margin: 0.2rem 0;
+    width: 33%;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-end;
   }
 
   .nav-button {
-    height: 50%;
     font-size: 1em;
-    font-style: italic !important;
+    text-align: center;
+    display: block;
+    text-decoration: underline;
+    border: 1px solid $border-colour;
+    padding: 0.3rem 0;
+    width: 100%;
+
+    &:hover {
+      font-style: italic;
+      cursor: pointer;
+    }
+
+    &.active {
+      font-style: italic;
+      background-color: $selected-colour;
+    }
   }
 }
 

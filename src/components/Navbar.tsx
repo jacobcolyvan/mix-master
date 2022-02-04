@@ -1,15 +1,10 @@
 import React, { useContext } from 'react';
-import Button from '@material-ui/core/Button';
 import UserContext from '../context/UserContext';
 import { useHistory } from 'react-router-dom';
 
-interface NavbarProps {
-  resetStates: any; // TODO
-}
-
-const Navbar: React.FC<NavbarProps> = ({ resetStates }) => {
+const Navbar = () => {
   const history = useHistory();
-  const { token, authError } = useContext(UserContext);
+  const { token, authError, resetStates } = useContext(UserContext);
   const pathname = history.location.pathname;
 
   const loadPage = (link: string) => {
@@ -19,49 +14,28 @@ const Navbar: React.FC<NavbarProps> = ({ resetStates }) => {
 
   return (
     <header className="navbar">
-      <h1 onClick={() => loadPage('/')} id="site-name">
-        Mix Master
-      </h1>
+      <h1 onClick={() => loadPage('/')}>Mix Master</h1>
 
       {token && !authError && (
         <div className="nav-buttons">
-          {pathname !== '/' && (
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => loadPage('/')}
-              className="nav-button"
-              fullWidth
-            >
-              Playlists
-            </Button>
-          )}
-
-          {pathname !== '/search' && (
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => loadPage('search')}
-              className="nav-button"
-              fullWidth
-            >
-              Search
-            </Button>
-          )}
-
-          {pathname !== '/about' &&
-            !pathname.includes('/playlist') &&
-            pathname !== '/recommended' && (
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => loadPage('/about')}
-                className="nav-button"
-                fullWidth
-              >
-                About
-              </Button>
-            )}
+          <a
+            className={`nav-button ${pathname === '/' ? 'active' : ''}`}
+            onClick={() => loadPage('/')}
+          >
+            Playlists
+          </a>
+          <a
+            className={`nav-button ${pathname === '/search' ? 'active' : ''}`}
+            onClick={() => loadPage('/search')}
+          >
+            Search
+          </a>
+          <a
+            className={`nav-button ${pathname === '/about' ? 'active' : ''}`}
+            onClick={() => loadPage('/about')}
+          >
+            About
+          </a>
         </div>
       )}
     </header>
