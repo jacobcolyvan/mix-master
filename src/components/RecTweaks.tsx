@@ -9,6 +9,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import RecTweaksGenre from './RecTweaksGenre';
 
 const inputChoices = [
   {
@@ -89,7 +90,7 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
   } = useContext(UserContext);
   const [currentTab, setCurrentTab] = useState(0);
 
-  const saveSeedParam = (
+  const saveSeedParam = async (
     paramName: string,
     value: any,
     limit: number,
@@ -97,7 +98,7 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
   ) => {
     if (!value) {
       setSeedParams({ ...seedParams, [paramName]: false });
-    } else if (value >= 0 && value <= limit) {
+    } else if (paramName === 'genre' || (value >= 0 && value <= limit)) {
       // convert seconds to ms
       if (paramName === 'duration') value = value * 1000;
       setSeedParams({
@@ -106,15 +107,6 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
       });
     }
   };
-
-  // const parseParamDurationValue = (param_name, param_value) => {
-  //     if (param_name === "duration"  && param_value) {
-  //         return param_value
-  //     } else {
-  //         return param_value
-  //     }
-
-  // }
 
   const handleMatchKeyChange = () => {
     setMatchRecsToSeedTrackKey(!matchRecsToSeedTrackKey);
@@ -126,7 +118,6 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
 
   const handleSeedParamRemoval = (paramName: string) => {
     saveSeedParam(paramName, false, 1, 'target');
-    getTracks(recommendedTrack);
   };
 
   return (
@@ -157,6 +148,11 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
             className="rec-tweaks__tab"
           />
         ))}
+        <Tab
+          label="Genre"
+          key={`tab-panel-genre`}
+          className="rec-tweaks__tab"
+        />
       </Tabs>
 
       {inputChoices.map((inputItem, index) => (
@@ -168,18 +164,22 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
           className="rec-tweaks__tab-input"
         >
           <RecTweaksInput
-            // TODO: pass whole inputItem instead of breaking it up
-            title={inputItem.input_name}
-            extra_text={inputItem.extra_text}
-            limit={inputItem.range_limit}
-            wholeNumber={inputItem.takes_whole_numbers}
+            inputItem={inputItem}
             paramValue={seedParams[`${inputItem.input_name}`]}
             saveParam={saveSeedParam}
-            getTracks={getTracks}
-            recommendedTrack={recommendedTrack}
           />
         </div>
       ))}
+
+      <div
+        role="tabpanel"
+        hidden={currentTab !== inputChoices.length}
+        id={`full-width-tabpanel-${inputChoices.length}`}
+        key={`tab-input-${inputChoices.length}`}
+        className="rec-tweaks__tab-input"
+      >
+        <RecTweaksGenre saveParam={saveSeedParam} genre={seedParams['genre']} />
+      </div>
 
       <Button
         variant="outlined"
@@ -197,7 +197,9 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
             (param) =>
               seedParams[param] && (
                 <li key={`currently-selected-param-li__${param}`}>
-                  {`– ${seedParams[param].maxOrMin} ${param}: ${seedParams[param].value}`}
+                  {`– ${
+                    seedParams[param].maxOrMin && seedParams[param].maxOrMin
+                  } ${param}: ${seedParams[param].value}`}
                   <IconButton
                     aria-label="close"
                     onClick={() => handleSeedParamRemoval(param)}

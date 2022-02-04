@@ -17,7 +17,7 @@ const Playlist = () => {
     pushPlaylistToState,
     handleAuthError,
   } = useContext(UserContext);
-  const [sortOption, setSortOption] = useState('tempoThenKey');
+  const [sortOption, setSortOption] = useState('default');
   const [keyOption, setKeyOption] = useState('camelot');
   const history: any = useHistory();
   const playlist = history.location.state.playlist;

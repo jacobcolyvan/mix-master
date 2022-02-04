@@ -4,9 +4,9 @@ import TextField from '@material-ui/core/TextField';
 interface SearchBarProps {
   label: string;
   param: string;
-  setParam: any; // TODO
+  setParam: (key: string, value: any) => void;
   paramName: string;
-  getResults: any; // TODO
+  getResults: () => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({

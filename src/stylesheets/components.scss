@@ -81,7 +81,6 @@
   }
 
   .nav-buttons {
-    margin: 0.2rem 0;
     width: 33%;
     display: flex;
     flex-direction: column;
@@ -89,13 +88,14 @@
   }
 
   .nav-button {
-    font-size: 1em;
+    font-size: 1.1em;
     text-align: center;
     display: block;
     text-decoration: underline;
     border: 1px solid $border-colour;
     padding: 0.3rem 0;
     width: 100%;
+    color: #e2e4ee;
 
     &:hover {
       font-style: italic;
@@ -105,6 +105,7 @@
     &.active {
       font-style: italic;
       background-color: $selected-colour;
+      color: $link-colour2;
     }
   }
 }

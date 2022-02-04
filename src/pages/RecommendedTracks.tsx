@@ -45,14 +45,16 @@ const RecommendedTracks = () => {
         currentUrl += `&limit=${limit}`;
 
         // // other available api seeds
-        // if (genre) url += `&seed_genres=${ genre.join(',') }`;
         // if (artistSeed) url += `&seed_artists=${ artistSeed.map(artist => artist.id).join(',') }`;
         // if (trackSeed) url += `&seed_tracks=${ trackSeed.map(track => track.id).join(',') }`;
         // if (mode) url += `&target_mode=${mode}`
 
         Object.keys(seedParams).forEach((param) => {
-          if (seedParams[param])
+          if (seedParams[param] && param !== 'genre') {
             currentUrl += `&${seedParams[param].maxOrMin}_${param}=${seedParams[param].value}`;
+          } else if (seedParams[param] && param === 'genre') {
+            currentUrl += `&seed_genres=${seedParams['genre'].value}`;
+          }
         });
 
         console.log(currentUrl);
@@ -220,7 +222,7 @@ const RecommendedTracks = () => {
   useEffect(() => {
     getTracks(recommendedTrack);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recommendedTrack, matchRecsToSeedTrackKey]);
+  }, [recommendedTrack, matchRecsToSeedTrackKey, seedParams]);
 
   return (
     <div>
@@ -280,52 +282,52 @@ const RecommendedTracks = () => {
                       </li>
 
                       <li>
-                        <span>Duration:</span>{' '}
+                        <span>Duration:</span>
                         <span>{recommendedTrack.duration}</span>
                       </li>
                       <li>
-                        <span>Danceability:</span>{' '}
+                        <span>Danceability:</span>
                         <span>{recommendedTrack.danceability}</span>
                       </li>
                       <li>
-                        <span>Valence:</span>{' '}
+                        <span>Valence:</span>
                         <span>{recommendedTrack.valence}</span>
                       </li>
                       <li>
-                        <span>Acousticness:</span>{' '}
+                        <span>Acousticness:</span>
                         <span>{recommendedTrack.acousticness}</span>
                       </li>
                       <li>
-                        <span>Liveness:</span>{' '}
+                        <span>Liveness:</span>
                         <span>{recommendedTrack.liveness}</span>
                       </li>
                       <li>
-                        <span>Loudness:</span>{' '}
+                        <span>Loudness:</span>
                         <span>{recommendedTrack.loudness}</span>
                       </li>
                       <li>
-                        <span>Popularity:</span>{' '}
+                        <span>Popularity:</span>
                         <span>{recommendedTrack.track_popularity}</span>
                       </li>
                       <li>
-                        <span>Speechiness:</span>{' '}
+                        <span>Speechiness:</span>
                         <span>{recommendedTrack.speechiness}</span>
                       </li>
 
                       <br />
                       <li>
-                        <span>Key:</span>{' '}
+                        <span>Key:</span>
                         <span>
                           {keyDict[recommendedTrack.key]}
                           {recommendedTrack.mode === 1 ? '' : 'm'}
                         </span>
                       </li>
                       <li>
-                        <span>Album:</span>{' '}
+                        <span>Album:</span>
                         <span>{recommendedTrack.album}</span>
                       </li>
                       <li>
-                        <span>Released:</span>{' '}
+                        <span>Released:</span>
                         <span>{recommendedTrack.release_date}</span>
                       </li>
                     </ul>

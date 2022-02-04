@@ -5,10 +5,12 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 interface InputProps {
-  title: string;
-  limit: number;
-  wholeNumber: boolean;
-  extra_text: string | boolean;
+  inputItem: {
+    input_name: string;
+    extra_text: string | boolean;
+    range_limit: number;
+    takes_whole_numbers: boolean;
+  };
   paramValue: any;
   saveParam: (
     paramName: string,
@@ -16,25 +18,16 @@ interface InputProps {
     limit: number,
     maxOrMin: string
   ) => void;
-  getTracks: (recommendedTrack: { [key: string]: any }) => void;
-  recommendedTrack: { [key: string]: any };
 }
 
-const RecTweaksInput = ({
-  title,
-  saveParam,
-  limit,
-  wholeNumber,
-  extra_text,
-  paramValue,
-  getTracks,
-  recommendedTrack,
-}: InputProps) => {
+const RecTweaksInput = ({ saveParam, paramValue, inputItem }: InputProps) => {
+  const { input_name, extra_text, range_limit, takes_whole_numbers } =
+    inputItem;
   const [error, setError] = useState(false);
   const [maxOrMin, setMaxOrMin] = useState(paramValue.maxOrMin || 'target');
   const [inputValue, setInputValue] = useState(paramValue.value || false);
   const [inputLabel, setInputLabel] = useState(
-    `min ${title} (0 – ${limit}${extra_text || ''})`
+    `min ${input_name} (0 – ${range_limit}${extra_text || ''})`
   );
 
   const handleRadioChange = (
@@ -42,7 +35,9 @@ const RecTweaksInput = ({
   ) => {
     setMaxOrMin(event.target.value);
     setInputLabel(
-      `${event.target.value} ${title} (0 – ${limit}${extra_text || ''})`
+      `${event.target.value} ${input_name} (0 – ${range_limit}${
+        extra_text || ''
+      })`
     );
   };
 
@@ -50,12 +45,6 @@ const RecTweaksInput = ({
     event: React.ChangeEvent<{ [key: string]: any }>
   ) => {
     setInputValue(event.target.value);
-  };
-
-  const searchOnEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      getTracks(recommendedTrack);
-    }
   };
 
   // for when inputs are updated from outside the component
@@ -68,23 +57,21 @@ const RecTweaksInput = ({
       if (inputValue && inputValue !== '0') {
         if (
           inputValue &&
-          wholeNumber &&
+          takes_whole_numbers &&
           !Number.isInteger(parseFloat(inputValue))
         ) {
           setError(true);
-          // saveParam(title, false, limit, maxOrMin)
-        } else if (!(inputValue > 0 && inputValue < limit)) {
+        } else if (!(inputValue > 0 && inputValue < range_limit)) {
           setError(true);
-          // saveParam(title, false, limit)
         } else {
           setError(false);
-          saveParam(title, inputValue, limit, maxOrMin);
+          saveParam(input_name, inputValue, range_limit, maxOrMin);
         }
       } else if (inputValue === '0') {
-        saveParam(title, false, limit, maxOrMin);
+        saveParam(input_name, false, range_limit, maxOrMin);
         setError(true);
       } else {
-        saveParam(title, false, limit, maxOrMin);
+        saveParam(input_name, false, range_limit, maxOrMin);
         setError(false);
       }
     };
@@ -126,7 +113,6 @@ const RecTweaksInput = ({
         type="number"
         className="rec-tweaks__textfield"
         onChange={handleInputChange}
-        onKeyPress={searchOnEnter}
         error={error}
         helperText={error ? 'Invalid range value' : false}
       />

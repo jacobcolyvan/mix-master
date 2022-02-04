@@ -38,8 +38,9 @@ const App = () => {
     liveness: false,
     speechiness: false,
     acousticness: false,
+    genre: false,
   });
-  const [matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey] = useState(true);
+  const [matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey] = useState(false);
   const [cookies, setCookie] = useCookies(['token']);
 
   const [searchOptionValues, setSearchOptionValues] = useState({
