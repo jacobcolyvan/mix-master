@@ -24,10 +24,10 @@
   },
   "scripts": {
     "start": "BROWSER=none react-scripts start",
-    "build": "react-scripts build",
+    "build": "DISABLE_NEW_JSX_TRANSFORM=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+    "prettier-format": "prettier --config .prettierrc './src/**/*.ts' --write"
   },
   "eslintConfig": {
     "extends": [
