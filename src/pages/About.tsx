@@ -13,7 +13,7 @@ const About = () => {
       </p>
       <ul>
         <li>
-          – The track name
+          – The track name{' '}
           <b>
             <span>copies to clipboard</span>
           </b>{' '}

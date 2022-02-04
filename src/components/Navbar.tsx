@@ -1,16 +1,19 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import UserContext from '../context/UserContext';
 import { useHistory } from 'react-router-dom';
 
 const Navbar = () => {
   const history = useHistory();
   const { token, authError, resetStates } = useContext(UserContext);
-  const pathname = history.location.pathname;
+  const [activeNavItem, setActiveNavItem] = useState('/');
 
   const loadPage = (link: string) => {
-    resetStates();
+    setActiveNavItem(link);
     history.push(link);
+    resetStates();
   };
+
+  useEffect(() => {}, [history.location.pathname]);
 
   return (
     <header className="navbar">
@@ -19,19 +22,25 @@ const Navbar = () => {
       {token && !authError && (
         <div className="nav-buttons">
           <a
-            className={`nav-button ${pathname === '/' ? 'active' : ''}`}
+            className={`nav-button nav-button__top ${
+              activeNavItem === '/' ? 'active' : ''
+            }`}
             onClick={() => loadPage('/')}
           >
             Playlists
           </a>
           <a
-            className={`nav-button ${pathname === '/search' ? 'active' : ''}`}
+            className={`nav-button ${
+              activeNavItem === '/search' ? 'active' : ''
+            }`}
             onClick={() => loadPage('/search')}
           >
             Search
           </a>
           <a
-            className={`nav-button ${pathname === '/about' ? 'active' : ''}`}
+            className={`nav-button ${
+              activeNavItem === '/about' ? 'active' : ''
+            }`}
             onClick={() => loadPage('/about')}
           >
             About
