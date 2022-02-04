@@ -7,6 +7,8 @@ import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 const inputChoices = [
   {
@@ -122,6 +124,11 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
     setCurrentTab(newValue);
   };
 
+  const handleSeedParamRemoval = (paramName: string) => {
+    saveSeedParam(paramName, false, 1, 'target');
+    getTracks(recommendedTrack);
+  };
+
   return (
     <div className="rec-tweaks__div">
       <h4>Tweak the recommendations below:</h4>
@@ -190,8 +197,15 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
             (param) =>
               seedParams[param] && (
                 <li key={`currently-selected-param-li__${param}`}>
-                  – {seedParams[param].maxOrMin} {param}{' '}
-                  {seedParams[param].value}
+                  {`– ${seedParams[param].maxOrMin} ${param}: ${seedParams[param].value}`}
+                  <IconButton
+                    aria-label="close"
+                    onClick={() => handleSeedParamRemoval(param)}
+                    size="small"
+                    className="close-icon"
+                  >
+                    <CloseIcon />
+                  </IconButton>
                 </li>
               )
           )}

@@ -74,7 +74,7 @@ const RecommendedTracks = () => {
 
       let tracklist;
       if (matchRecsToSeedTrackKey) {
-        // macth key
+        // match key
         const url1 =
           `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}` +
           // conditional here to account for any missing track attributes

@@ -58,6 +58,11 @@ const RecTweaksInput = ({
     }
   };
 
+  // for when inputs are updated from outside the component
+  useEffect(() => {
+    setInputValue(paramValue.value || false);
+  }, [paramValue]);
+
   useEffect(() => {
     const validateInput = () => {
       if (inputValue && inputValue !== '0') {

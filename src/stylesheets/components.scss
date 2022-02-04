@@ -149,6 +149,11 @@
 
   .currently-selected-params-div {
     margin: 0 1rem 2rem 1rem;
+    width: 50%;
+
+    @media screen and (max-width: 864px) {
+      width: 92%;
+    }
 
     label:first-child {
       font-style: italic;
@@ -160,6 +165,16 @@
       li {
         font-size: 1em;
         text-transform: capitalize;
+        margin: 0.3em 0;
+      }
+
+      .close-icon {
+        margin-left: 10%;
+        float: right;
+
+        * {
+          font-size: 1em;
+        }
       }
     }
   }
