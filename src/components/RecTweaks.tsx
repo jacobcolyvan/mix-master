@@ -99,8 +99,6 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
     if (!value) {
       setSeedParams({ ...seedParams, [paramName]: false });
     } else if (paramName === 'genre' || (value >= 0 && value <= limit)) {
-      // convert seconds to ms
-      if (paramName === 'duration') value = value * 1000;
       setSeedParams({
         ...seedParams,
         [paramName]: { value: value, maxOrMin: maxOrMin },

@@ -50,10 +50,15 @@ const RecommendedTracks = () => {
         // if (mode) url += `&target_mode=${mode}`
 
         Object.keys(seedParams).forEach((param) => {
-          if (seedParams[param] && param !== 'genre') {
-            currentUrl += `&${seedParams[param].maxOrMin}_${param}=${seedParams[param].value}`;
-          } else if (seedParams[param] && param === 'genre') {
+          if (seedParams[param] && param === 'genre') {
             currentUrl += `&seed_genres=${seedParams['genre'].value}`;
+          } else if (seedParams[param] && param === 'duration') {
+            // convert seconds to ms
+            currentUrl += `&${seedParams[param].maxOrMin}_${param}=${
+              seedParams[param].value * 1000
+            }`;
+          } else if (seedParams[param]) {
+            currentUrl += `&${seedParams[param].maxOrMin}_${param}=${seedParams[param].value}`;
           }
         });
 
@@ -221,7 +226,6 @@ const RecommendedTracks = () => {
 
   useEffect(() => {
     getTracks(recommendedTrack);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recommendedTrack, matchRecsToSeedTrackKey, seedParams]);
 
   return (

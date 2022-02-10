@@ -27,7 +27,7 @@ const RecTweaksInput = ({ saveParam, paramValue, inputItem }: InputProps) => {
   const [maxOrMin, setMaxOrMin] = useState(paramValue.maxOrMin || 'target');
   const [inputValue, setInputValue] = useState(paramValue.value || false);
   const [inputLabel, setInputLabel] = useState(
-    `min ${input_name} (0 – ${range_limit}${extra_text || ''})`
+    `${maxOrMin} ${input_name} (0 – ${range_limit}${extra_text || ''})`
   );
 
   const handleRadioChange = (
