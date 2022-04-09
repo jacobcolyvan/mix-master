@@ -9,6 +9,9 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { CookiesProvider } from 'react-cookie';
 
+import { Provider } from 'react-redux';
+import { store } from './app/store';
+
 const theme = createTheme({
   palette: {
     type: 'dark',
@@ -27,11 +30,13 @@ const theme = createTheme({
 
 dotenv.config();
 ReactDOM.render(
-  <CookiesProvider>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </CookiesProvider>,
+  <Provider store={store}>
+    <CookiesProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </CookiesProvider>
+  </Provider>,
   document.getElementById('root')
 );
