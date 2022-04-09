@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": false,
     "checkJs": false,
     "skipLibCheck": true,
@@ -15,12 +19,11 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "noEmitOnError": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "sourceMap": true,
     "declaration": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    // "noImplicitReturns": true,
     "noImplicitAny": false,
     "useUnknownInCatchVariables": false,
     "incremental": true,
@@ -29,6 +32,12 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "build"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
 }

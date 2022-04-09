@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
 import UserContext from '../context/UserContext';

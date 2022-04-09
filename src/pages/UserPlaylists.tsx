@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import UserContext from '../context/UserContext';
 import PlaylistList from '../components/PlaylistList';

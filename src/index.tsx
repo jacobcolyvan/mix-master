@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import './stylesheets/global.scss';
 import './stylesheets/pages.scss';
