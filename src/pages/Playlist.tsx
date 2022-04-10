@@ -2,22 +2,19 @@ import { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import parse from 'html-react-parser';
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/store';
+
 import UserContext from '../context/UserContext';
 import millisToMinutesAndSeconds from '../utils/CommonFunctions';
-
 import Tracks from '../components/Tracks';
 import SortBy from '../components/SortBy';
 import KeySelect from '../components/KeySelect';
 
 const Playlist = () => {
-  const {
-    token,
-    setTracks,
-    setSortedTracks,
-    pushPlaylistToState,
-    handleAuthError,
-    username,
-  } = useContext(UserContext);
+  const { token, setTracks, setSortedTracks, pushPlaylistToState, handleAuthError } =
+    useContext(UserContext);
+  const username = useSelector((state: RootState) => state.settingsSlice.username);
   const [sortOption, setSortOption] = useState('default');
   const [keyOption, setKeyOption] = useState('camelot');
   const history: any = useHistory();
@@ -123,9 +120,7 @@ const Playlist = () => {
 
             artistsResponse = await axios({
               method: 'get',
-              url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(
-                ','
-              )}`,
+              url: `https://api.spotify.com/v1/artists?ids=${artistIds.join(',')}`,
               headers: {
                 Authorization: 'Bearer ' + token,
                 'Content-Type': 'application/json',
@@ -148,14 +143,8 @@ const Playlist = () => {
           }
 
           tracklist = [...tracklist, ...tracksResponse];
-          trackFeatures = [
-            ...trackFeatures,
-            ...featuresResponse?.data.audio_features,
-          ];
-          artistFeatures = [
-            ...artistFeatures,
-            ...artistsResponse?.data.artists,
-          ];
+          trackFeatures = [...trackFeatures, ...featuresResponse?.data.audio_features];
+          artistFeatures = [...artistFeatures, ...artistsResponse?.data.artists];
 
           offset += 50;
         }
@@ -177,38 +166,22 @@ const Playlist = () => {
                   : '',
               key: trackFeatures[index] != null ? trackFeatures[index].key : '',
               mode:
-                trackFeatures[index] != null
-                  ? parseInt(trackFeatures[index].mode)
-                  : '',
+                trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : '',
               energy:
                 trackFeatures[index] != null
-                  ? Math.round(trackFeatures[index].energy.toFixed(2) * 100) /
-                    100
+                  ? Math.round(trackFeatures[index].energy.toFixed(2) * 100) / 100
                   : '',
               danceability:
-                trackFeatures[index] != null
-                  ? trackFeatures[index].danceability
-                  : '',
+                trackFeatures[index] != null ? trackFeatures[index].danceability : '',
               acousticness:
-                trackFeatures[index] != null
-                  ? trackFeatures[index].acousticness
-                  : '',
+                trackFeatures[index] != null ? trackFeatures[index].acousticness : '',
               liveness:
-                trackFeatures[index] != null
-                  ? trackFeatures[index].liveness
-                  : '',
+                trackFeatures[index] != null ? trackFeatures[index].liveness : '',
               loudness:
-                trackFeatures[index] != null
-                  ? trackFeatures[index].loudness
-                  : '',
+                trackFeatures[index] != null ? trackFeatures[index].loudness : '',
               speechiness:
-                trackFeatures[index] != null
-                  ? trackFeatures[index].speechiness
-                  : '',
-              valence:
-                trackFeatures[index] != null
-                  ? trackFeatures[index].valence
-                  : '',
+                trackFeatures[index] != null ? trackFeatures[index].speechiness : '',
+              valence: trackFeatures[index] != null ? trackFeatures[index].valence : '',
 
               duration:
                 item.track.duration_ms != null
@@ -217,9 +190,7 @@ const Playlist = () => {
               track_popularity:
                 item.track.popularity != null ? item.track.popularity : '',
               artist_genres:
-                artistFeatures[index] != null
-                  ? artistFeatures[index].genres
-                  : '',
+                artistFeatures[index] != null ? artistFeatures[index].genres : '',
               album: item.track.album.name && item.track.album.name,
               release_date: item.track.album.release_date
                 ? item.track.album.release_date
@@ -251,13 +222,9 @@ const Playlist = () => {
       <SortBy sortOption={sortOption} setSortOption={setSortOption} />
 
       {playlist && <h3 className="playlist-page-title">{playlist.name}</h3>}
-      {description && (
-        <p className="playlist-page-description">{description}</p>
-      )}
+      {description && <p className="playlist-page-description">{description}</p>}
       {playlist.owner.display_name !== username && (
-        <p className="playlist-page-description">
-          ({playlist.owner.display_name}).
-        </p>
+        <p className="playlist-page-description">({playlist.owner.display_name}).</p>
       )}
       <Tracks sortOption={sortOption} keyOption={keyOption} />
     </div>

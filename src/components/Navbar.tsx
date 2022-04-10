@@ -1,10 +1,13 @@
 import { useContext, useState, useEffect } from 'react';
 import UserContext from '../context/UserContext';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/store';
 
 const Navbar = () => {
   const history = useHistory();
-  const { token, authError, resetStates } = useContext(UserContext);
+  const { token, resetStates } = useContext(UserContext);
+  const { authError } = useSelector((state: RootState) => state.settingsSlice);
   const [activeNavItem, setActiveNavItem] = useState('/');
 
   const loadPage = (link: string) => {

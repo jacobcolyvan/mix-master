@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 import { useCookies } from 'react-cookie';
 
@@ -18,15 +13,21 @@ import About from './pages/About';
 import Search from './pages/Search';
 import RecommendedTracks from './pages/RecommendedTracks';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { setSpotifyToken, setAuthError } from './features/settingsSlice';
+import { RootState } from './app/store';
+
 const App = () => {
-  const [token, setToken] = useState(false);
-  const [playlists, setPlaylists] = useState([]);
+  const dispatch = useDispatch();
+  const [cookies, setCookie] = useCookies(['token']); // ????
+  const token = useSelector((state: RootState) => state.settingsSlice.spotifyToken);
+  const { authError } = useSelector((state: RootState) => state.settingsSlice);
+  // const [isLoading, setIsLoading] = useState(false);
+
   const [tracks, setTracks] = useState(false);
   const [sortedTracks, setSortedTracks] = useState(false);
-  const [username, setUsername] = useState(false);
   const [recommendedTrack, setRecommendedTrack] = useState(false);
   const [lastClickedTrack, setLastClickedTrack] = useState(false);
-  const [authError, setAuthError] = useState(false);
   const [seedParams, setSeedParams] = useState({
     tempo: false,
     energy: false,
@@ -41,7 +42,6 @@ const App = () => {
     genre: false,
   });
   const [matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey] = useState(false);
-  const [cookies, setCookie] = useCookies(['token']);
 
   const [searchOptionValues, setSearchOptionValues] = useState({
     albumSearchQuery: '',
@@ -57,13 +57,12 @@ const App = () => {
     tracks: false,
   });
 
-  const resetStates = (resetRecommended = false) => {
+  const resetStates = () => {
     setTracks(false);
     setSortedTracks(false);
     setRecommendedTrack(false);
     setLastClickedTrack(false);
     // setSeedParams()
-    resetRecommended && setRecommendedTrack(false);
   };
 
   const pushPlaylistToState = (history, playlist) => {
@@ -83,10 +82,10 @@ const App = () => {
 
   const handleAuthError = () => {
     if (cookies.token && cookies.token !== token) {
-      setToken(cookies.token);
-      setAuthError(false);
+      dispatch(setSpotifyToken(cookies.token));
+      dispatch(setAuthError(false));
     } else {
-      setAuthError(true);
+      dispatch(setAuthError(false));
     }
   };
 
@@ -96,15 +95,10 @@ const App = () => {
         <UserContext.Provider
           value={{
             token,
-            setToken,
-            playlists,
-            setPlaylists,
             tracks,
             setTracks,
             sortedTracks,
             setSortedTracks,
-            username,
-            setUsername,
             resetStates,
             recommendedTrack,
             setRecommendedTrack,
@@ -120,8 +114,6 @@ const App = () => {
             setSeedParams,
             matchRecsToSeedTrackKey,
             setMatchRecsToSeedTrackKey,
-            cookies,
-            setCookie,
           }}
         >
           <Container maxWidth="lg" className="main-div" id="main">
@@ -135,20 +127,21 @@ const App = () => {
                       exact
                       path="/"
                       render={(props) => (
-                        <SpotifyAuth location={props.location} />
+                        <SpotifyAuth
+                          location={props.location}
+                          cookies={cookies}
+                          setCookie={setCookie}
+                        />
                       )}
                     />
                   ) : !authError ? (
-                    <Switch>
+                    <>
                       <Route exact path="/" component={UserPlaylists} />
                       <Route exact path="/about" component={About} />
                       <Route path="/search" component={Search} />
                       <Route path="/playlist" component={Playlist} />
-                      <Route
-                        path="/recommended"
-                        component={RecommendedTracks}
-                      />
-                    </Switch>
+                      <Route path="/recommended" component={RecommendedTracks} />
+                    </>
                   ) : (
                     <Route path="/" component={TokenExpired} />
                   )}

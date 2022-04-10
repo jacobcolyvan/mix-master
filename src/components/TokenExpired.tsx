@@ -1,24 +1,18 @@
 import Button from '@material-ui/core/Button';
-import { scopes } from '../utils/CommonVariables';
+import { createSpotifyAuthHREF } from '../utils/RequestUtils';
 
-const AuthError = () => {
+const TokenExpired = () => {
   return (
     <div>
       <p>
-        Your Spotify token has expired. Reauthorise by reloading the page or by
-        clicking the link below.
+        Your Spotify token has expired. Reauthorise by reloading the page or by clicking
+        the link below.
       </p>
 
       <p>
         <i>Authorise Spotify: </i>
       </p>
-      <a
-        href={`https://accounts.spotify.com/authorize?response_type=token&client_id=${
-          process.env.REACT_APP_SPOTIFY_CLIENT_ID2
-        }&scope=${scopes.join('%20')}&redirect_uri=${encodeURIComponent(
-          process.env.REACT_APP_SPOTIFY_CALLBACK_URI || 'missing-callback-uri'
-        )}&show_dialog=false`}
-      >
+      <a href={createSpotifyAuthHREF()}>
         <Button variant="outlined" color="primary" fullWidth>
           Authorise Spotify
         </Button>
@@ -27,4 +21,4 @@ const AuthError = () => {
   );
 };
 
-export default AuthError;
+export default TokenExpired;

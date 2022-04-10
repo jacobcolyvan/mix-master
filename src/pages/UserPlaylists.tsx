@@ -1,105 +1,29 @@
-import { useEffect, useContext, useState } from 'react';
-import axios from 'axios';
-import UserContext from '../context/UserContext';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { RootState } from '../app/store';
+import { getUserPlaylists } from '../features/itemsSlice';
+import { getUserProfile } from '../features/settingsSlice';
+
 import PlaylistList from '../components/PlaylistList';
 import Loading from '../components/Loading';
 
 const UserPlaylists = () => {
-  const {
-    token,
-    playlists,
-    setPlaylists,
-    username,
-    setUsername,
-    handleAuthError,
-  } = useContext(UserContext);
-  const [sortedPlaylists, setSortedPlaylists] = useState<
-    boolean | { [key: string]: any[] }
-  >(false);
+  const dispatch = useDispatch();
+  const { sortedPlaylists } = useSelector((state: RootState) => state.itemsSlice);
+  const { spotifyToken } = useSelector((state: RootState) => state.settingsSlice);
 
   useEffect(() => {
-    let playlistTotalAmount = 0;
-    let allPlaylists = false;
-    let tempPlaylistArray: [][] = [];
-    let offset = 0;
-
-    const getAllPlaylists = async () => {
-      try {
-        while (!allPlaylists) {
-          const response = await axios({
-            method: 'get',
-            url: `https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`,
-            headers: {
-              Authorization: 'Bearer ' + token,
-              'Content-Type': 'application/json',
-            },
-          });
-
-          playlistTotalAmount = response.data.total;
-          playlistTotalAmount > tempPlaylistArray.length
-            ? (offset += 50)
-            : (allPlaylists = true);
-
-          tempPlaylistArray = [...tempPlaylistArray, ...response.data.items];
-        }
-
-        setPlaylists(tempPlaylistArray);
-      } catch (err) {
-        if (err.response?.status === 401) handleAuthError();
-        console.log(err.message);
-      }
+    const dispatchPlaylists = async () => {
+      // HACKY
+      await dispatch(getUserProfile());
+      dispatch(getUserPlaylists());
     };
 
-    getAllPlaylists();
-  }, [token, setPlaylists]);
+    dispatchPlaylists();
+  }, [spotifyToken]);
 
-  useEffect(() => {
-    const getUserProfile = async () => {
-      try {
-        const userResponse = await axios({
-          method: 'get',
-          url: `https://api.spotify.com/v1/me/`,
-          headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        setUsername(userResponse.data.display_name);
-      } catch (err) {
-        if (err.response?.status === 401) handleAuthError();
-        console.log(err.message);
-      }
-    };
-
-    getUserProfile();
-  }, [token, setUsername, handleAuthError]);
-
-  useEffect(() => {
-    const sortPlaylists = () => {
-      let tempSortedPlaylists: { [key: string]: any[] } = {
-        created: [],
-        followed: [],
-        generated: [],
-      };
-
-      playlists.forEach((playlist: { [key: string]: any }) => {
-        if (playlist.name.slice(0, 4) === 'gena') {
-          tempSortedPlaylists.generated.push(playlist);
-        } else if (playlist.owner.display_name === username) {
-          tempSortedPlaylists.created.push(playlist);
-        } else {
-          tempSortedPlaylists.followed.push(playlist);
-        }
-      });
-
-      setSortedPlaylists(tempSortedPlaylists);
-    };
-
-    sortPlaylists();
-  }, [playlists, username]);
-
-  if (playlists.length > 0) {
+  if (sortedPlaylists) {
     return (
       <div>
         <div className="playlists-title__div">
@@ -124,21 +48,13 @@ const UserPlaylists = () => {
 
         {typeof sortedPlaylists === 'object' && (
           <div>
-            <div
-              className="playlists-title__div"
-              id="created-playlists"
-              tabIndex={0}
-            >
+            <div className="playlists-title__div" id="created-playlists" tabIndex={0}>
               <h3>Created</h3>
             </div>
             <PlaylistList playlistsToRender={sortedPlaylists.created} />
 
             <br />
-            <div
-              className="playlists-title__div"
-              id="followed-playlists"
-              tabIndex={0}
-            >
+            <div className="playlists-title__div" id="followed-playlists" tabIndex={0}>
               <h3>Followed</h3>
             </div>
             <PlaylistList playlistsToRender={sortedPlaylists.followed} />

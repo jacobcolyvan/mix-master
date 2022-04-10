@@ -1,28 +1,35 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
+import { useDispatch } from 'react-redux';
+import { setSpotifyToken } from '../features/settingsSlice';
 
-import UserContext from '../context/UserContext';
 import Info from '../components/Info';
-import { scopes } from '../utils/CommonVariables';
+import { createSpotifyAuthHREF } from '../utils/RequestUtils';
 
 interface AuthProps {
   location: { hash: string };
+  cookies: {
+    token?: any;
+  };
+  setCookie: any;
 }
 
-const SpotifyAuth = ({ location }: AuthProps) => {
+const SpotifyAuth = ({ location, cookies, setCookie }: AuthProps) => {
+  const dispatch = useDispatch();
   const history = useHistory();
-  const { token, setToken, setCookie, cookies } = useContext(UserContext);
 
   useEffect(() => {
-    if (cookies.token) setToken(cookies.token);
-    console.log('cocaine');
+    if (cookies.token) {
+      dispatch(setSpotifyToken(cookies.token));
+    }
   }, []);
 
   useEffect(() => {
     if (location && location.hash.split('=')[1]) {
       const newToken = location.hash.split('=')[1].split('&token')[0];
-      setToken(newToken);
+      dispatch(setSpotifyToken(newToken));
+
       setCookie('token', newToken, {
         path: '/',
         maxAge: 3600,
@@ -31,7 +38,7 @@ const SpotifyAuth = ({ location }: AuthProps) => {
       });
       history.replace('/');
     }
-  }, [setToken, token, history, location]);
+  }, [location]);
 
   return (
     <div>
@@ -39,13 +46,7 @@ const SpotifyAuth = ({ location }: AuthProps) => {
       <p>
         <i>Authorise Spotify to start: </i>
       </p>
-      <a
-        href={`https://accounts.spotify.com/authorize?response_type=token&client_id=${
-          process.env.REACT_APP_SPOTIFY_CLIENT_ID2
-        }&scope=${scopes.join('%20')}&redirect_uri=${encodeURIComponent(
-          process.env.REACT_APP_SPOTIFY_CALLBACK_URI || ''
-        )}&show_dialog=false`}
-      >
+      <a href={createSpotifyAuthHREF()}>
         <Button variant="outlined" color="primary" fullWidth>
           Authorise Spotify
         </Button>
