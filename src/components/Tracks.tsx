@@ -57,21 +57,23 @@ const Tracks = () => {
   };
 
   // TODO: move this logic to state
-  const goToRecommended = async (track: { [key: string]: any }) => {
+  const goToRecommended = async (track: Track) => {
     await dispatch(resetItemStates);
 
-    const recommendedTrack = {
+    const recommendedTrack: RecommendedTrack = {
       id: track.id,
       key: track.key,
       parsedKeys: [
         `${
-          track.mode === 1
+          String(track.mode) === '1'
             ? camelotMajorKeyDict[track.key] + 'B'
             : camelotMinorKeyDict[track.key] + 'A'
         }`,
-        `${keyDict[track.key]}${track.mode === 1 ? '' : 'm'}`,
+        `${keyDict[track.key]}${track.mode === '1' ? '' : 'm'}`,
         // find the inverse major/minor key
-        track.mode === 1 ? [(track.key + 9) % 12, 0] : [(track.key + 3) % 12, 1],
+        String(track.mode) === '1'
+          ? [String((parseInt(track.key) + 9) % 12), "0"]
+          : [String((parseInt(track.key) + 3) % 12), "1"],
       ],
       mode: track.mode,
       name: track.name,
@@ -79,6 +81,8 @@ const Tracks = () => {
       energy: track.energy,
       tempo: track.tempo,
       acousticness: track.acousticness,
+      danceability: track.danceability,
+      instrumentalness: track.instrumentalness,
       liveness: track.liveness,
       loudness: track.loudness,
       speechiness: track.speechiness,
@@ -120,7 +124,7 @@ const Tracks = () => {
 
         <tbody>
           {sortedTracks &&
-            sortedTracks.map((track: { [key: string]: any }, index: number) => (
+            sortedTracks.map((track: Track, index: number) => (
               <tr key={`track${index}`} className={`track-name-tr`}>
                 <td
                   className="table-data__name table-data__name-hover"
@@ -150,11 +154,11 @@ const Tracks = () => {
                 >
                   {keyOption === 'camelot'
                     ? `${
-                        track.mode === 1
+                        String(track.mode) === '1'
                           ? camelotMajorKeyDict[track.key] + 'B'
                           : camelotMinorKeyDict[track.key] + 'A'
                       }`
-                    : `${keyDict[track.key]}${track.mode === 1 ? '' : 'm'}`}
+                    : `${keyDict[track.key]}${String(track.mode) === '1' ? '' : 'm'}`}
                 </td>
                 <td className="table-data__attributes table-data__attributes-energy">
                   {track.energy && track.energy}

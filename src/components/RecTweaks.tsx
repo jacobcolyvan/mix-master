@@ -17,13 +17,14 @@ import {
 } from '../features/controlsSlice';
 import RecTweaksInput from './RecTweaksInput';
 import RecTweaksGenre from './RecTweaksGenre';
+import { getRecommendedTracks } from '../features/itemsSlice';
+import { RecommendedTrack } from '../types';
 
 interface RecTweakProps {
-  getTracks: (recommendedTrack: { [key: string]: any }) => void;
-  recommendedTrack: { [key: string]: any };
+  recommendedTrack: RecommendedTrack;
 }
 
-const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
+const RecTweaks = ({ recommendedTrack }: RecTweakProps) => {
   const dispatch = useDispatch();
   const { matchRecsToSeedTrackKey, seedAttributes } = useSelector(
     (state: RootState) => state.controlsSlice
@@ -93,7 +94,7 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => getTracks(recommendedTrack)}
+        onClick={() => dispatch(getRecommendedTracks(recommendedTrack))}
         className="button rec-tweaks__button"
       >
         Refresh Recommendations

@@ -2,7 +2,7 @@ export type Track = {
   id: string;
   name: string;
   album: string;
-  artists: { [key: string]: any }[]; // Artist type?
+  artists: string[];
   artist_genres: string[] | null;
   release_date: string;
   analysis_url?: string;
@@ -25,6 +25,10 @@ export type Track = {
   loudness: string | ''; // -60-0db
   speechiness: string | ''; // 0-1;
   valence: string | ''; // 0-1;
+};
+
+export type RecommendedTrack = Track & {
+  parsedKeys: any[]
 };
 
 // Playlist response object
