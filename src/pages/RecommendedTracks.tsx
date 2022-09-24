@@ -1,9 +1,5 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import axios, { AxiosResponse } from 'axios';
-import UserContext from '../context/UserContext';
-import { millisToMinutesAndSeconds } from '../utils/CommonFunctions';
-import { keyDict } from '../utils/CommonVariables';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../app/store';
@@ -13,19 +9,9 @@ import SortBy from '../components/SortBy';
 import KeySelect from '../components/KeySelect';
 import RecTweaks from '../components/RecTweaks';
 
-import { withStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import { selectKeyDisplayOption, selectSpotifyToken } from '../features/settingsSlice';
-import { setSortedTracks, setTracks } from '../features/itemsSlice';
-
-const HtmlTooltip = withStyles(() => ({
-  tooltip: {
-    backgroundColor: '#484848',
-    maxWidth: 1000,
-    border: '1px solid #dadde9',
-  },
-}))(Tooltip);
+import { selectKeyDisplayOption } from '../features/settingsSlice';
+import { getRecommendedTracks } from '../features/itemsSlice';
+import TrackTooltip from '../components/TrackTooltip';
 
 const RecommendedTracks = () => {
   const dispatch = useDispatch();
@@ -258,70 +244,7 @@ const RecommendedTracks = () => {
                   </span>
                 </span>
 
-                <HtmlTooltip
-                  className="table-data__name__tooltip"
-                  placement="left"
-                  title={
-                    <ul className="recommended-tooltip__ul">
-                      <li className="table-date__tooltip-genres">
-                        <span>Genres: </span>
-                        <span>{recommendedTrack.artist_genres.join(', ')}.</span>
-                      </li>
-
-                      <li>
-                        <span>Duration:</span>
-                        <span>{recommendedTrack.duration}</span>
-                      </li>
-                      <li>
-                        <span>Danceability:</span>
-                        <span>{recommendedTrack.danceability}</span>
-                      </li>
-                      <li>
-                        <span>Valence:</span>
-                        <span>{recommendedTrack.valence}</span>
-                      </li>
-                      <li>
-                        <span>Acousticness:</span>
-                        <span>{recommendedTrack.acousticness}</span>
-                      </li>
-                      <li>
-                        <span>Liveness:</span>
-                        <span>{recommendedTrack.liveness}</span>
-                      </li>
-                      <li>
-                        <span>Loudness:</span>
-                        <span>{recommendedTrack.loudness}</span>
-                      </li>
-                      <li>
-                        <span>Popularity:</span>
-                        <span>{recommendedTrack.track_popularity}</span>
-                      </li>
-                      <li>
-                        <span>Speechiness:</span>
-                        <span>{recommendedTrack.speechiness}</span>
-                      </li>
-
-                      <br />
-                      <li>
-                        <span>Key:</span>
-                        <span>
-                          {keyDict[recommendedTrack.key]}
-                          {recommendedTrack.mode === 1 ? '' : 'm'}
-                        </span>
-                      </li>
-                      <li>
-                        <span>Album:</span>
-                        <span>{recommendedTrack.album}</span>
-                      </li>
-                      <li>
-                        <span>Released:</span>
-                        <span>{recommendedTrack.release_date}</span>
-                      </li>
-                    </ul>
-                  }
-                >
-                  <InfoOutlinedIcon fontSize="small" />
-                </HtmlTooltip>
+                <TrackTooltip track={recommendedTrack} />
               </td>
               <td className="table-data__attributes key-data">
                 {keyOption === 'camelot'

@@ -11,10 +11,8 @@ import {
   sortTracksByAudioFeatures,
 } from '../features/itemsSlice';
 
-import { withStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import Loading from './Loading';
+import TrackTooltip from './TrackTooltip';
 
 import {
   keyDict,
@@ -23,15 +21,7 @@ import {
 } from '../utils/CommonVariables';
 import { selectSortTracksBy } from '../features/controlsSlice';
 import { selectKeyDisplayOption } from '../features/settingsSlice';
-
-const HtmlTooltip = withStyles(() => ({
-  tooltip: {
-    backgroundColor: '#484848',
-    maxWidth: 600,
-    width: 'auto',
-    border: '1px solid #dadde9',
-  },
-}))(Tooltip);
+import { RecommendedTrack, Track } from '../types';
 
 const Tracks = () => {
   const dispatch = useDispatch();
@@ -152,61 +142,7 @@ const Tracks = () => {
                     </span>
                   </span>
 
-                  <HtmlTooltip
-                    className="table-data__name__tooltip"
-                    placement="left"
-                    tabIndex={0}
-                    title={
-                      <ul className="tooltip-ul">
-                        <li className="table-date__tooltip-genres">
-                          <span>Genres:</span>
-                          <span>{track.artist_genres.join(', ')}.</span>
-                        </li>
-
-                        <li>
-                          <span>Duration:</span> <span>{track.duration}</span>
-                        </li>
-                        <li>
-                          <span>Danceability:</span> <span>{track.danceability}</span>
-                        </li>
-                        <li>
-                          <span>Valence:</span> <span>{track.valence}</span>
-                        </li>
-                        <li>
-                          <span>Acousticness:</span> <span>{track.acousticness}</span>
-                        </li>
-                        <li>
-                          <span>Liveness:</span> <span>{track.liveness}</span>
-                        </li>
-                        <li>
-                          <span>Loudness:</span> <span>{track.loudness}</span>
-                        </li>
-                        <li>
-                          <span>Popularity:</span> <span>{track.track_popularity}</span>
-                        </li>
-                        <li>
-                          <span>Speechiness:</span> <span>{track.speechiness}</span>
-                        </li>
-
-                        <br />
-                        <li>
-                          <span>Key:</span>{' '}
-                          <span>
-                            {keyDict[track.key]}
-                            {track.mode === 1 ? '' : 'm'}
-                          </span>
-                        </li>
-                        <li>
-                          <span>Album:</span> <span>{track.album}</span>
-                        </li>
-                        <li>
-                          <span>Released:</span> <span>{track.release_date}</span>
-                        </li>
-                      </ul>
-                    }
-                  >
-                    <InfoOutlinedIcon fontSize="small" />
-                  </HtmlTooltip>
+                  <TrackTooltip track={track} />
                 </td>
                 <td
                   className="table-data__attributes key-data"
