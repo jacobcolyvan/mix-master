@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '../app/store';
 import { getUserPlaylists } from '../features/itemsSlice';
-import { getUserProfile } from '../features/settingsSlice';
+import { getUsername, selectSpotifyToken } from '../features/settingsSlice';
 
 import PlaylistList from '../components/PlaylistList';
 import Loading from '../components/Loading';
@@ -11,17 +11,17 @@ import Loading from '../components/Loading';
 const UserPlaylists = () => {
   const dispatch = useDispatch();
   const { sortedPlaylists } = useSelector((state: RootState) => state.itemsSlice);
-  const { spotifyToken } = useSelector((state: RootState) => state.settingsSlice);
+  const token = useSelector(selectSpotifyToken);
 
   useEffect(() => {
     const dispatchPlaylists = async () => {
-      // HACKY
-      await dispatch(getUserProfile());
+      // HACKY / what does this do?
+      await dispatch(getUsername());
       dispatch(getUserPlaylists());
     };
 
     dispatchPlaylists();
-  }, [spotifyToken]);
+  }, [token]);
 
   if (sortedPlaylists) {
     return (
@@ -60,6 +60,7 @@ const UserPlaylists = () => {
             <PlaylistList playlistsToRender={sortedPlaylists.followed} />
 
             <br />
+
             {sortedPlaylists.generated.length > 0 && (
               <>
                 <div

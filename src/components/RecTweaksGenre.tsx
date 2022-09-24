@@ -4,27 +4,25 @@ import TextField from '@material-ui/core/TextField';
 // NOTE: this file can be updated from this link --
 //       https://developer.spotify.com/console/get-available-genre-seeds/
 import genres from '../utils/genres.json';
+import { useDispatch } from 'react-redux';
+import { saveSeedAttribute } from '../features/controlsSlice';
 
 interface InputProps {
-  saveParam: (
-    paramName: string,
-    value: any,
-    limit: number,
-    maxOrMin: string
-  ) => void;
-  genre: { [key: string]: any } | boolean;
+  genre: { [key: string]: any } | false;
 }
 
-const RecTweaksGenre = ({ saveParam, genre }: InputProps) => {
+const RecTweaksGenre = ({ genre }: InputProps) => {
+  const dispatch = useDispatch();
+
   return (
     <div className="rec-tweaks-input__div rec-tweaks-input__genre">
       <Autocomplete
         fullWidth
         id="Genre-Autocomplete"
         options={genres.genres}
-        value={typeof genre === 'boolean' ? '' : genre.value}
+        value={genre === false ? '' : genre.value}
         onChange={(_, newValue) => {
-          saveParam('genre', newValue, 0, 'target');
+          dispatch(saveSeedAttribute('genre', newValue));
         }}
         renderInput={(params) => (
           <TextField {...params} label="Genre" variant="outlined" />

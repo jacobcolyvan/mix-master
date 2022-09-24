@@ -1,6 +1,15 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import UserContext from '../context/UserContext';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../app/store';
+import {
+  resetItemStates,
+  selectSortedTracks,
+  selectTracks,
+  setLastClickedTrack,
+  sortTracksByAudioFeatures,
+} from '../features/itemsSlice';
 
 import { withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -12,6 +21,8 @@ import {
   camelotMajorKeyDict,
   camelotMinorKeyDict,
 } from '../utils/CommonVariables';
+import { selectSortTracksBy } from '../features/controlsSlice';
+import { selectKeyDisplayOption } from '../features/settingsSlice';
 
 const HtmlTooltip = withStyles(() => ({
   tooltip: {
@@ -22,138 +33,21 @@ const HtmlTooltip = withStyles(() => ({
   },
 }))(Tooltip);
 
-interface TracksProps {
-  keyOption: string;
-  sortOption: string;
-}
-
-const Tracks = ({ keyOption, sortOption }: TracksProps) => {
-  const {
-    tracks,
-    sortedTracks,
-    setSortedTracks,
-    resetStates,
-    lastClickedTrack,
-    setLastClickedTrack,
-  } = useContext(UserContext);
+const Tracks = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
 
+  const tracks = useSelector(selectTracks);
+  const sortedTracks = useSelector(selectSortedTracks);
+  const sortOption = useSelector(selectSortTracksBy);
+  const keyOption = useSelector(selectKeyDisplayOption);
+
+  const { lastClickedTrack } = useSelector((state: RootState) => state.itemsSlice);
+
+  // Sort tracks on tracks, sorOption, and keyOption change
   useEffect(() => {
-    const camelotSort = (tempTracks: Array<{ [key: string]: any }>) => {
-      // tempTracks = tempTracks.sort((a, b) => {
-      //   return a - b;
-      // });
-      tempTracks = tempTracks.sort((a: any, b: any) => {
-        a =
-          a.mode === 0
-            ? parseInt(camelotMinorKeyDict[a.key])
-            : parseInt(camelotMajorKeyDict[a.key]) + 0.1;
-        b =
-          b.mode === 0
-            ? parseInt(camelotMinorKeyDict[b.key])
-            : parseInt(camelotMajorKeyDict[b.key]) + 0.1;
-
-        return a > b ? 1 : -1;
-      });
-
-      return tempTracks;
-    };
-
-    // This is a function for standard non-camelot key sort
-    const keySort = (tempTracks: Array<{ [key: string]: any }>) => {
-      tempTracks.sort((a, b) => parseInt(b.mode) - parseInt(a.mode));
-      tempTracks = tempTracks.sort((a, b) => parseInt(a.key) - parseInt(b.key));
-
-      return tempTracks;
-    };
-
-    // TODO: improve the trash heap sort logic below (case(?))
-    const sorter = (sortType: string) => {
-      if (tracks) {
-        if (sortType === 'tempo') {
-          const tempTracks = [...tracks].sort(
-            (a, b) => parseInt(a.tempo) - parseInt(b.tempo)
-          );
-
-          setSortedTracks(tempTracks);
-        } else if (sortType === 'duration') {
-          let tempTracks = [...tracks].sort(
-            (a, b) => parseInt(b.duration) - parseInt(a.duration)
-          );
-
-          setSortedTracks(tempTracks);
-        } else if (sortType === 'popularity') {
-          let tempTracks = [...tracks].sort(
-            (a, b) =>
-              parseInt(b.track_popularity) - parseInt(a.track_popularity)
-          );
-
-          setSortedTracks(tempTracks);
-        } else if (sortType === 'valence') {
-          let tempTracks = [...tracks].sort(
-            (a, b) => parseFloat(b.valence) - parseFloat(a.valence)
-          );
-
-          setSortedTracks(tempTracks);
-        } else if (sortType === 'durationThenKey') {
-          let tempTracks = [...tracks].sort(
-            (a, b) => parseInt(b.duration) - parseInt(a.duration)
-          );
-
-          setSortedTracks(
-            keyOption === 'camelot'
-              ? camelotSort(tempTracks)
-              : keySort(tempTracks)
-          );
-        } else if (sortType === 'tempoThenKey') {
-          let tempTracks = [...tracks].sort(
-            (a, b) => parseInt(a.tempo) - parseInt(b.tempo)
-          );
-
-          setSortedTracks(
-            keyOption === 'camelot'
-              ? camelotSort(tempTracks)
-              : keySort(tempTracks)
-          );
-        } else if (sortType === 'energyThenKey') {
-          let tempTracks = [...tracks].sort(
-            (a, b) => parseFloat(b.energy) - parseFloat(a.energy)
-          );
-
-          setSortedTracks(
-            keyOption === 'camelot'
-              ? camelotSort(tempTracks)
-              : keySort(tempTracks)
-          );
-        } else if (sortType === 'valenceThenKey') {
-          let tempTracks = [...tracks].sort(
-            (a, b) => parseFloat(b.valence) - parseFloat(a.valence)
-          );
-
-          setSortedTracks(
-            keyOption === 'camelot'
-              ? camelotSort(tempTracks)
-              : keySort(tempTracks)
-          );
-        } else if (sortType === 'major/minor') {
-          let tempTracks =
-            keyOption === 'camelot'
-              ? camelotSort([...tracks])
-              : keySort([...tracks]);
-
-          tempTracks = tempTracks.sort(
-            (a, b) => parseInt(a.mode) - parseInt(b.mode)
-          );
-
-          setSortedTracks(tempTracks);
-        } else {
-          setSortedTracks([...tracks]);
-        }
-      }
-    };
-
-    sorter(sortOption);
-  }, [sortOption, tracks, keyOption, setSortedTracks]);
+    dispatch(sortTracksByAudioFeatures());
+  }, [tracks, sortOption, keyOption]);
 
   const copyNameAndSaveAsCurrentTrack = (
     trackName: string,
@@ -164,17 +58,18 @@ const Tracks = ({ keyOption, sortOption }: TracksProps) => {
 
     if (lastClickedTrack) {
       const currentlySelected = document.getElementById(lastClickedTrack);
-      if (currentlySelected)
-        currentlySelected.classList.remove('currently-selected');
+      if (currentlySelected) currentlySelected.classList.remove('currently-selected');
     }
 
     const nowSelected = document.getElementById(clickedTrackId);
     if (nowSelected) nowSelected.classList.add('currently-selected');
-    setLastClickedTrack(clickedTrackId);
+    dispatch(setLastClickedTrack(clickedTrackId));
   };
 
-  const goToRecommended = (track: { [key: string]: any }) => {
-    resetStates(false);
+  // TODO: move this logic to state
+  const goToRecommended = async (track: { [key: string]: any }) => {
+    await dispatch(resetItemStates);
+
     const recommendedTrack = {
       id: track.id,
       key: track.key,
@@ -186,9 +81,7 @@ const Tracks = ({ keyOption, sortOption }: TracksProps) => {
         }`,
         `${keyDict[track.key]}${track.mode === 1 ? '' : 'm'}`,
         // find the inverse major/minor key
-        track.mode === 1
-          ? [(track.key + 9) % 12, 0]
-          : [(track.key + 3) % 12, 1],
+        track.mode === 1 ? [(track.key + 9) % 12, 0] : [(track.key + 3) % 12, 1],
       ],
       mode: track.mode,
       name: track.name,
@@ -208,7 +101,7 @@ const Tracks = ({ keyOption, sortOption }: TracksProps) => {
       release_date: track.release_date,
     };
 
-    // TODO: check this is stil working properly
+    // TODO: check this is still working properly
     history.push(
       `/recommended/?id=${track.id}`,
       // {
@@ -274,15 +167,13 @@ const Tracks = ({ keyOption, sortOption }: TracksProps) => {
                           <span>Duration:</span> <span>{track.duration}</span>
                         </li>
                         <li>
-                          <span>Danceability:</span>{' '}
-                          <span>{track.danceability}</span>
+                          <span>Danceability:</span> <span>{track.danceability}</span>
                         </li>
                         <li>
                           <span>Valence:</span> <span>{track.valence}</span>
                         </li>
                         <li>
-                          <span>Acousticness:</span>{' '}
-                          <span>{track.acousticness}</span>
+                          <span>Acousticness:</span> <span>{track.acousticness}</span>
                         </li>
                         <li>
                           <span>Liveness:</span> <span>{track.liveness}</span>
@@ -291,12 +182,10 @@ const Tracks = ({ keyOption, sortOption }: TracksProps) => {
                           <span>Loudness:</span> <span>{track.loudness}</span>
                         </li>
                         <li>
-                          <span>Popularity:</span>{' '}
-                          <span>{track.track_popularity}</span>
+                          <span>Popularity:</span> <span>{track.track_popularity}</span>
                         </li>
                         <li>
-                          <span>Speechiness:</span>{' '}
-                          <span>{track.speechiness}</span>
+                          <span>Speechiness:</span> <span>{track.speechiness}</span>
                         </li>
 
                         <br />
@@ -311,8 +200,7 @@ const Tracks = ({ keyOption, sortOption }: TracksProps) => {
                           <span>Album:</span> <span>{track.album}</span>
                         </li>
                         <li>
-                          <span>Released:</span>{' '}
-                          <span>{track.release_date}</span>
+                          <span>Released:</span> <span>{track.release_date}</span>
                         </li>
                       </ul>
                     }
@@ -335,9 +223,7 @@ const Tracks = ({ keyOption, sortOption }: TracksProps) => {
                 <td className="table-data__attributes table-data__attributes-energy">
                   {track.energy && track.energy}
                 </td>
-                <td className="table-data__attributes">
-                  {track.tempo && track.tempo}
-                </td>
+                <td className="table-data__attributes">{track.tempo && track.tempo}</td>
               </tr>
             ))}
         </tbody>

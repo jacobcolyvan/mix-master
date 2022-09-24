@@ -1,9 +1,12 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
 import UserContext from '../context/UserContext';
-import millisToMinutesAndSeconds from '../utils/CommonFunctions';
+import { millisToMinutesAndSeconds } from '../utils/CommonFunctions';
 import { keyDict } from '../utils/CommonVariables';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../app/store';
 
 import Tracks from '../components/Tracks';
 import SortBy from '../components/SortBy';
@@ -13,6 +16,8 @@ import RecTweaks from '../components/RecTweaks';
 import { withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { selectKeyDisplayOption, selectSpotifyToken } from '../features/settingsSlice';
+import { setSortedTracks, setTracks } from '../features/itemsSlice';
 
 const HtmlTooltip = withStyles(() => ({
   tooltip: {
@@ -23,22 +28,20 @@ const HtmlTooltip = withStyles(() => ({
 }))(Tooltip);
 
 const RecommendedTracks = () => {
-  const {
-    token,
-    setTracks,
-    setSortedTracks,
-    handleAuthError,
-    matchRecsToSeedTrackKey,
-    seedParams,
-  } = useContext(UserContext);
+  const dispatch = useDispatch();
   const history: any = useHistory();
+
+  const { handleAuthError } = useContext(UserContext);
   const recommendedTrack = history.location.state.recommendedTrack;
-  // const seedParams = history.location.state.seedParams;
-  const [sortOption, setSortOption] = useState('default');
-  const [keyOption, setKeyOption] = useState('camelot');
+  const keyOption = useSelector(selectKeyDisplayOption);
+
+  const { matchRecsToSeedTrackKey, seedAttributes } = useSelector(
+    (state: RootState) => state.controlsSlice
+  );
+  const token = useSelector(selectSpotifyToken);
 
   const getTracks = async (recommendedTrack: { [key: string]: any[] }) => {
-    setSortedTracks(false);
+    await dispatch(setSortedTracks(null));
 
     try {
       const generateUrl = (currentUrl: string, limit = 10) => {
@@ -49,16 +52,17 @@ const RecommendedTracks = () => {
         // if (trackSeed) url += `&seed_tracks=${ trackSeed.map(track => track.id).join(',') }`;
         // if (mode) url += `&target_mode=${mode}`
 
-        Object.keys(seedParams).forEach((param) => {
-          if (seedParams[param] && param === 'genre') {
-            currentUrl += `&seed_genres=${seedParams['genre'].value}`;
-          } else if (seedParams[param] && param === 'duration') {
-            // convert seconds to ms
-            currentUrl += `&${seedParams[param].maxOrMin}_${param}=${
-              seedParams[param].value * 1000
-            }`;
-          } else if (seedParams[param]) {
-            currentUrl += `&${seedParams[param].maxOrMin}_${param}=${seedParams[param].value}`;
+        Object.keys(seedAttributes).forEach((param) => {
+          if (seedAttributes[param].value !== '') {
+            if (param === 'genre') {
+              currentUrl += `&seed_genres=${seedAttributes[param].value}`;
+            } else if (param === 'duration') {
+              // Convert seconds to ms + ts casting weirdness
+              const durationInMs = parseInt(seedAttributes[param].value || '1') * 1000;
+              currentUrl += `&${seedAttributes[param].maxOrMinFilter}_${param}=${durationInMs}`;
+            } else {
+              currentUrl += `&${seedAttributes[param].maxOrMin}_${param}=${seedAttributes[param].value}`;
+            }
           }
         });
 
@@ -101,14 +105,12 @@ const RecommendedTracks = () => {
         const url2 =
           `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}` +
           `${
-            recommendedTrack.parsedKeys[2][0] ||
-            recommendedTrack.parsedKeys[2][0] === 0
+            recommendedTrack.parsedKeys[2][0] || recommendedTrack.parsedKeys[2][0] === 0
               ? `&target_key=${recommendedTrack.parsedKeys[2][0]}`
               : ''
           }` +
           `${
-            recommendedTrack.parsedKeys[2][1] ||
-            recommendedTrack.parsedKeys[2][1] === 0
+            recommendedTrack.parsedKeys[2][1] || recommendedTrack.parsedKeys[2][1] === 0
               ? `&target_mode=${recommendedTrack.parsedKeys[2][1]}`
               : ''
           }`;
@@ -148,9 +150,7 @@ const RecommendedTracks = () => {
 
       let trackFeatures: any[] | AxiosResponse<any> = await axios({
         method: 'get',
-        url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(
-          ','
-        )}`,
+        url: `https://api.spotify.com/v1/audio-features/?ids=${trackIds.join(',')}`,
         headers: {
           Authorization: 'Bearer ' + token,
           'Content-Type': 'application/json',
@@ -176,31 +176,20 @@ const RecommendedTracks = () => {
                 : '',
             key: trackFeatures[index] != null ? trackFeatures[index].key : '',
             mode:
-              trackFeatures[index] != null
-                ? parseInt(trackFeatures[index].mode)
-                : '',
+              trackFeatures[index] != null ? parseInt(trackFeatures[index].mode) : '',
             energy:
               trackFeatures[index] != null
                 ? Math.round(trackFeatures[index].energy.toFixed(2) * 100) / 100
                 : '',
             danceability:
-              trackFeatures[index] != null
-                ? trackFeatures[index].danceability
-                : '',
+              trackFeatures[index] != null ? trackFeatures[index].danceability : '',
             acousticness:
-              trackFeatures[index] != null
-                ? trackFeatures[index].acousticness
-                : '',
-            liveness:
-              trackFeatures[index] != null ? trackFeatures[index].liveness : '',
-            loudness:
-              trackFeatures[index] != null ? trackFeatures[index].loudness : '',
+              trackFeatures[index] != null ? trackFeatures[index].acousticness : '',
+            liveness: trackFeatures[index] != null ? trackFeatures[index].liveness : '',
+            loudness: trackFeatures[index] != null ? trackFeatures[index].loudness : '',
             speechiness:
-              trackFeatures[index] != null
-                ? trackFeatures[index].speechiness
-                : '',
-            valence:
-              trackFeatures[index] != null ? trackFeatures[index].valence : '',
+              trackFeatures[index] != null ? trackFeatures[index].speechiness : '',
+            valence: trackFeatures[index] != null ? trackFeatures[index].valence : '',
 
             duration:
               item.duration_ms != null
@@ -210,14 +199,12 @@ const RecommendedTracks = () => {
             artist_genres:
               artistFeatures[index] != null ? artistFeatures[index].genres : '',
             album: item.album.name ? item.album.name : '',
-            release_date: item.album.release_date
-              ? item.album.release_date
-              : '',
+            release_date: item.album.release_date ? item.album.release_date : '',
           };
         });
 
-      setTracks([...splicedTracks]);
-      setSortedTracks([...splicedTracks]);
+      dispatch(setTracks(splicedTracks));
+      dispatch(setSortedTracks(splicedTracks));
     } catch (err) {
       console.log(err.message);
       if (err.response?.status === 401) handleAuthError();
@@ -226,13 +213,13 @@ const RecommendedTracks = () => {
 
   useEffect(() => {
     getTracks(recommendedTrack);
-  }, [recommendedTrack, matchRecsToSeedTrackKey, seedParams]);
+  }, [recommendedTrack, matchRecsToSeedTrackKey, seedAttributes]);
 
   return (
     <div>
       <h2 className="recommended-page-title">Recommended Tracks</h2>
-      <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
-      <SortBy sortOption={sortOption} setSortOption={setSortOption} />
+      <KeySelect />
+      <SortBy />
 
       <RecTweaks getTracks={getTracks} recommendedTrack={recommendedTrack} />
 
@@ -266,9 +253,7 @@ const RecommendedTracks = () => {
                   {recommendedTrack.name} –{' '}
                   <span className="table_data__artist-name">
                     {recommendedTrack.artists.length > 1
-                      ? recommendedTrack.artists[0] +
-                        ', ' +
-                        recommendedTrack.artists[1]
+                      ? recommendedTrack.artists[0] + ', ' + recommendedTrack.artists[1]
                       : recommendedTrack.artists[0]}
                   </span>
                 </span>
@@ -280,9 +265,7 @@ const RecommendedTracks = () => {
                     <ul className="recommended-tooltip__ul">
                       <li className="table-date__tooltip-genres">
                         <span>Genres: </span>
-                        <span>
-                          {recommendedTrack.artist_genres.join(', ')}.
-                        </span>
+                        <span>{recommendedTrack.artist_genres.join(', ')}.</span>
                       </li>
 
                       <li>
@@ -348,15 +331,13 @@ const RecommendedTracks = () => {
               <td className="table-data__attributes table-data__attributes-energy">
                 {recommendedTrack.energy}
               </td>
-              <td className="table-data__attributes">
-                {recommendedTrack.tempo}
-              </td>
+              <td className="table-data__attributes">{recommendedTrack.tempo}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <Tracks sortOption={sortOption} keyOption={keyOption} />
+      <Tracks />
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk } from '../app/store';
+import { AppThunk, RootState } from '../app/store';
+import { KeyOptionTypes } from '../types';
 import { spotifyBaseRequest } from '../utils/RequestUtils';
 
 export interface SettingsState {
   spotifyToken: string;
   authError: boolean;
   username: string;
-  keyDisplayOption: 'camelot' | 'standard';
+  keyDisplayOption: KeyOptionTypes;
 }
 
 const initialState: SettingsState = {
@@ -31,18 +32,43 @@ const settingsSlice = createSlice({
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
     },
+    setKeyDisplayOption: (state, action: PayloadAction<KeyOptionTypes>) => {
+      state.keyDisplayOption = action.payload;
+    },
   },
 });
-
-export const { setSpotifyToken, setAuthError, setUsername } = settingsSlice.actions;
-
 export default settingsSlice.reducer;
 
-export const getUserProfile = (): AppThunk => {
+export const { setSpotifyToken, setAuthError, setUsername, setKeyDisplayOption } =
+  settingsSlice.actions;
+
+// ----------------------------------------------------------------------------
+// Selectors
+
+export const selectSpotifyToken = (state: RootState): string => {
+  return state?.settingsSlice.spotifyToken;
+};
+
+export const selectAuthError = (state: RootState): boolean => {
+  return state?.settingsSlice.authError;
+};
+
+export const selectUsername = (state: RootState): string => {
+  return state?.settingsSlice.username;
+};
+
+export const selectKeyDisplayOption = (state: RootState): string => {
+  return state?.settingsSlice.keyDisplayOption;
+};
+
+// ----------------------------------------------------------------------------
+// Thunks
+
+export const getUsername = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
       const { spotifyToken } = getState().settingsSlice;
-      const response = await spotifyBaseRequest(spotifyToken).get('/');
+      const response = await spotifyBaseRequest(spotifyToken).get('me/');
 
       if (response.status === 200) {
         dispatch(setUsername(response.data.display_name));

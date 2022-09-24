@@ -1,19 +1,23 @@
-import { useContext, useState, useEffect } from 'react';
-import UserContext from '../context/UserContext';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../app/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectAuthError, selectSpotifyToken } from '../features/settingsSlice';
+import { resetItemStates } from '../features/itemsSlice';
 
 const Navbar = () => {
   const history = useHistory();
-  const { token, resetStates } = useContext(UserContext);
-  const { authError } = useSelector((state: RootState) => state.settingsSlice);
+  const dispatch = useDispatch();
+
+  const authError = useSelector(selectAuthError);
+  const token = useSelector(selectSpotifyToken);
+
   const [activeNavItem, setActiveNavItem] = useState('/');
 
   const loadPage = (link: string) => {
     setActiveNavItem(link);
     history.push(link);
-    resetStates();
+
+    dispatch(resetItemStates);
   };
 
   useEffect(() => {}, [history.location.pathname]);
@@ -33,17 +37,13 @@ const Navbar = () => {
             Playlists
           </a>
           <a
-            className={`nav-button ${
-              activeNavItem === '/search' ? 'active' : ''
-            }`}
+            className={`nav-button ${activeNavItem === '/search' ? 'active' : ''}`}
             onClick={() => loadPage('/search')}
           >
             Search
           </a>
           <a
-            className={`nav-button ${
-              activeNavItem === '/about' ? 'active' : ''
-            }`}
+            className={`nav-button ${activeNavItem === '/about' ? 'active' : ''}`}
             onClick={() => loadPage('/about')}
           >
             About

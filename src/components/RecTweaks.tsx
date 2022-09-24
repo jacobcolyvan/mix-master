@@ -1,7 +1,7 @@
-import { useState, useContext } from 'react';
-import UserContext from '../context/UserContext';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../app/store';
 
-import RecTweaksInput from './RecTweaksInput';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
@@ -9,72 +9,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import RecTweaksGenre from './RecTweaksGenre';
 
-const inputChoices = [
-  {
-    input_name: 'tempo',
-    extra_text: false,
-    range_limit: 240,
-    takes_whole_numbers: true,
-  },
-  {
-    input_name: 'energy',
-    extra_text: false,
-    range_limit: 1,
-    takes_whole_numbers: false,
-  },
-  {
-    input_name: 'duration',
-    extra_text: ' seconds',
-    range_limit: 3600,
-    takes_whole_numbers: true,
-  },
-  {
-    input_name: 'popularity',
-    extra_text: false,
-    range_limit: 100,
-    takes_whole_numbers: true,
-  },
-  {
-    input_name: 'intrumentalness',
-    extra_text: false,
-    range_limit: 1,
-    takes_whole_numbers: false,
-  },
-  {
-    input_name: 'valence',
-    extra_text: false,
-    range_limit: 1,
-    takes_whole_numbers: false,
-  },
-  {
-    input_name: 'danceability',
-    extra_text: false,
-    range_limit: 1,
-    takes_whole_numbers: false,
-  },
-  {
-    input_name: 'liveness',
-    extra_text: false,
-    range_limit: 1,
-    takes_whole_numbers: false,
-  },
-  {
-    input_name: 'speechiness',
-    extra_text: false,
-    range_limit: 1,
-    takes_whole_numbers: false,
-  },
-  {
-    input_name: 'acousticness',
-    extra_text: false,
-    range_limit: 1,
-    takes_whole_numbers: false,
-  },
-  // // Loudness is an available param but has a weird input raneg (db's)
-  // {input_name: "loudness", range_limit: 1, takes_whole_numbers: false},
-];
+import { attributeChoices } from '../utils/CommonVariables';
+import {
+  invertMatchRecsToSeedTrackKey,
+  saveSeedAttribute,
+} from '../features/controlsSlice';
+import RecTweaksInput from './RecTweaksInput';
+import RecTweaksGenre from './RecTweaksGenre';
 
 interface RecTweakProps {
   getTracks: (recommendedTrack: { [key: string]: any }) => void;
@@ -82,40 +24,14 @@ interface RecTweakProps {
 }
 
 const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
-  const {
-    setSeedParams,
-    seedParams,
-    matchRecsToSeedTrackKey,
-    setMatchRecsToSeedTrackKey,
-  } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const { matchRecsToSeedTrackKey, seedAttributes } = useSelector(
+    (state: RootState) => state.controlsSlice
+  );
   const [currentTab, setCurrentTab] = useState(0);
 
-  const saveSeedParam = async (
-    paramName: string,
-    value: any,
-    limit: number,
-    maxOrMin: string
-  ) => {
-    if (!value) {
-      setSeedParams({ ...seedParams, [paramName]: false });
-    } else if (paramName === 'genre' || (value >= 0 && value <= limit)) {
-      setSeedParams({
-        ...seedParams,
-        [paramName]: { value: value, maxOrMin: maxOrMin },
-      });
-    }
-  };
-
-  const handleMatchKeyChange = () => {
-    setMatchRecsToSeedTrackKey(!matchRecsToSeedTrackKey);
-  };
-
-  const handleTabChange = (_: any, newValue: React.SetStateAction<number>) => {
+  const handleTabChange = (_: any, newValue: React.SetStateAction<number>): void => {
     setCurrentTab(newValue);
-  };
-
-  const handleSeedParamRemoval = (paramName: string) => {
-    saveSeedParam(paramName, false, 1, 'target');
   };
 
   return (
@@ -125,7 +41,7 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
         control={
           <Switch
             checked={matchRecsToSeedTrackKey}
-            onChange={handleMatchKeyChange}
+            onChange={() => dispatch(invertMatchRecsToSeedTrackKey())}
             name="match-key__switch"
           />
         }
@@ -139,21 +55,17 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
         scrollButtons="on"
         className="rec-tweaks__tabs"
       >
-        {inputChoices.map((inputItem) => (
+        {attributeChoices.map((inputItem) => (
           <Tab
             label={inputItem.input_name}
             key={`tab-panel-${inputItem.input_name}`}
             className="rec-tweaks__tab"
           />
         ))}
-        <Tab
-          label="Genre"
-          key={`tab-panel-genre`}
-          className="rec-tweaks__tab"
-        />
+        <Tab label="Genre" key={`tab-panel-genre`} className="rec-tweaks__tab" />
       </Tabs>
 
-      {inputChoices.map((inputItem, index) => (
+      {attributeChoices.map((inputItem, index) => (
         <div
           role="tabpanel"
           hidden={currentTab !== index}
@@ -163,20 +75,19 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
         >
           <RecTweaksInput
             inputItem={inputItem}
-            paramValue={seedParams[`${inputItem.input_name}`]}
-            saveParam={saveSeedParam}
+            paramValue={seedAttributes[`${inputItem.input_name}`]}
           />
         </div>
       ))}
 
       <div
         role="tabpanel"
-        hidden={currentTab !== inputChoices.length}
-        id={`full-width-tabpanel-${inputChoices.length}`}
-        key={`tab-input-${inputChoices.length}`}
+        hidden={currentTab !== attributeChoices.length}
+        id={`full-width-tabpanel-${attributeChoices.length}`}
+        key={`tab-input-${attributeChoices.length}`}
         className="rec-tweaks__tab-input"
       >
-        <RecTweaksGenre saveParam={saveSeedParam} genre={seedParams['genre']} />
+        <RecTweaksGenre genre={seedAttributes['genre']} />
       </div>
 
       <Button
@@ -191,16 +102,17 @@ const RecTweaks = ({ getTracks, recommendedTrack }: RecTweakProps) => {
       <div className="currently-selected-params-div">
         <label>Currently selected inputs are:</label>
         <ul>
-          {Object.keys(seedParams).map(
-            (param) =>
-              seedParams[param] && (
-                <li key={`currently-selected-param-li__${param}`}>
+          {Object.keys(seedAttributes).map(
+            (attribute) =>
+              seedAttributes[attribute].value && (
+                <li key={`currently-selected-attribute-li__${attribute}`}>
                   {`– ${
-                    seedParams[param].maxOrMin && seedParams[param].maxOrMin
-                  } ${param}: ${seedParams[param].value}`}
+                    seedAttributes[attribute].maxOrMin &&
+                    seedAttributes[attribute].maxOrMin
+                  } ${attribute}: ${seedAttributes[attribute].value}`}
                   <IconButton
                     aria-label="close"
-                    onClick={() => handleSeedParamRemoval(param)}
+                    onClick={() => dispatch(saveSeedAttribute(attribute, false))}
                     size="small"
                     className="close-icon"
                   >

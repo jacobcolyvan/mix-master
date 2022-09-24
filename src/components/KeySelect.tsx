@@ -1,17 +1,14 @@
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectKeyDisplayOption, setKeyDisplayOption } from '../features/settingsSlice';
 
-interface KeySelectProps {
-  keyOption: string;
-  setKeyOption: React.Dispatch<React.SetStateAction<string>>;
-}
+const KeySelect = () => {
+  const dispatch = useDispatch();
+  const keyDisplayOption = useSelector(selectKeyDisplayOption);
 
-const KeySelect = ({ keyOption, setKeyOption }: KeySelectProps) => {
-  const keyOptionChange = (
-    event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
-  ) => {
-    if (event && typeof event.target.value === 'string')
-      setKeyOption(event.target.value);
+  const keySettingChange = (event: React.ChangeEvent<any>) => {
+    if (event && event.target.value) dispatch(setKeyDisplayOption(event.target.value));
   };
 
   return (
@@ -19,8 +16,8 @@ const KeySelect = ({ keyOption, setKeyOption }: KeySelectProps) => {
       <Select
         labelId="Key Select"
         id="key-select"
-        value={keyOption}
-        onChange={keyOptionChange}
+        value={keyDisplayOption}
+        onChange={keySettingChange}
         fullWidth
         variant="outlined"
       >

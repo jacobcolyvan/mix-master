@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 import { useCookies } from 'react-cookie';
@@ -14,59 +13,23 @@ import Search from './pages/Search';
 import RecommendedTracks from './pages/RecommendedTracks';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { setSpotifyToken, setAuthError } from './features/settingsSlice';
-import { RootState } from './app/store';
+import {
+  setSpotifyToken,
+  setAuthError,
+  selectSpotifyToken,
+  selectAuthError,
+} from './features/settingsSlice';
+import { resetItemStates } from './features/itemsSlice';
 
 const App = () => {
   const dispatch = useDispatch();
   const [cookies, setCookie] = useCookies(['token']); // ????
-  const token = useSelector((state: RootState) => state.settingsSlice.spotifyToken);
-  const { authError } = useSelector((state: RootState) => state.settingsSlice);
-  // const [isLoading, setIsLoading] = useState(false);
 
-  const [tracks, setTracks] = useState(false);
-  const [sortedTracks, setSortedTracks] = useState(false);
-  const [recommendedTrack, setRecommendedTrack] = useState(false);
-  const [lastClickedTrack, setLastClickedTrack] = useState(false);
-  const [seedParams, setSeedParams] = useState({
-    tempo: false,
-    energy: false,
-    duration: false,
-    popularity: false,
-    intrumentalness: false,
-    valence: false,
-    danceability: false,
-    liveness: false,
-    speechiness: false,
-    acousticness: false,
-    genre: false,
-  });
-  const [matchRecsToSeedTrackKey, setMatchRecsToSeedTrackKey] = useState(false);
-
-  const [searchOptionValues, setSearchOptionValues] = useState({
-    albumSearchQuery: '',
-    artist: '',
-    playlistSearchQuery: '',
-    searchType: 'track',
-    trackSearchQuery: '',
-  });
-
-  const [searchResultValues, setSearchResultValues] = useState({
-    albums: false,
-    playlistSearchResults: '',
-    tracks: false,
-  });
-
-  const resetStates = () => {
-    setTracks(false);
-    setSortedTracks(false);
-    setRecommendedTrack(false);
-    setLastClickedTrack(false);
-    // setSeedParams()
-  };
+  const token = useSelector(selectSpotifyToken);
+  const authError = useSelector(selectAuthError);
 
   const pushPlaylistToState = (history, playlist) => {
-    resetStates();
+    dispatch(resetItemStates);
     history.push(
       {
         pathname: '/playlist',
@@ -81,6 +44,7 @@ const App = () => {
   };
 
   const handleAuthError = () => {
+    // this should handle what type of error it is
     if (cookies.token && cookies.token !== token) {
       dispatch(setSpotifyToken(cookies.token));
       dispatch(setAuthError(false));
@@ -94,26 +58,8 @@ const App = () => {
       <Router>
         <UserContext.Provider
           value={{
-            token,
-            tracks,
-            setTracks,
-            sortedTracks,
-            setSortedTracks,
-            resetStates,
-            recommendedTrack,
-            setRecommendedTrack,
-            lastClickedTrack,
-            setLastClickedTrack,
-            searchOptionValues,
-            setSearchOptionValues,
-            searchResultValues,
-            setSearchResultValues,
             pushPlaylistToState,
             handleAuthError,
-            seedParams,
-            setSeedParams,
-            matchRecsToSeedTrackKey,
-            setMatchRecsToSeedTrackKey,
           }}
         >
           <Container maxWidth="lg" className="main-div" id="main">
