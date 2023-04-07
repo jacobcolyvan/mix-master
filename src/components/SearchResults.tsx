@@ -1,6 +1,6 @@
 import Albums from './Albums';
 import Tracks from './Tracks';
-import PlaylistList from './PlaylistList';
+import PlaylistItems from './PlaylistItems';
 import SortBy from './SortBy';
 import KeySelect from './KeySelect';
 
@@ -17,8 +17,6 @@ const SearchResults = ({ updateUrl }: SearchResultsProps) => {
   const searchResultValues = useSelector(selectSearchResultValues);
   const tracks = useSelector(selectTracks);
   const playlist = useSelector(selectPlaylist);
-
-  console.log("searchResultValues", searchResultValues);
 
   return (
     <div>
@@ -45,10 +43,7 @@ const SearchResults = ({ updateUrl }: SearchResultsProps) => {
       {searchResultValues.playlistResults && (
         <>
           <h3 className="results-page-title">Playlist Results</h3>
-          <PlaylistList
-            playlistsToRender={searchResultValues.playlistResults}
-            // showOnlyPlaylistTracks={showOnlyPlaylistTracks}
-          />
+          <PlaylistItems playlistsToRender={searchResultValues.playlistResults} />
         </>
       )}
     </div>

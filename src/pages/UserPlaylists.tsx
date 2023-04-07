@@ -5,7 +5,7 @@ import { RootState } from '../app/store';
 import { getUserPlaylists } from '../features/itemsSlice';
 import { getUsername, selectSpotifyToken } from '../features/settingsSlice';
 
-import PlaylistList from '../components/PlaylistList';
+import PlaylistList from '../components/PlaylistItems';
 import Loading from '../components/Loading';
 
 const UserPlaylists = () => {

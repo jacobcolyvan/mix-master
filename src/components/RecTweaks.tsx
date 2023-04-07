@@ -31,7 +31,10 @@ const RecTweaks = ({ recommendedTrack }: RecTweakProps) => {
   );
   const [currentTab, setCurrentTab] = useState(0);
 
-  const handleTabChange = (_: any, newValue: React.SetStateAction<number>): void => {
+  const handleTabChange = (
+    _: React.ChangeEvent<{}>,
+    newValue: React.SetStateAction<number>
+  ): void => {
     setCurrentTab(newValue);
   };
 

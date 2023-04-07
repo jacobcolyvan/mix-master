@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
 import { AppThunk, RootState } from '../app/store';
 import { KeyOptionTypes } from '../types';
 import { spotifyBaseRequest } from '../utils/RequestUtils';
@@ -74,8 +75,21 @@ export const getUsername = (): AppThunk => {
         dispatch(setUsername(response.data.display_name));
       }
     } catch (err) {
-      // if (err.response?.status === 401) handleAuthError();
+      if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);
     }
   };
+};
+
+export const handleAuthError = () => (dispatch, getState: () => RootState) => {
+  // checks if token in cookies is different from token in state
+  const currentToken = getState().settingsSlice.spotifyToken;
+  const cookiesToken = Cookies.get('token');
+
+  if (cookiesToken && cookiesToken !== currentToken) {
+    dispatch(setSpotifyToken(cookiesToken));
+  }
+
+  // TODO: check this
+  dispatch(setAuthError(false));
 };

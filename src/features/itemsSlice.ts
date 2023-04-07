@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { History } from 'history';
+import axios from 'axios';
 
 import {
   Track,
@@ -10,7 +12,6 @@ import {
 } from '../types';
 import { AppThunk, RootState } from '../app/store';
 import { createRequestUrl, spotifyBaseRequest } from '../utils/RequestUtils';
-import axios from 'axios';
 import {
   camelotKeySort,
   millisToMinutesAndSeconds,
@@ -23,6 +24,7 @@ import {
   setIsSearching,
   setSearchResultValues,
 } from './controlsSlice';
+import { handleAuthError } from './settingsSlice';
 
 export interface ItemsState {
   userPlaylists: Playlist[];
@@ -148,7 +150,7 @@ export const getUserPlaylists = (): AppThunk => {
       dispatch(setUserPlaylists(tempPlaylistArray));
       dispatch(setSortedPlaylists(sortedPlaylists));
     } catch (err) {
-      // if (err.response?.status === 401) handleAuthError();
+      if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);
     }
   };
@@ -293,7 +295,7 @@ export const getResults = (): AppThunk => {
         dispatch(setHasCurrentSearchResults(true));
         dispatch(setIsSearching(false));
       } catch (err) {
-        // if (err.response?.status === 401) handleAuthError();
+        if (err.response?.status === 401) dispatch(handleAuthError());
         console.log(err.message);
       }
     }
@@ -334,7 +336,7 @@ export const getAlbumTracks = (album: Album): AppThunk => {
 
       // updateUrl('album-tracks', results);
     } catch (err) {
-      // if (err.response?.status === 401) handleAuthError();
+      if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);
     }
   };
@@ -504,7 +506,7 @@ export const getTracks = (currentPlaylist: Playlist): AppThunk => {
             },
           });
         } catch (err) {
-          // if (err.response?.status === 401) handleAuthError();
+          if (err.response?.status === 401) dispatch(handleAuthError());
           console.log(err);
         }
 
@@ -566,7 +568,7 @@ export const getTracks = (currentPlaylist: Playlist): AppThunk => {
       dispatch(setTracks([...splicedTracks]));
       dispatch(setSortedTracks([...splicedTracks]));
     } catch (err) {
-      // if (err.response?.status === 401) handleAuthError();
+      if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);
     }
   };
@@ -601,8 +603,6 @@ export const getRecommendedTracks = (recommendedTrack: RecommendedTrack): AppThu
         }
       });
 
-      console.log("newUrl", newUrl)
-
       return newUrl;
     };
 
@@ -622,16 +622,8 @@ export const getRecommendedTracks = (recommendedTrack: RecommendedTrack): AppThu
         const url1 =
           `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}` +
           // conditional here to account for any missing track attributes
-          `${
-            recommendedTrack.key
-              ? `&target_key=${recommendedTrack.key}`
-              : ''
-          }` +
-          `${
-            recommendedTrack.mode
-              ? `&target_mode=${recommendedTrack.mode}`
-              : ''
-          }`;
+          `${recommendedTrack.key ? `&target_key=${recommendedTrack.key}` : ''}` +
+          `${recommendedTrack.mode ? `&target_mode=${recommendedTrack.mode}` : ''}`;
 
         const tracks1 = await getTracksFromSpotify(url1, 25);
 
@@ -731,7 +723,26 @@ export const getRecommendedTracks = (recommendedTrack: RecommendedTrack): AppThu
       dispatch(setSortedTracks(splicedTracks));
     } catch (err) {
       console.log(err.message);
-      // if (err.response?.status === 401) handleAuthError();
+      if (err.response?.status === 401) dispatch(handleAuthError());
     }
+  };
+};
+
+export const pushPlaylistToHistory = (
+  history: History,
+  playlist: Playlist
+): AppThunk => {
+  return async (dispatch) => {
+    dispatch(resetItemStates);
+
+    history.push(
+      {
+        pathname: '/playlist',
+        search: `?id=${playlist.id}`,
+      },
+      {
+        playlist: playlist,
+      }
+    );
   };
 };

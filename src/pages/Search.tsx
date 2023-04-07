@@ -73,10 +73,6 @@ const Search = () => {
     );
   };
 
-  // const showOnlyPlaylistTracks = () => {
-  //   handleResultsChange('playlistSearchResults', false);
-  // };
-
   return (
     <div>
       <h1 className="search-page-title">Search</h1>

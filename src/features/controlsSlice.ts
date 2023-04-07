@@ -120,12 +120,6 @@ const controlsSlice = createSlice({
     setIsSearching: (state, action: PayloadAction<boolean>) => {
       state.isSearching = action.payload;
     },
-    showOnlyPlaylistTracks: (state) => {
-      state.searchResultValues = {
-        ...state.searchResultValues,
-        playlistResults: null,
-      };
-    },
   },
 });
 export default controlsSlice.reducer;
@@ -139,7 +133,6 @@ export const {
   setSortTracksBy,
   setAlbumName,
   setIsSearching,
-  showOnlyPlaylistTracks,
 } = controlsSlice.actions;
 
 // --------------------------

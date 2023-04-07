@@ -4,16 +4,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import parse from 'html-react-parser';
 
-import UserContext from '../context/UserContext';
 import Tracks from '../components/Tracks';
 import SortBy from '../components/SortBy';
 import KeySelect from '../components/KeySelect';
 import { selectSpotifyToken, selectUsername } from '../features/settingsSlice';
-import { getTracks, setSortedTracks } from '../features/itemsSlice';
+import {
+  getTracks,
+  pushPlaylistToHistory,
+  setSortedTracks,
+} from '../features/itemsSlice';
 
 const Playlist = () => {
-  const { pushPlaylistToState } = useContext(UserContext);
-
   const token = useSelector(selectSpotifyToken);
   const username = useSelector(selectUsername);
   const history: any = useHistory();
@@ -43,7 +44,7 @@ const Playlist = () => {
       });
 
       dispatch(setSortedTracks(null));
-      pushPlaylistToState(history, newPlaylist.data);
+      dispatch(pushPlaylistToHistory(history, newPlaylist.data));
     };
 
     // safely render a string to html
@@ -82,7 +83,7 @@ const Playlist = () => {
     };
 
     parseDescription(playlist.description);
-  }, [playlist, history, pushPlaylistToState, token]);
+  }, [playlist, history, token]);
 
   return (
     <div>
