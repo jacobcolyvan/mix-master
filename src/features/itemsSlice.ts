@@ -25,6 +25,11 @@ import {
   setSearchResultValues,
 } from './controlsSlice';
 import { handleAuthError, selectSpotifyToken } from './settingsSlice';
+import {
+  camelotMajorKeyDict,
+  camelotMinorKeyDict,
+  keyDict,
+} from '../utils/CommonVariables';
 
 export interface ItemsState {
   userPlaylists: Playlist[];
@@ -115,6 +120,10 @@ export const selectSortedTracks = (state: RootState): Track[] | null => {
 
 export const selectPlaylist = (state: RootState): Playlist | null => {
   return state?.itemsSlice.playlist;
+};
+
+export const selectLastClickedTrack = (state: RootState): string | null => {
+  return state?.itemsSlice.lastClickedTrack;
 };
 
 // --------------------------
@@ -727,6 +736,68 @@ export const getRecommendedTracks = (recommendedTrack: RecommendedTrack): AppThu
     }
   };
 };
+
+export const goToRecommendedTrack =
+  (history: History, track: Track): AppThunk =>
+  async (dispatch) => {
+    await dispatch(resetItemStates());
+
+    const recommendedTrack: RecommendedTrack = {
+      id: track.id,
+      key: track.key,
+      parsedKeys: [
+        `${
+          String(track.mode) === '1'
+            ? camelotMajorKeyDict[track.key] + 'B'
+            : camelotMinorKeyDict[track.key] + 'A'
+        }`,
+        `${keyDict[track.key]}${track.mode === '1' ? '' : 'm'}`,
+        // find the inverse major/minor key
+        String(track.mode) === '1'
+          ? [String((parseInt(track.key) + 9) % 12), '0']
+          : [String((parseInt(track.key) + 3) % 12), '1'],
+      ],
+      mode: track.mode,
+      name: track.name,
+      artists: track.artists,
+      energy: track.energy,
+      tempo: track.tempo,
+      acousticness: track.acousticness,
+      danceability: track.danceability,
+      instrumentalness: track.instrumentalness,
+      liveness: track.liveness,
+      loudness: track.loudness,
+      speechiness: track.speechiness,
+      valence: track.valence,
+
+      duration: track.duration,
+      track_popularity: track.track_popularity,
+      artist_genres: track.artist_genres,
+      album: track.album,
+      release_date: track.release_date,
+    };
+
+    history.push(`/recommended/?id=${track.id}`, {
+      recommendedTrack: recommendedTrack,
+    });
+  };
+
+export const copyNameAndSaveAsCurrentTrack =
+  (trackName: string, trackArtist: string, clickedTrackId: string): AppThunk =>
+  async (dispatch, getState) => {
+    navigator.clipboard.writeText(`${trackName} ${trackArtist}`);
+
+    const lastClickedTrack = selectLastClickedTrack(getState());
+    if (lastClickedTrack) {
+      const currentlySelected = document.getElementById(lastClickedTrack);
+      if (currentlySelected) currentlySelected.classList.remove('currently-selected');
+    }
+
+    const nowSelected = document.getElementById(clickedTrackId);
+    if (nowSelected) nowSelected.classList.add('currently-selected');
+
+    dispatch(setLastClickedTrack(clickedTrackId));
+  };
 
 export const pushPlaylistToHistory = (
   history: History,

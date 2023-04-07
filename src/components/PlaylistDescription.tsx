@@ -3,6 +3,7 @@ import parse from 'html-react-parser';
 import { goToPlaylist } from '../features/itemsSlice';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
+import { History } from 'history';
 
 interface ParsedDescriptionProps {
   description: string;
@@ -10,7 +11,7 @@ interface ParsedDescriptionProps {
 
 const PlaylistDescription: React.FC<ParsedDescriptionProps> = ({ description }) => {
   const dispatch = useDispatch();
-  const history: any = useHistory();
+  const history: History = useHistory();
 
   const getParsedDescription = () => {
     const parsedDescription = description.replaceAll(
