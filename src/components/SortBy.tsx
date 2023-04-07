@@ -10,7 +10,9 @@ const SortBy = () => {
   const sortOption = useSelector(selectSortTracksBy);
 
   const sortOptionChange = (event: React.ChangeEvent<any>) => {
-    if (event && event.target.value) dispatch(setSortTracksBy(event.target.value));
+    if (event && event.target.value) {
+      dispatch(setSortTracksBy(event.target.value));
+    }
   };
 
   return (

@@ -58,6 +58,7 @@ const Search = () => {
   }, [history.location, updateHooksFromState]);
 
   /** Update Browser URL state and local storage */
+  // TODO: move this
   const updateBrowserHistory = (slug = 'rand', results = false) => {
     history.push(
       {

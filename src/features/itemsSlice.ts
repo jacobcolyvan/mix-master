@@ -24,7 +24,7 @@ import {
   setIsSearching,
   setSearchResultValues,
 } from './controlsSlice';
-import { handleAuthError } from './settingsSlice';
+import { handleAuthError, selectSpotifyToken } from './settingsSlice';
 
 export interface ItemsState {
   userPlaylists: Playlist[];
@@ -744,5 +744,27 @@ export const pushPlaylistToHistory = (
         playlist: playlist,
       }
     );
+  };
+};
+
+export const goToPlaylist = (history: History, playlistId: string): AppThunk => {
+  return async (dispatch, getState) => {
+    const token = selectSpotifyToken(getState());
+
+    try {
+      const newPlaylist = await axios({
+        method: 'get',
+        url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      dispatch(setSortedTracks(null));
+      dispatch(pushPlaylistToHistory(history, newPlaylist.data));
+    } catch (error) {
+      console.log(error);
+    }
   };
 };

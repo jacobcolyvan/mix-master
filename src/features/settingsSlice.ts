@@ -83,7 +83,7 @@ export const getUsername = (): AppThunk => {
 
 export const handleAuthError = () => (dispatch, getState: () => RootState) => {
   // checks if token in cookies is different from token in state
-  const currentToken = getState().settingsSlice.spotifyToken;
+  const currentToken = selectSpotifyToken(getState());
   const cookiesToken = Cookies.get('token');
 
   if (cookiesToken && cookiesToken !== currentToken) {
