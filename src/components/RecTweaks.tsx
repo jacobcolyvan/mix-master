@@ -18,10 +18,10 @@ import {
 import RecTweaksInput from './RecTweaksInput';
 import RecTweaksGenre from './RecTweaksGenre';
 import { getRecommendedTracks } from '../features/itemsSlice';
-import { RecommendedTrack } from '../types';
+import { Track } from '../types';
 
 interface RecTweakProps {
-  recommendedTrack: RecommendedTrack;
+  recommendedTrack: Track;
 }
 
 const RecTweaks = ({ recommendedTrack }: RecTweakProps) => {

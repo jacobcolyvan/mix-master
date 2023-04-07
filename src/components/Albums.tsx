@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSearchResultValues } from '../features/controlsSlice';
 import { getAlbumTracks } from '../features/itemsSlice';
+import { Album } from '../types';
 
 interface AlbumsProps {
   updateUrl: (slug: string, results: any) => void;
@@ -13,6 +14,17 @@ const Albums = ({ updateUrl }: AlbumsProps) => {
   const handleOnAlbumClick = async (album: any) => {
     const results = await dispatch(getAlbumTracks(album));
     updateUrl('album-tracks', results);
+  };
+
+  const getAlbumDetailsDisplay = (album: Album) => {
+    const artistName =
+      album.artists.length > 1
+        ? `${album.artists[0].name}, ${album.artists[1].name}`
+        : album.artists[0].name;
+
+    const releaseYear = album.release_date.slice(0, 4);
+
+    return `${artistName} (${releaseYear})`;
   };
 
   return (
@@ -28,13 +40,7 @@ const Albums = ({ updateUrl }: AlbumsProps) => {
             >
               <div className="single-playlist-div">
                 <p className="playlist-name">
-                  {album.name} –
-                  <i>
-                    {album.artists.length > 1
-                      ? album.artists[0].name + ', ' + album.artists[1].name
-                      : album.artists[0].name}
-                    {' (' + album.release_date.slice(0, 4) + ')'}
-                  </i>
+                  {album.name} –<i>{getAlbumDetailsDisplay(album)}</i>
                 </p>
                 {album.images[0] && (
                   <img

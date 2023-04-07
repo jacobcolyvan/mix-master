@@ -25,10 +25,7 @@ export type Track = {
   loudness: string | ''; // -60-0db
   speechiness: string | ''; // 0-1;
   valence: string | ''; // 0-1;
-};
-
-export type RecommendedTrack = Track & {
-  parsedKeys: any[]
+  parsedKeys: any[];
 };
 
 // Playlist response object

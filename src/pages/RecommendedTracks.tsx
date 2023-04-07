@@ -45,7 +45,7 @@ const RecommendedTracks = () => {
               <th className="table-data__name">Track</th>
               <th className="table-data__attributes">Key</th>
               <th className="table-data__attributes table-data__attributes-energy">
-                Enrgy
+                Energy
               </th>
               <th className="table-data__attributes">BPM</th>
             </tr>

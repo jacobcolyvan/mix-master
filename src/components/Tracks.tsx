@@ -21,6 +21,7 @@ import {
   camelotMinorKeyDict,
 } from '../utils/CommonVariables';
 import { Track } from '../types';
+import { getArtistNames } from '../utils/CommonFunctions';
 
 const Tracks = () => {
   const dispatch = useDispatch();
@@ -59,15 +60,6 @@ const Tracks = () => {
     }
   };
 
-  const getArtistNames = (track: Track) => {
-    // only show first two artists
-    if (track.artists.length > 1) {
-      return `${track.artists[0]}, ${track.artists[1]}`;
-    } else {
-      return track.artists[0];
-    }
-  };
-
   const renderSortedTracksBody = () => {
     return (
       <tbody>
@@ -82,7 +74,8 @@ const Tracks = () => {
                 <span>
                   {track.name} –{' '}
                   <span className="table_data__artist-name">
-                    {getArtistNames(track)}
+                    {/* TODO: is this redundant? */}
+                    {getArtistNames(track.artists)}
                   </span>
                 </span>
 

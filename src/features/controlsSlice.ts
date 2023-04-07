@@ -160,6 +160,10 @@ export const selectIsSearching = (state: RootState): boolean => {
   return state?.controlsSlice.isSearching;
 };
 
+export const selectSeedAttributes = (state: RootState): SeedAttributes => {
+  return state?.controlsSlice.seedAttributes;
+};
+
 // --------------------------
 // Thunks
 
@@ -176,24 +180,17 @@ export const saveSeedAttribute = (
   maxOrMinFilter: 'max' | 'min' | 'target' = 'target'
 ): AppThunk => {
   return (dispatch, getState) => {
-    const { seedAttributes } = getState().controlsSlice;
+    const seedAttributes = selectSeedAttributes(getState());
 
-    if (value === false) {
-      // Set value to be empty as we no longer want to use it
-      dispatch(
-        setSeedAttributes({
-          ...seedAttributes,
-          [attributeName]: { value: '', maxOrMin: 'target' },
-        })
-      );
-    } else {
-      dispatch(
-        setSeedAttributes({
-          ...seedAttributes,
-          [attributeName]: { value: value, maxOrMin: maxOrMinFilter },
-        })
-      );
-    }
+    const updatedValue = value === false ? '' : value;
+    const updatedMaxOrMinFilter = value === false ? 'target' : maxOrMinFilter;
+
+    dispatch(
+      setSeedAttributes({
+        ...seedAttributes,
+        [attributeName]: { value: updatedValue, maxOrMin: updatedMaxOrMinFilter },
+      })
+    );
   };
 };
 
@@ -210,8 +207,6 @@ export const saveSearchQueryChange = (
         trackResults: null,
       })
     );
-
-    console.log(key, value);
 
     if (typeof value !== 'string') return;
     const { currentSearchQueries } = getState().controlsSlice;
