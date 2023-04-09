@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import { useDispatch } from 'react-redux';
-import { setSpotifyToken } from '../features/settingsSlice';
+import { setSpotifyToken } from '../slices/settingsSlice';
 import { useCookies } from 'react-cookie';
 
-import Info from '../components/Info';
-import { createSpotifyAuthHREF } from '../utils/RequestUtils';
+import Info from '../atoms/Info';
+import { createSpotifyAuthHREF } from '../utils/requestUtils';
 
 interface AuthProps {
   location: { hash: string };

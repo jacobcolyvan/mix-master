@@ -1,4 +1,4 @@
-import Info from '../components/Info';
+import Info from '../atoms/Info';
 import CamelotWheel from '../media/camelot-wheel.jpg';
 
 const About = () => {
@@ -6,10 +6,7 @@ const About = () => {
     <div className="about-page__div">
       <Info />
 
-      <p>
-        Note that all info comes from Spotify, and may not always be 100%
-        accurate.
-      </p>
+      <p>Note that all info comes from Spotify, and may not always be 100% accurate.</p>
       <ul>
         <li>
           – The track name{' '}
@@ -23,16 +20,15 @@ const About = () => {
           <b>
             <span>recommended tracks</span>
           </b>
-          . This uses Spotify's song radio/generated tracks API to get tracks
-          that are similar, and in a similar key/mode to the selected song.
+          . This uses Spotify's song radio/generated tracks API to get tracks that are
+          similar, and in a similar key/mode to the selected song.
         </li>
         <li>
-          – Hover over the tooltip to see more track-related info. Note that the
-          genres provided by Spotify are unfortunately artist specific rather
-          than track, meaning they sometimes might be inaccurate. Welcome to the
-          weird and wonderful world of Spotify's 4000+ genre classifications.
-          Also note that if there are more than one artist, genres are only
-          shown for the first.
+          – Hover over the tooltip to see more track-related info. Note that the genres
+          provided by Spotify are unfortunately artist specific rather than track,
+          meaning they sometimes might be inaccurate. Welcome to the weird and wonderful
+          world of Spotify's 4000+ genre classifications. Also note that if there are
+          more than one artist, genres are only shown for the first.
         </li>
       </ul>
 
@@ -40,19 +36,18 @@ const About = () => {
         <hr />
         <h3>Camelot Key/Wheel</h3>
         <p>
-          This site uses the <i>Camelot</i> key system, which is an alternative
-          tool to the circle of fifths for understanding how keys work together
-          harmonically. It lets you understand how different keys might work
-          together, without having to understand music theory.
+          This site uses the <i>Camelot</i> key system, which is an alternative tool to
+          the circle of fifths for understanding how keys work together harmonically. It
+          lets you understand how different keys might work together, without having to
+          understand music theory.
         </p>
 
         <img src={CamelotWheel} alt="Camelot wheel" />
         <p>
-          The basic idea is the closer the numbers are numerically, the more
-          notes they share, and the better they will sound together (each number
-          apart represents one difference). Those numbers that are followed by
-          'B', represent major scales, whereas those followed by 'A' represent
-          minor scales.
+          The basic idea is the closer the numbers are numerically, the more notes they
+          share, and the better they will sound together (each number apart represents
+          one difference). Those numbers that are followed by 'B', represent major
+          scales, whereas those followed by 'A' represent minor scales.
         </p>
 
         <h4 className="info-header">
@@ -65,21 +60,20 @@ const About = () => {
             <span>root</span> note // major to minor scale).
           </li>
           <li>
-            – Those that are one number away from one another will be easy to
-            mix together,
+            – Those that are one number away from one another will be easy to mix
+            together,
           </li>
           <li>{'>'} (eg. 12a will be easy to mix with 1a and 11a).</li>
           <li>
-            – The further two numbers are away from another the harder they will
-            be to mix 'naturally',
+            – The further two numbers are away from another the harder they will be to
+            mix 'naturally',
           </li>
           <li>
-            {'>'} eg. where 1a is hardest to mix with 7a/7b and 3b with 9b/9a,
-            etc.
+            {'>'} eg. where 1a is hardest to mix with 7a/7b and 3b with 9b/9a, etc.
           </li>
           <li>
-            – Those tracks with similar BPM/Tempo are going to sound more
-            natural when mixed close to one another.
+            – Those tracks with similar BPM/Tempo are going to sound more natural when
+            mixed close to one another.
           </li>
         </ul>
 
@@ -108,8 +102,8 @@ const About = () => {
       <div className="afterword">
         <hr />
         <p className="links-header">
-          If you're interested, other Spotify-based sites that I've written can
-          be found at:
+          If you're interested, other Spotify-based sites that I've written can be found
+          at:
         </p>
         <p className="links">
           <a

@@ -5,7 +5,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import { useDispatch } from 'react-redux';
-import { saveSeedAttribute } from '../features/controlsSlice';
+import { saveSeedAttribute } from '../slices/controlsSlice';
 import { AttributeChoiceDetails } from '../types';
 
 interface InputProps {

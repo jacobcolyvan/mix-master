@@ -1,9 +1,7 @@
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { useSelector } from 'react-redux';
-import { selectSortTracksBy, setSortTracksBy } from '../features/controlsSlice';
-import { useDispatch } from 'react-redux';
-import { TrackSortByChoices } from '../types';
+import { MenuItem, Select } from '@material-ui/core';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { selectSortTracksBy, setSortTracksBy } from '../slices/controlsSlice';
 
 const SortBy = () => {
   const dispatch = useDispatch();

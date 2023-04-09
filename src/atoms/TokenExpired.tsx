@@ -1,5 +1,5 @@
-import Button from '@material-ui/core/Button';
-import { createSpotifyAuthHREF } from '../utils/RequestUtils';
+import { Button } from '@material-ui/core';
+import { createSpotifyAuthHREF } from '../utils/requestUtils';
 
 const TokenExpired = () => {
   return (

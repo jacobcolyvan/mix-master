@@ -1,5 +1,5 @@
 import { Track } from '../types';
-import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from './CommonVariables';
+import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from './commonVariables';
 
 export const millisToMinutesAndSeconds = (millis: number) => {
   const minutes: string = String(Math.floor(millis / 60000) + 1);

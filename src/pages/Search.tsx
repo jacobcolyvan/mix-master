@@ -4,11 +4,11 @@ import { History } from 'history';
 
 import SearchOptions from '../components/SearchOptions';
 import SearchResults from '../components/SearchResults';
-import Loading from '../components/Loading';
+import Loading from '../atoms/Loading';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../app/store';
-import { updateSearchStateFromBrowserState } from '../features/controlsSlice';
+import { updateSearchStateFromBrowserState } from '../slices/controlsSlice';
 
 const Search = () => {
   const dispatch = useDispatch();

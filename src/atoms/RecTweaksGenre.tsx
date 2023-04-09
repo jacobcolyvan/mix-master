@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 //       https://developer.spotify.com/console/get-available-genre-seeds/
 import genres from '../utils/genres.json';
 import { useDispatch } from 'react-redux';
-import { saveSeedAttribute } from '../features/controlsSlice';
+import { saveSeedAttribute } from '../slices/controlsSlice';
 
 interface InputProps {
   genre: { [key: string]: any } | false;

@@ -4,8 +4,8 @@ import { useHistory } from 'react-router';
 import {
   selectSearchResultValues,
   updateBrowserHistoryThunk,
-} from '../features/controlsSlice';
-import { getAlbumTracks } from '../features/itemsSlice';
+} from '../slices/controlsSlice';
+import { getAlbumTracks } from '../slices/itemsSlice';
 import { Album } from '../types';
 
 const Albums = () => {

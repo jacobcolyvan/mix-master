@@ -1,12 +1,12 @@
 import Albums from './Albums';
 import Tracks from './Tracks';
-import PlaylistItems from './PlaylistItems';
-import SortBy from './SortBy';
-import KeySelect from './KeySelect';
+import PlaylistItems from '../atoms/PlaylistItems';
+import SortBy from '../atoms/SortBy';
+import KeySelect from '../atoms/KeySelect';
 
 import { useSelector } from 'react-redux';
-import { selectAlbumName, selectSearchResultValues } from '../features/controlsSlice';
-import { selectPlaylist, selectTracks } from '../features/itemsSlice';
+import { selectAlbumName, selectSearchResultValues } from '../slices/controlsSlice';
+import { selectPlaylist, selectTracks } from '../slices/itemsSlice';
 
 const SearchResults = () => {
   const albumName = useSelector(selectAlbumName);

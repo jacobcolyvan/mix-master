@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { pushPlaylistToHistory } from '../features/itemsSlice';
+
+import { pushPlaylistToHistory } from '../slices/itemsSlice';
 import { Playlist } from '../types';
 
 interface Props {

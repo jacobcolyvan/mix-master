@@ -1,6 +1,7 @@
-import TextField from '@material-ui/core/TextField';
 import { useDispatch } from 'react-redux';
-import { saveSearchQueryChange } from '../features/controlsSlice';
+import { TextField } from '@material-ui/core';
+
+import { saveSearchQueryChange } from '../slices/controlsSlice';
 import { CurrentSearchQueryOptionsKeys } from '../types';
 
 interface SearchBarProps {

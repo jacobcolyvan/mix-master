@@ -9,8 +9,8 @@ import {
   getTrackAndArtistFeatures,
   getTracksFromSpotify,
   spotifyBaseRequest,
-} from '../utils/RequestUtils';
-import { camelotKeySort, standardKeySort } from '../utils/CommonFunctions';
+} from '../utils/requestUtils';
+import { camelotKeySort, standardKeySort } from '../utils/commonFunctions';
 import {
   handleSearchResultsChange,
   selectSortTracksBy,

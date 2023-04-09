@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAuthError, selectSpotifyToken } from '../features/settingsSlice';
-import { resetItemStates } from '../features/itemsSlice';
+
+import { selectAuthError, selectSpotifyToken } from '../slices/settingsSlice';
+import { resetItemStates } from '../slices/itemsSlice';
 
 const Navbar = () => {
   const history = useHistory();

@@ -1,15 +1,13 @@
 import { useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import { Button, Select, MenuItem } from '@material-ui/core';
 
-import SearchBar from './SearchBar';
+import SearchBar from '../atoms/SearchBar';
 import {
   saveSearchQueryChange,
   selectCurrentSearchQueries,
-} from '../features/controlsSlice';
-import { getSearchResults } from '../features/itemsSlice';
+} from '../slices/controlsSlice';
+import { getSearchResults } from '../slices/itemsSlice';
 
 const SearchOptions = () => {
   const currentSearchQueries = useSelector(selectCurrentSearchQueries);

@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../app/store';
 
 import Tracks from '../components/Tracks';
-import SortBy from '../components/SortBy';
-import KeySelect from '../components/KeySelect';
+import SortBy from '../atoms/SortBy';
+import KeySelect from '../atoms/KeySelect';
 import RecTweaks from '../components/RecTweaks';
 
-import { selectKeyDisplayOption } from '../features/settingsSlice';
-import { getRecommendedTracks } from '../features/itemsSlice';
-import TrackTooltip from '../components/TrackTooltip';
+import { selectKeyDisplayOption } from '../slices/settingsSlice';
+import { getRecommendedTracks } from '../slices/itemsSlice';
+import TrackTooltip from '../atoms/TrackTooltip';
 
 const RecommendedTracks = () => {
   const dispatch = useDispatch();

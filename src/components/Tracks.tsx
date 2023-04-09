@@ -8,20 +8,19 @@ import {
   selectSortedTracks,
   selectTracks,
   sortTracksByAudioFeatures,
-} from '../features/itemsSlice';
-import { selectSortTracksBy } from '../features/controlsSlice';
-import { selectKeyDisplayOption } from '../features/settingsSlice';
+} from '../slices/itemsSlice';
+import { selectSortTracksBy } from '../slices/controlsSlice';
+import { selectKeyDisplayOption } from '../slices/settingsSlice';
 
-import Loading from './Loading';
-import TrackTooltip from './TrackTooltip';
-
+import Loading from '../atoms/Loading';
+import TrackTooltip from '../atoms/TrackTooltip';
 import {
   keyDict,
   camelotMajorKeyDict,
   camelotMinorKeyDict,
-} from '../utils/CommonVariables';
+} from '../utils/commonVariables';
 import { Track } from '../types';
-import { getArtistNames } from '../utils/CommonFunctions';
+import { getArtistNames } from '../utils/commonFunctions';
 
 const Tracks = () => {
   const dispatch = useDispatch();

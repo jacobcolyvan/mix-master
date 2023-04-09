@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '../app/store';
-import { getUserPlaylists } from '../features/itemsSlice';
-import { getUsername, selectSpotifyToken } from '../features/settingsSlice';
+import { getUserPlaylists } from '../slices/itemsSlice';
+import { getUsername, selectSpotifyToken } from '../slices/settingsSlice';
 
-import PlaylistList from '../components/PlaylistItems';
-import Loading from '../components/Loading';
+import PlaylistList from '../atoms/PlaylistItems';
+import Loading from '../atoms/Loading';
 
 const UserPlaylists = () => {
   const dispatch = useDispatch();

@@ -1,7 +1,6 @@
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectKeyDisplayOption, setKeyDisplayOption } from '../features/settingsSlice';
+import { Select, MenuItem } from '@material-ui/core';
+import { selectKeyDisplayOption, setKeyDisplayOption } from '../slices/settingsSlice';
 
 const KeySelect = () => {
   const dispatch = useDispatch();

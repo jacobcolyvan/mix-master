@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../app/store';
-
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import IconButton from '@material-ui/core/IconButton';
+import {
+  Tabs,
+  Tab,
+  Button,
+  FormControlLabel,
+  Switch,
+  IconButton,
+} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { attributeChoices } from '../utils/CommonVariables';
+import { RootState } from '../app/store';
+import { attributeChoices } from '../utils/commonVariables';
 import {
   invertMatchRecsToSeedTrackKey,
   saveSeedAttribute,
-} from '../features/controlsSlice';
-import RecTweaksInput from './RecTweaksInput';
-import RecTweaksGenre from './RecTweaksGenre';
-import { getRecommendedTracks } from '../features/itemsSlice';
+} from '../slices/controlsSlice';
+import RecTweaksInput from '../atoms/RecTweaksInput';
+import RecTweaksGenre from '../atoms/RecTweaksGenre';
+import { getRecommendedTracks } from '../slices/itemsSlice';
 import { Track } from '../types';
 
 interface RecTweakProps {

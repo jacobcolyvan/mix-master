@@ -1,9 +1,8 @@
-import { withStyles } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles, Tooltip } from '@material-ui/core';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 import { Track } from '../types';
-import { keyDict } from '../utils/CommonVariables';
+import { keyDict } from '../utils/commonVariables';
 
 const HtmlTooltip = withStyles(() => ({
   tooltip: {

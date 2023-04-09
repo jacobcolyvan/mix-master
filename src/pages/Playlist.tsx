@@ -3,11 +3,11 @@ import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Tracks from '../components/Tracks';
-import SortBy from '../components/SortBy';
-import KeySelect from '../components/KeySelect';
-import { selectUsername } from '../features/settingsSlice';
-import { getTracks } from '../features/itemsSlice';
-import PlaylistDescription from '../components/PlaylistDescription';
+import SortBy from '../atoms/SortBy';
+import KeySelect from '../atoms/KeySelect';
+import { selectUsername } from '../slices/settingsSlice';
+import { getTracks } from '../slices/itemsSlice';
+import PlaylistDescription from '../atoms/PlaylistDescription';
 
 const Playlist = () => {
   const username = useSelector(selectUsername);
