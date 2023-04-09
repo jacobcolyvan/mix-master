@@ -7,7 +7,6 @@ import { CurrentSearchQueryOptionsKeys } from '../types';
 interface SearchBarProps {
   label: string;
   param: string;
-
   paramName: CurrentSearchQueryOptionsKeys;
   getResults: () => void;
 }
@@ -20,7 +19,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const dispatch = useDispatch();
   const searchOnEnter = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') getResults();
+    if (event?.key === 'Enter') getResults();
   };
 
   return (

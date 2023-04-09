@@ -12,7 +12,7 @@ const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const dispatchPlaylistHistory = (history, playlist) => {
+  const dispatchPlaylistHistory = (playlist: Playlist) => {
     dispatch(pushPlaylistToHistory(history, playlist));
   };
 
@@ -23,7 +23,7 @@ const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
           <li
             className="playlist-list__li"
             key={`track${index}`}
-            onClick={() => dispatchPlaylistHistory(history, playlist)}
+            onClick={() => dispatchPlaylistHistory(playlist)}
           >
             <div>
               <div className="playlist-name">{playlist.name}</div>

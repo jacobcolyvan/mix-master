@@ -2,7 +2,6 @@ import { withStyles, Tooltip } from '@material-ui/core';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 import { Track } from '../types';
-import { keyDict } from '../utils/commonVariables';
 
 const HtmlTooltip = withStyles(() => ({
   tooltip: {
@@ -18,6 +17,21 @@ interface TooltipProps {
 }
 
 const TrackTooltip = ({ track }: TooltipProps) => {
+  const {
+    artist_genres,
+    duration,
+    danceability,
+    valence,
+    acousticness,
+    liveness,
+    loudness,
+    track_popularity,
+    speechiness,
+    parsedKeys,
+    album,
+    release_date,
+  } = track;
+
   return (
     <HtmlTooltip
       className="table-data__name__tooltip"
@@ -26,57 +40,53 @@ const TrackTooltip = ({ track }: TooltipProps) => {
         <ul className="recommended-tooltip__ul">
           <li className="table-date__tooltip-genres">
             <span>Genres: </span>
-            <span>{track.artist_genres && track.artist_genres.join(', ')}.</span>
+            <span>{artist_genres?.join(', ')}.</span>
           </li>
-
           <li>
             <span>Duration:</span>
-            <span>{track.duration}</span>
+            <span>{duration}</span>
           </li>
           <li>
             <span>Danceability:</span>
-            <span>{track.danceability}</span>
+            <span>{danceability}</span>
           </li>
           <li>
             <span>Valence:</span>
-            <span>{track.valence}</span>
+            <span>{valence}</span>
           </li>
           <li>
             <span>Acousticness:</span>
-            <span>{track.acousticness}</span>
+            <span>{acousticness}</span>
           </li>
           <li>
             <span>Liveness:</span>
-            <span>{track.liveness}</span>
+            <span>{liveness}</span>
           </li>
           <li>
             <span>Loudness:</span>
-            <span>{track.loudness}</span>
+            <span>{loudness}</span>
           </li>
           <li>
             <span>Popularity:</span>
-            <span>{track.track_popularity}</span>
+            <span>{track_popularity}</span>
           </li>
           <li>
             <span>Speechiness:</span>
-            <span>{track.speechiness}</span>
+            <span>{speechiness}</span>
           </li>
 
           <br />
           <li>
             <span>Key:</span>
-            <span>
-              {keyDict[track.key]}
-              {String(track.mode) === '1' ? '' : 'm'}
-            </span>
+            <span>{parsedKeys[1]}</span>
           </li>
           <li>
             <span>Album:</span>
-            <span>{track.album}</span>
+            <span>{album}</span>
           </li>
           <li>
             <span>Released:</span>
-            <span>{track.release_date}</span>
+            <span>{release_date}</span>
           </li>
         </ul>
       }

@@ -7,7 +7,7 @@ const KeySelect = () => {
   const keyDisplayOption = useSelector(selectKeyDisplayOption);
 
   const handleKeySettingChange = (event: React.ChangeEvent<any>) => {
-    if (event && event.target.value) dispatch(setKeyDisplayOption(event.target.value));
+    if (event?.target.value) dispatch(setKeyDisplayOption(event.target.value));
   };
 
   return (

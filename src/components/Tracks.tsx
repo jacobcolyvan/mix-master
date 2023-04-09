@@ -80,6 +80,7 @@ const Tracks = () => {
 
                 <TrackTooltip track={track} />
               </td>
+
               <td
                 className="table-data__attributes key-data"
                 onClick={() => handleTrackRecommendedClick(track)}
@@ -96,26 +97,24 @@ const Tracks = () => {
     );
   };
 
-  if (sortedTracks) {
-    return (
-      <table className="tracks-table">
-        <thead>
-          <tr>
-            <th className="table-data__name">Track</th>
-            <th className="table-data__attributes">Key</th>
-            <th className="table-data__attributes table-data__attributes-energy">
-              Energy
-            </th>
-            <th className="table-data__attributes">BPM</th>
-          </tr>
-        </thead>
+  return sortedTracks ? (
+    <table className="tracks-table">
+      <thead>
+        <tr>
+          <th className="table-data__name">Track</th>
+          <th className="table-data__attributes">Key</th>
+          <th className="table-data__attributes table-data__attributes-energy">
+            Energy
+          </th>
+          <th className="table-data__attributes">BPM</th>
+        </tr>
+      </thead>
 
-        {renderSortedTracksBody()}
-      </table>
-    );
-  }
-
-  return <Loading />;
+      {renderSortedTracksBody()}
+    </table>
+  ) : (
+    <Loading />
+  );
 };
 
 export default Tracks;

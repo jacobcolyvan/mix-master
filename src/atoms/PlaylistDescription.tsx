@@ -1,10 +1,10 @@
 import React from 'react';
 import parse from 'html-react-parser';
-
-import { goToPlaylist } from '../slices/itemsSlice';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import { History } from 'history';
+
+import { goToPlaylist } from '../slices/itemsSlice';
 
 interface ParsedDescriptionProps {
   description: string;

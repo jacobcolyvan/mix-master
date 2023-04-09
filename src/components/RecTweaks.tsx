@@ -1,25 +1,14 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Tabs,
-  Tab,
-  Button,
-  FormControlLabel,
-  Switch,
-  IconButton,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Button, FormControlLabel, Switch } from '@material-ui/core';
 
 import { RootState } from '../app/store';
-import { attributeChoices } from '../utils/commonVariables';
-import {
-  invertMatchRecsToSeedTrackKey,
-  saveSeedAttribute,
-} from '../slices/controlsSlice';
-import RecTweaksInput from '../atoms/RecTweaksInput';
-import RecTweaksGenre from '../atoms/RecTweaksGenre';
-import { getRecommendedTracks } from '../slices/itemsSlice';
 import { Track } from '../types';
+import { invertMatchRecsToSeedTrackKey } from '../slices/controlsSlice';
+import { getRecommendedTracks } from '../slices/itemsSlice';
+import { attributeChoices } from '../utils/commonVariables';
+import RecTweaksTabs from './RecTweaksTabs';
+import RecTweaksParams from '../atoms/RecTweaksParams';
 
 interface RecTweakProps {
   recommendedTrack: Track;
@@ -53,48 +42,12 @@ const RecTweaks = ({ recommendedTrack }: RecTweakProps) => {
         label="Match recommendations to key of chosen track?"
         className="match-key__switch"
       />
-      <Tabs
-        value={currentTab}
-        onChange={handleTabChange}
-        variant="scrollable"
-        scrollButtons="on"
-        className="rec-tweaks__tabs"
-      >
-        {attributeChoices.map((inputItem) => (
-          <Tab
-            label={inputItem.input_name}
-            key={`tab-panel-${inputItem.input_name}`}
-            className="rec-tweaks__tab"
-          />
-        ))}
-        <Tab label="Genre" key={`tab-panel-genre`} className="rec-tweaks__tab" />
-      </Tabs>
-
-      {attributeChoices.map((inputItem, index) => (
-        <div
-          role="tabpanel"
-          hidden={currentTab !== index}
-          id={`full-width-tabpanel-${index}`}
-          key={`tab-input-${index}`}
-          className="rec-tweaks__tab-input"
-        >
-          <RecTweaksInput
-            inputItem={inputItem}
-            paramValue={seedAttributes[`${inputItem.input_name}`]}
-          />
-        </div>
-      ))}
-
-      <div
-        role="tabpanel"
-        hidden={currentTab !== attributeChoices.length}
-        id={`full-width-tabpanel-${attributeChoices.length}`}
-        key={`tab-input-${attributeChoices.length}`}
-        className="rec-tweaks__tab-input"
-      >
-        <RecTweaksGenre genre={seedAttributes['genre']} />
-      </div>
-
+      <RecTweaksTabs
+        currentTab={currentTab}
+        handleTabChange={handleTabChange}
+        attributeChoices={attributeChoices}
+        attributes={seedAttributes}
+      />
       <Button
         variant="outlined"
         color="primary"
@@ -103,31 +56,7 @@ const RecTweaks = ({ recommendedTrack }: RecTweakProps) => {
       >
         Refresh Recommendations
       </Button>
-
-      <div className="currently-selected-params-div">
-        <label>Currently selected inputs are:</label>
-        <ul>
-          {Object.keys(seedAttributes).map(
-            (attribute) =>
-              seedAttributes[attribute].value && (
-                <li key={`currently-selected-attribute-li__${attribute}`}>
-                  {`– ${
-                    seedAttributes[attribute].maxOrMin &&
-                    seedAttributes[attribute].maxOrMin
-                  } ${attribute}: ${seedAttributes[attribute].value}`}
-                  <IconButton
-                    aria-label="close"
-                    onClick={() => dispatch(saveSeedAttribute(attribute, false))}
-                    size="small"
-                    className="close-icon"
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </li>
-              )
-          )}
-        </ul>
-      </div>
+      <RecTweaksParams attributes={seedAttributes} />
     </div>
   );
 };

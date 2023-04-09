@@ -1,24 +1,23 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-
+import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../app/store';
 
+import { RootState } from '../app/store';
 import Tracks from '../components/Tracks';
 import SortBy from '../atoms/SortBy';
 import KeySelect from '../atoms/KeySelect';
 import RecTweaks from '../components/RecTweaks';
 
-import { selectKeyDisplayOption } from '../slices/settingsSlice';
 import { getRecommendedTracks } from '../slices/itemsSlice';
-import TrackTooltip from '../atoms/TrackTooltip';
+import CurrentTrackRec from '../components/CurrentTrackRec';
 
 const RecommendedTracks = () => {
   const dispatch = useDispatch();
-  const history: any = useHistory();
+  const history: History = useHistory();
 
+  // TODO: rethink this
   const recommendedTrack = history.location.state.recommendedTrack;
-  const keyOption = useSelector(selectKeyDisplayOption);
   const { matchRecsToSeedTrackKey, seedAttributes } = useSelector(
     (state: RootState) => state.controlsSlice
   );
@@ -34,58 +33,9 @@ const RecommendedTracks = () => {
       <SortBy />
 
       <RecTweaks recommendedTrack={recommendedTrack} />
-
       <br />
 
-      <div className="recommended-track__div">
-        <p>Tracks were recommended from this track:</p>
-        <table>
-          <thead>
-            <tr>
-              <th className="table-data__name">Track</th>
-              <th className="table-data__attributes">Key</th>
-              <th className="table-data__attributes table-data__attributes-energy">
-                Energy
-              </th>
-              <th className="table-data__attributes">BPM</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr className={`track-name-tr`} id="recommended-track">
-              <td
-                className="table-data__name table-data__name-hover"
-                onClick={() =>
-                  navigator.clipboard.writeText(
-                    `${recommendedTrack.name} ${recommendedTrack.artists[0]}`
-                  )
-                }
-              >
-                <span>
-                  {recommendedTrack.name} –{' '}
-                  <span className="table_data__artist-name">
-                    {recommendedTrack.artists.length > 1
-                      ? recommendedTrack.artists[0] + ', ' + recommendedTrack.artists[1]
-                      : recommendedTrack.artists[0]}
-                  </span>
-                </span>
-
-                <TrackTooltip track={recommendedTrack} />
-              </td>
-              <td className="table-data__attributes key-data">
-                {keyOption === 'camelot'
-                  ? recommendedTrack.parsedKeys[0]
-                  : recommendedTrack.parsedKeys[1]}
-              </td>
-              <td className="table-data__attributes table-data__attributes-energy">
-                {recommendedTrack.energy}
-              </td>
-              <td className="table-data__attributes">{recommendedTrack.tempo}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
+      <CurrentTrackRec track={recommendedTrack} />
       <Tracks />
     </div>
   );

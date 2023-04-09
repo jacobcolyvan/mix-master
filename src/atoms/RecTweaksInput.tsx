@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-
 import { useDispatch } from 'react-redux';
+import { TextField, Radio, RadioGroup, FormControlLabel } from '@material-ui/core';
+
 import { saveSeedAttribute } from '../slices/controlsSlice';
 import { AttributeChoiceDetails } from '../types';
 
@@ -19,38 +16,41 @@ const RecTweaksInput = ({ paramValue, inputItem }: InputProps) => {
   const { input_name, extra_text, range_limit, validateField } = inputItem;
 
   const [validationError, setValidationError] = useState(false);
-  const [maxOrMin, setMaxOrMin] = useState(
-    (paramValue && paramValue.maxOrMin) || 'target'
-  );
-  const [inputValue, setInputValue] = useState(paramValue && paramValue.value);
-  const [inputLabel, setInputLabel] = useState(
-    `${maxOrMin} ${input_name} (0 – ${range_limit}${extra_text || ''})`
-  );
+  const [maxOrMin, setMaxOrMin] = useState(paramValue?.maxOrMin || 'target');
+  const [inputValue, setInputValue] = useState(paramValue?.value);
+  const [inputLabel, setInputLabel] = useState(getMaxOrMinInputLabel(maxOrMin));
 
-  // for when inputs are updated from outside the component
+  function getMaxOrMinInputLabel(value: string): string {
+    return `${value} ${input_name} (0 – ${range_limit}${extra_text || ''})`;
+  }
+
+  // Handle updates from outside the component
   useEffect(() => {
     setInputValue(paramValue && paramValue.value);
   }, [paramValue]);
 
-  // validate input value on change
-  useEffect(() => {
-    const valueIsValid = validateField(parseFloat(inputValue));
+  // Validate input value on change, update state and dispatch actions
+  const handleValueUpdate = (value: string) => {
+    const valueIsValid = validateField(parseFloat(value));
 
     if (valueIsValid) {
-      dispatch(saveSeedAttribute(input_name, inputValue, maxOrMin));
+      dispatch(saveSeedAttribute(input_name, value, maxOrMin));
       setValidationError(false);
     } else {
       // Avoid empty inputs raising validation error
-      inputValue === '0' ? setValidationError(true) : setValidationError(false);
+      value === '0' ? setValidationError(true) : setValidationError(false);
       dispatch(saveSeedAttribute(input_name, false));
     }
+  };
+
+  useEffect(() => {
+    handleValueUpdate(inputValue);
   }, [inputValue]);
 
   const handleRadioChange = (event: React.ChangeEvent<{ [key: string]: any }>) => {
-    setMaxOrMin(event.target.value);
-    setInputLabel(
-      `${event.target.value} ${input_name} (0 – ${range_limit}${extra_text || ''})`
-    );
+    const newValue = event.target.value;
+    setMaxOrMin(newValue);
+    setInputLabel(getMaxOrMinInputLabel(newValue));
   };
 
   const handleInputChange = (event: React.ChangeEvent<{ [key: string]: any }>) => {

@@ -8,7 +8,7 @@ const SortBy = () => {
   const sortOption = useSelector(selectSortTracksBy);
 
   const sortOptionChange = (event: React.ChangeEvent<any>) => {
-    if (event && event.target.value) {
+    if (event?.target.value) {
       dispatch(setSortTracksBy(event.target.value));
     }
   };
@@ -26,7 +26,6 @@ const SortBy = () => {
         <MenuItem value={'default'}>Original Order</MenuItem>
         <MenuItem value={'duration'}>Sort by Duration</MenuItem>
         <MenuItem value={'popularity'}>Sort by Popularity</MenuItem>
-
         <MenuItem value={'valence'}>Sort by Valence</MenuItem>
         <MenuItem value={'tempo'}>Sort by Tempo</MenuItem>
         <MenuItem value={'energy'}>Sort by Energy</MenuItem>

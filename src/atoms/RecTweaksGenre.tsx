@@ -1,5 +1,5 @@
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+import { TextField } from '@material-ui/core';
 
 // NOTE: this file can be updated from this link --
 //       https://developer.spotify.com/console/get-available-genre-seeds/

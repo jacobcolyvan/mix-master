@@ -9,56 +9,59 @@ import {
 } from '../slices/controlsSlice';
 import { getSearchResults } from '../slices/itemsSlice';
 
+const PlaylistSearch = ({ getResults, playlistSearchQuery }) => (
+  <SearchBar
+    label={'playlist name'}
+    param={playlistSearchQuery}
+    paramName={'playlistSearchQuery'}
+    getResults={getResults}
+  />
+);
+
+const AlbumSearch = ({ getResults, albumSearchQuery, artistSearchQuery }) => (
+  <>
+    <SearchBar
+      label={'artist'}
+      param={artistSearchQuery}
+      paramName={'artistSearchQuery'}
+      getResults={getResults}
+    />
+    <SearchBar
+      label={'album name'}
+      paramName={'albumSearchQuery'}
+      param={albumSearchQuery}
+      getResults={getResults}
+    />
+  </>
+);
+
+const TrackSearch = ({ getResults, trackSearchQuery, artistSearchQuery }) => (
+  <>
+    <SearchBar
+      label={'artist'}
+      param={artistSearchQuery}
+      paramName={'artistSearchQuery'}
+      getResults={getResults}
+    />
+    <SearchBar
+      label={'track name'}
+      param={trackSearchQuery}
+      paramName={'trackSearchQuery'}
+      getResults={getResults}
+    />
+  </>
+);
+
 const SearchOptions = () => {
-  const currentSearchQueries = useSelector(selectCurrentSearchQueries);
   const dispatch = useDispatch();
   const history = useHistory();
 
+  const currentSearchQueries = useSelector(selectCurrentSearchQueries);
+  const { playlistSearchQuery, albumSearchQuery, trackSearchQuery, artistSearchQuery } =
+    currentSearchQueries;
+
   const dispatchGetSearchResults = async () => {
     await dispatch(getSearchResults(history));
-  };
-
-  const createSearchBars = () => {
-    let searchBars;
-    if (currentSearchQueries.searchType === 'playlist') {
-      searchBars = (
-        <SearchBar
-          label={'playlist name'}
-          param={currentSearchQueries.playlistSearchQuery}
-          paramName={'playlistSearchQuery'}
-          getResults={dispatchGetSearchResults}
-        />
-      );
-    } else {
-      searchBars = (
-        <div>
-          <SearchBar
-            label={'artist'}
-            param={currentSearchQueries.artistSearchQuery}
-            paramName={'artistSearchQuery'}
-            getResults={dispatchGetSearchResults}
-          />
-
-          {currentSearchQueries.searchType === 'album' ? (
-            <SearchBar
-              label={'album name'}
-              paramName={'albumSearchQuery'}
-              param={currentSearchQueries.albumSearchQuery}
-              getResults={dispatchGetSearchResults}
-            />
-          ) : (
-            <SearchBar
-              label={'track name'}
-              param={currentSearchQueries.trackSearchQuery}
-              paramName={'trackSearchQuery'}
-              getResults={dispatchGetSearchResults}
-            />
-          )}
-        </div>
-      );
-    }
-
-    return searchBars;
   };
 
   return (
@@ -78,7 +81,28 @@ const SearchOptions = () => {
         <MenuItem value={'playlist'}>Playlists</MenuItem>
       </Select>
 
-      <div className="searchbar__div">{createSearchBars()}</div>
+      <div className="searchbar__div">
+        {currentSearchQueries.searchType === 'playlist' && (
+          <PlaylistSearch
+            getResults={dispatchGetSearchResults}
+            playlistSearchQuery={playlistSearchQuery}
+          />
+        )}
+        {currentSearchQueries.searchType === 'album' && (
+          <AlbumSearch
+            getResults={dispatchGetSearchResults}
+            albumSearchQuery={albumSearchQuery}
+            artistSearchQuery={artistSearchQuery}
+          />
+        )}
+        {currentSearchQueries.searchType === 'track' && (
+          <TrackSearch
+            getResults={dispatchGetSearchResults}
+            trackSearchQuery={trackSearchQuery}
+            artistSearchQuery={artistSearchQuery}
+          />
+        )}
+      </div>
 
       <div className="search-button__div">
         <Button

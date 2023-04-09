@@ -12,6 +12,7 @@ const TokenExpired = () => {
       <p>
         <i>Authorise Spotify: </i>
       </p>
+
       <a href={createSpotifyAuthHREF()}>
         <Button variant="outlined" color="primary" fullWidth>
           Authorise Spotify

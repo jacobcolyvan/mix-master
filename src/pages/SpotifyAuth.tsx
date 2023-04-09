@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setSpotifyToken } from '../slices/settingsSlice';
 import { useCookies } from 'react-cookie';
 
-import Info from '../atoms/Info';
+import InfoOverview from '../atoms/info/InfoOverview';
 import { createSpotifyAuthHREF } from '../utils/requestUtils';
 
 interface AuthProps {
@@ -24,7 +24,7 @@ const SpotifyAuth = ({ location }: AuthProps) => {
   }, []);
 
   useEffect(() => {
-    if (location && location.hash.split('=')[1]) {
+    if (location?.hash.split('=')[1]) {
       const newToken = location.hash.split('=')[1].split('&token')[0];
       dispatch(setSpotifyToken(newToken));
 
@@ -40,7 +40,7 @@ const SpotifyAuth = ({ location }: AuthProps) => {
 
   return (
     <div>
-      <Info />
+      <InfoOverview />
       <p>
         <i>Authorise Spotify to start: </i>
       </p>

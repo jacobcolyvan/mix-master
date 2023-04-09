@@ -10,7 +10,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
 
   const authError = useSelector(selectAuthError);
-  const token = useSelector(selectSpotifyToken);
+  const spotifyToken = useSelector(selectSpotifyToken);
 
   const [activeNavItem, setActiveNavItem] = useState('/');
 
@@ -27,7 +27,7 @@ const Navbar = () => {
     <header className="navbar">
       <h1 onClick={() => loadPage('/')}>Mix Master</h1>
 
-      {token && !authError && (
+      {spotifyToken && !authError && (
         <div className="nav-buttons">
           <a
             className={`nav-button nav-button__top ${
