@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { History } from 'history';
 
-import { Track, Playlist, Album, SortedPlaylists, SearchResultsType } from '../types';
+import { Track, Playlist, Album, SortedPlaylists } from '../types';
 import { AppThunk, RootState } from '../app/store';
 import {
-  createRequestUrl,
+  createSearchRequestUrl,
   generateRecommendedTrackUrl,
   getTrackAndArtistFeatures,
   getTracksFromSpotify,
@@ -18,6 +18,7 @@ import {
   setHasCurrentSearchResults,
   setIsSearching,
   setSearchResultValues,
+  updateBrowserHistoryThunk,
 } from './controlsSlice';
 import {
   handleAuthError,
@@ -179,80 +180,84 @@ const sortPlaylists = (playlists: Playlist[], username: string): SortedPlaylists
   return tempSortedPlaylists;
 };
 
-export const getResults = (): AppThunk => {
+const handleAlbumSearch = async (response, dispatch, searchResultValues) => {
+  const results = {
+    ...searchResultValues,
+    albumResults: response.data.albums.items,
+  };
+
+  await dispatch(setSearchResultValues(results));
+};
+
+const handleTrackSearch = async (
+  response,
+  dispatch,
+  searchResultValues,
+  spotifyToken
+) => {
+  const trackArray = response.data.tracks.items;
+  if (trackArray.length) {
+    const splicedTracks = await getTrackAndArtistFeatures(trackArray, spotifyToken);
+
+    await dispatch(setSortedTracks(splicedTracks));
+    await dispatch(setTracks(splicedTracks));
+
+    const results = {
+      ...searchResultValues,
+      trackResults: splicedTracks,
+    };
+
+    await dispatch(setSearchResultValues(results));
+  }
+};
+
+const handlePlaylistSearch = async (response, dispatch, searchResultValues) => {
+  const results = {
+    ...searchResultValues,
+    playlistResults: response.data.playlists.items,
+  };
+
+  await dispatch(setSearchResultValues(results));
+};
+
+export const getSearchResults = (history: History): AppThunk => {
   return async (dispatch, getState) => {
-    const { spotifyToken } = getState().settingsSlice;
-
-    await dispatch(setIsSearching(true));
-    // updateUrl to save searchOption params
-    // updateBrowserHistory('');
-
+    const spotifyToken = selectSpotifyToken(getState());
     const { currentSearchQueries, searchResultValues } = getState().controlsSlice;
 
-    if (
-      currentSearchQueries.artistSearchQuery.length ||
-      currentSearchQueries.albumSearchQuery.length ||
-      currentSearchQueries.trackSearchQuery.length ||
-      currentSearchQueries.playlistSearchQuery.length
-    ) {
-      try {
-        const searchUrl = await createRequestUrl(currentSearchQueries);
-        const response = await spotifyBaseRequest(spotifyToken).get(searchUrl);
+    dispatch(setIsSearching(true));
+    dispatch(updateBrowserHistoryThunk('', history));
 
-        if (currentSearchQueries.searchType === 'album') {
-          const results: SearchResultsType = {
-            ...searchResultValues,
-            albumResults: response.data.albums.items,
-          };
-
-          await dispatch(setSearchResultValues(results));
-
-          // updateBrowserHistory('albums', Boolean(results));
-        } else if (currentSearchQueries.searchType === 'track') {
-          const trackArray = response.data.tracks.items;
-          if (trackArray.length) {
-            const splicedTracks = await getTrackAndArtistFeatures(
-              trackArray,
-              spotifyToken
-            );
-
-            await dispatch(setSortedTracks(splicedTracks));
-            // TODO: check if this is necessary
-            await dispatch(setTracks(splicedTracks));
-
-            const results: SearchResultsType = {
-              ...searchResultValues,
-              trackResults: splicedTracks,
-            };
-
-            await dispatch(setSearchResultValues(results));
-          }
-
-          // updateBrowserHistory('tracks');
-        } else {
-          const results: SearchResultsType = {
-            ...searchResultValues,
-            playlistResults: response.data.playlists.items,
-          };
-
-          await dispatch(setSearchResultValues(results));
-
-          // updateBrowserHistory('playlists', Boolean(results));
-        }
-
-        dispatch(setHasCurrentSearchResults(true));
-        dispatch(setIsSearching(false));
-      } catch (err) {
-        if (err.response?.status === 401) dispatch(handleAuthError());
-        console.log(err.message);
+    try {
+      const searchUrl = await createSearchRequestUrl(currentSearchQueries);
+      if (!searchUrl) {
+        console.log('Search failed as query was empty.');
+        return;
       }
+      const response = await spotifyBaseRequest(spotifyToken).get(searchUrl);
+
+      switch (currentSearchQueries.searchType) {
+        case 'album':
+          await handleAlbumSearch(response, dispatch, searchResultValues);
+          break;
+        case 'track':
+          await handleTrackSearch(response, dispatch, searchResultValues, spotifyToken);
+          break;
+        default:
+          await handlePlaylistSearch(response, dispatch, searchResultValues);
+      }
+
+      dispatch(setHasCurrentSearchResults(true));
+      dispatch(setIsSearching(false));
+    } catch (err) {
+      if (err.response?.status === 401) dispatch(handleAuthError());
+      console.log(err.message);
     }
   };
 };
 
 export const getAlbumTracks = (album: Album): AppThunk => {
   return async (dispatch, getState) => {
-    // TODO: fix that this is not routing to the correct page
     try {
       const spotifyToken = selectSpotifyToken(getState());
       const tracksResponse = await spotifyBaseRequest(spotifyToken).get(album.href);
@@ -272,13 +277,18 @@ export const getAlbumTracks = (album: Album): AppThunk => {
           }`
         )
       );
+      await dispatch(
+        setSearchResultValues({
+          albumResults: null,
+          playlistResults: null,
+          trackResults: null,
+        })
+      );
       const results = await dispatch(
         handleSearchResultsChange('tracks', splicedTracks)
       );
 
       return results;
-
-      // updateUrl('album-tracks', results);
     } catch (err) {
       if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);

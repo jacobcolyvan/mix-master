@@ -7,7 +7,7 @@ const KeySelect = () => {
   const dispatch = useDispatch();
   const keyDisplayOption = useSelector(selectKeyDisplayOption);
 
-  const keySettingChange = (event: React.ChangeEvent<any>) => {
+  const handleKeySettingChange = (event: React.ChangeEvent<any>) => {
     if (event && event.target.value) dispatch(setKeyDisplayOption(event.target.value));
   };
 
@@ -17,7 +17,7 @@ const KeySelect = () => {
         labelId="Key Select"
         id="key-select"
         value={keyDisplayOption}
-        onChange={keySettingChange}
+        onChange={handleKeySettingChange}
         fullWidth
         variant="outlined"
       >

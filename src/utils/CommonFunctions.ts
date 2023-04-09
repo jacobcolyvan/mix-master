@@ -57,8 +57,6 @@ export const standardKeySort = (tempTracks: Track[]): Track[] => {
 };
 
 export const getKeyInfoArray = (trackKey, trackMode): any[] => {
-  console.log('trackKey', trackKey);
-  console.log('trackMode', trackMode);
   const camelotKey =
     String(trackMode) === '1'
       ? camelotMajorKeyDict[parseInt(trackKey)] + 'B'

@@ -68,7 +68,7 @@ export const selectKeyDisplayOption = (state: RootState): string => {
 export const getUsername = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
-      const { spotifyToken } = getState().settingsSlice;
+      const spotifyToken = selectSpotifyToken(getState());
       const response = await spotifyBaseRequest(spotifyToken).get('me/');
 
       if (response.status === 200) {

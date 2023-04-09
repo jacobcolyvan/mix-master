@@ -8,11 +8,7 @@ import { useSelector } from 'react-redux';
 import { selectAlbumName, selectSearchResultValues } from '../features/controlsSlice';
 import { selectPlaylist, selectTracks } from '../features/itemsSlice';
 
-interface SearchResultsProps {
-  updateUrl: (slug: string, results: any) => void;
-}
-
-const SearchResults = ({ updateUrl }: SearchResultsProps) => {
+const SearchResults = () => {
   const albumName = useSelector(selectAlbumName);
   const searchResultValues = useSelector(selectSearchResultValues);
   const tracks = useSelector(selectTracks);
@@ -21,7 +17,7 @@ const SearchResults = ({ updateUrl }: SearchResultsProps) => {
   return (
     <div>
       {searchResultValues.albumResults && !searchResultValues.trackResults && (
-        <Albums updateUrl={updateUrl} />
+        <Albums />
       )}
 
       {!playlist && !searchResultValues.playlistResults && tracks && (

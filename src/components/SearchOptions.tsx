@@ -1,21 +1,23 @@
+import { useHistory } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import SearchBar from './SearchBar';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   saveSearchQueryChange,
   selectCurrentSearchQueries,
 } from '../features/controlsSlice';
-import { getResults } from '../features/itemsSlice';
+import { getSearchResults } from '../features/itemsSlice';
 
 const SearchOptions = () => {
   const currentSearchQueries = useSelector(selectCurrentSearchQueries);
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const dispatchGetResults = async () => {
-    await dispatch(getResults());
+  const dispatchGetSearchResults = async () => {
+    await dispatch(getSearchResults(history));
   };
 
   const createSearchBars = () => {
@@ -26,7 +28,7 @@ const SearchOptions = () => {
           label={'playlist name'}
           param={currentSearchQueries.playlistSearchQuery}
           paramName={'playlistSearchQuery'}
-          getResults={dispatchGetResults}
+          getResults={dispatchGetSearchResults}
         />
       );
     } else {
@@ -36,7 +38,7 @@ const SearchOptions = () => {
             label={'artist'}
             param={currentSearchQueries.artistSearchQuery}
             paramName={'artistSearchQuery'}
-            getResults={dispatchGetResults}
+            getResults={dispatchGetSearchResults}
           />
 
           {currentSearchQueries.searchType === 'album' ? (
@@ -44,14 +46,14 @@ const SearchOptions = () => {
               label={'album name'}
               paramName={'albumSearchQuery'}
               param={currentSearchQueries.albumSearchQuery}
-              getResults={dispatchGetResults}
+              getResults={dispatchGetSearchResults}
             />
           ) : (
             <SearchBar
               label={'track name'}
               param={currentSearchQueries.trackSearchQuery}
               paramName={'trackSearchQuery'}
-              getResults={dispatchGetResults}
+              getResults={dispatchGetSearchResults}
             />
           )}
         </div>
@@ -84,7 +86,7 @@ const SearchOptions = () => {
         <Button
           variant="outlined"
           color="primary"
-          onClick={dispatchGetResults}
+          onClick={dispatchGetSearchResults}
           className="button"
           fullWidth
         >

@@ -24,7 +24,14 @@ export const createSpotifyAuthHREF = () => {
   )}&show_dialog=false`;
 };
 
-export const createRequestUrl = (currentSearchQueries: CurrentSearchQueryOptions) => {
+export const createSearchRequestUrl = (
+  currentSearchQueries: CurrentSearchQueryOptions
+) => {
+  // if all search queries are empty, return null
+  if (!Object.values(currentSearchQueries).some((query) => query.length)) {
+    return null;
+  }
+
   const baseSearchUrl = 'https://api.spotify.com/v1/search?q=';
   const {
     searchType,
