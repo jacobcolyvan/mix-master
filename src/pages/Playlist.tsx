@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { History } from 'history';
 
 import Tracks from '../components/Tracks';
 import SortBy from '../atoms/SortBy';
@@ -11,7 +12,7 @@ import PlaylistDescription from '../atoms/PlaylistDescription';
 
 const Playlist = () => {
   const username = useSelector(selectUsername);
-  const history: any = useHistory();
+  const history: History = useHistory();
   const dispatch = useDispatch();
 
   // TODO: rethink this

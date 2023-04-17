@@ -41,7 +41,7 @@ const GeneratedPlaylists = ({ generatedPlaylists }) => {
       <div className="playlists-title__div" id="generated-playlists" tabIndex={0}>
         <h3>Generated</h3>
       </div>
-      <PlaylistList playlistsToRender={generatedPlaylists.generated} />
+      <PlaylistList playlistsToRender={generatedPlaylists} />
       <br />
     </>
   );

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { CurrentSearchQueryOptions, SeedAttributes, Track } from '../types';
 import { scopes } from './commonVariables';
-import { getKeyInfoArray, millisToMinutesAndSeconds } from './commonFunctions';
+import { getKeyInfoArray } from './commonFunctions';
 
 /* Use .get() on returned value, with everything in url after v1/ */
 export const spotifyBaseRequest = (token: string) => {
@@ -60,13 +60,31 @@ export const createSearchRequestUrl = (
   }
 };
 
+export const millisToMinutesAndSeconds = (millis: number) => {
+  const minutes: string = String(Math.floor(millis / 60000) + 1);
+  ('');
+  const seconds: number = parseInt(((millis % 60000) / 1000).toFixed(0));
+
+  return seconds === 60
+    ? minutes + ':00'
+    : minutes + ':' + (seconds < 10 ? '0' : '') + String(seconds);
+};
+
 export const createTrackObject = (item, trackFeature, artistFeature): Track => {
   // we check this because sometimes the track object is nested in the item object
   const track = item.track || item;
+
+  const featureToString = (num) =>
+    num === null || num === undefined ? '' : String(num);
+
   const keyInfoArray = getKeyInfoArray(
-    String(trackFeature?.key),
-    String(trackFeature?.mode)
+    featureToString(trackFeature?.key),
+    featureToString(trackFeature?.mode)
   );
+
+  const roundToTwoDecimals = (num: number) => {
+    return (Math.round(num * 100) / 100).toFixed(2);
+  };
 
   return {
     id: track.id,
@@ -75,22 +93,22 @@ export const createTrackObject = (item, trackFeature, artistFeature): Track => {
       track.artists.length > 1
         ? [track.artists[0].name, track.artists[1].name]
         : [track.artists[0].name],
-    tempo: String(trackFeature?.tempo ? Math.round(trackFeature.tempo) : ''),
-    key: String(trackFeature?.key) || '',
-    mode: String(trackFeature?.mode) || '',
-    energy: trackFeature?.energy
-      ? String(Math.round(trackFeature.energy.toFixed(2) * 100) / 100)
-      : '',
-    danceability: trackFeature?.danceability || '',
-    acousticness: trackFeature?.acousticness || '',
-    speechiness: trackFeature?.speechiness || '',
-    instrumentalness: trackFeature?.instrumentalness || '',
-    liveness: trackFeature?.liveness || '',
-    loudness: trackFeature?.loudness || '',
-    valence: trackFeature?.valence || '',
+    tempo: featureToString(trackFeature?.tempo ? Math.round(trackFeature.tempo) : ''),
+    key: featureToString(trackFeature?.key),
+    mode: featureToString(trackFeature?.mode),
+    energy: featureToString(
+      trackFeature?.energy ? roundToTwoDecimals(trackFeature.energy) : ''
+    ),
+    danceability: featureToString(trackFeature?.danceability),
+    acousticness: featureToString(trackFeature?.acousticness),
+    speechiness: featureToString(trackFeature?.speechiness),
+    instrumentalness: featureToString(trackFeature?.instrumentalness),
+    liveness: featureToString(trackFeature?.liveness),
+    loudness: featureToString(trackFeature?.loudness),
+    valence: featureToString(trackFeature?.valence),
     duration: track.duration_ms ? millisToMinutesAndSeconds(track.duration_ms) : '',
-    track_popularity: track.popularity || '',
-    artist_genres: artistFeature?.genres || '',
+    track_popularity: featureToString(track.popularity),
+    artist_genres: artistFeature?.genres || [],
     album: track.album?.name || '',
     release_date: track.album?.release_date || '',
     parsedKeys: keyInfoArray,

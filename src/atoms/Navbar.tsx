@@ -5,6 +5,33 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectAuthError, selectSpotifyToken } from '../slices/settingsSlice';
 import { resetItemStates } from '../slices/itemsSlice';
 
+interface NavButtonProps {
+  activeNavItem: string;
+  target: string;
+  label: string;
+  loadPage: (link: string) => void;
+  extraClass?: string;
+}
+
+const NavButton: React.FC<NavButtonProps> = ({
+  activeNavItem,
+  target,
+  label,
+  loadPage,
+  extraClass,
+}) => {
+  return (
+    <a
+      className={`nav-button ${extraClass ? extraClass : ''} ${
+        activeNavItem === target ? 'active' : ''
+      }`}
+      onClick={() => loadPage(target)}
+    >
+      {label}
+    </a>
+  );
+};
+
 const Navbar = () => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -21,7 +48,11 @@ const Navbar = () => {
     dispatch(resetItemStates);
   };
 
-  useEffect(() => {}, [history.location.pathname]);
+  const navItems = [
+    { target: '/', label: 'Playlists', extraClass: 'nav-button__top' },
+    { target: '/search', label: 'Search' },
+    { target: '/about', label: 'About' },
+  ];
 
   return (
     <header className="navbar">
@@ -29,26 +60,16 @@ const Navbar = () => {
 
       {spotifyToken && !authError && (
         <div className="nav-buttons">
-          <a
-            className={`nav-button nav-button__top ${
-              activeNavItem === '/' ? 'active' : ''
-            }`}
-            onClick={() => loadPage('/')}
-          >
-            Playlists
-          </a>
-          <a
-            className={`nav-button ${activeNavItem === '/search' ? 'active' : ''}`}
-            onClick={() => loadPage('/search')}
-          >
-            Search
-          </a>
-          <a
-            className={`nav-button ${activeNavItem === '/about' ? 'active' : ''}`}
-            onClick={() => loadPage('/about')}
-          >
-            About
-          </a>
+          {navItems.map(({ target, label, extraClass }) => (
+            <NavButton
+              key={target}
+              activeNavItem={activeNavItem}
+              target={target}
+              label={label}
+              extraClass={extraClass}
+              loadPage={loadPage}
+            />
+          ))}
         </div>
       )}
     </header>

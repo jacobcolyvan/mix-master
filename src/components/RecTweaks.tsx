@@ -31,6 +31,7 @@ const RecTweaks = ({ recommendedTrack }: RecTweakProps) => {
   return (
     <div className="rec-tweaks__div">
       <h4>Tweak the recommendations below:</h4>
+
       <FormControlLabel
         control={
           <Switch

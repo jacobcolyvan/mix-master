@@ -1,16 +1,6 @@
 import { Track } from '../types';
 import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from './commonVariables';
 
-export const millisToMinutesAndSeconds = (millis: number) => {
-  const minutes: string = String(Math.floor(millis / 60000) + 1);
-  ('');
-  const seconds: number = parseInt(((millis % 60000) / 1000).toFixed(0));
-
-  return seconds === 60
-    ? minutes + ':00'
-    : minutes + ':' + (seconds < 10 ? '0' : '') + String(seconds);
-};
-
 export const getArtistNames = (artistNameArray: String[]) => {
   // only show first two artists
   if (artistNameArray.length > 1) {
@@ -21,53 +11,60 @@ export const getArtistNames = (artistNameArray: String[]) => {
 };
 
 const getCamelotKeyValue = (track: Track) => {
+  // 0.1 is added to the value of the major key so that it is sorted after the minor key
   const keyValue =
-    parseInt(track.mode) === 0
-      ? parseInt(camelotMinorKeyDict[parseInt(track.key)])
-      : parseInt(camelotMajorKeyDict[parseInt(track.key)]) + 0.1;
+    track.mode === '0'
+      ? parseInt(camelotMinorKeyDict[track.key])
+      : parseInt(camelotMajorKeyDict[track.key]) + 0.1;
+
   return keyValue;
 };
 
 export const camelotKeySort = (tempTracks: Track[]): Track[] => {
-  tempTracks.sort((a: Track, b: Track) => {
+  const sortedTracks = [...tempTracks];
+  sortedTracks.sort((a: Track, b: Track) => {
     const aValue = getCamelotKeyValue(a);
     const bValue = getCamelotKeyValue(b);
 
     return aValue > bValue ? 1 : -1;
   });
 
-  return tempTracks;
+  return sortedTracks;
 };
 
 export const standardKeySort = (tempTracks: Track[]): Track[] => {
-  // TODO: fix this
-  console.log('tempTracks', tempTracks);
-  tempTracks.sort((a, b) => {
+  const sortedTracks = [...tempTracks];
+
+  sortedTracks.sort((a, b) => {
     const { key: aKey, mode: aMode } = a;
     const { key: bKey, mode: bMode } = b;
 
-    if (aMode !== bMode) {
-      return parseInt(bMode) - parseInt(aMode);
+    // Adjust keys so that A is at 1 and G# is at 12
+    const aKeyAdjusted = ((parseInt(aKey) + 3) % 12) + 1;
+    const bKeyAdjusted = ((parseInt(bKey) + 3) % 12) + 1;
+
+    if (aKeyAdjusted !== bKeyAdjusted) {
+      return aKeyAdjusted - bKeyAdjusted;
     }
 
-    return parseInt(aKey) - parseInt(bKey);
+    return parseInt(bMode) - parseInt(aMode);
   });
 
-  return tempTracks;
+  return sortedTracks;
 };
 
 export const getKeyInfoArray = (trackKey, trackMode): any[] => {
   const camelotKey =
-    String(trackMode) === '1'
-      ? camelotMajorKeyDict[parseInt(trackKey)] + 'B'
-      : camelotMinorKeyDict[parseInt(trackKey)] + 'A';
+    trackMode === '1'
+      ? camelotMajorKeyDict[trackKey] + 'B'
+      : camelotMinorKeyDict[trackKey] + 'A';
 
-  const standardKey = `${keyDict[parseInt(trackKey)]}${
-    String(trackMode) === '1' ? '' : 'm'
-  }`;
+  const standardKey = `${keyDict[trackKey]}${trackMode === '1' ? '' : 'm'}`;
 
+  // 9 is the number of semitones between the major and minor key, while
+  // 3 is the number of semitones between the minor and major key
   const inverseKey =
-    String(trackMode) === '1'
+    trackMode === '1'
       ? [String((parseInt(trackKey) + 9) % 12), '0']
       : [String((parseInt(trackKey) + 3) % 12), '1'];
 

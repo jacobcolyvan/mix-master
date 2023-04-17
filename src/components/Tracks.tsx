@@ -47,8 +47,8 @@ const Tracks = () => {
   };
 
   const getKeyLabel = (keyOption: string, track: Track) => {
-    const trackMode = String(track.mode);
-    const trackKey = String(track.key);
+    const trackMode = track.mode;
+    const trackKey = track.key;
 
     if (keyOption === 'camelot') {
       return trackMode === '1'
@@ -85,7 +85,7 @@ const Tracks = () => {
                 className="table-data__attributes key-data"
                 onClick={() => handleTrackRecommendedClick(track)}
               >
-                {String(track.key) && getKeyLabel(keyOption, track)}
+                {track.key && getKeyLabel(keyOption, track)}
               </td>
               <td className="table-data__attributes table-data__attributes-energy">
                 {track.energy && track.energy}

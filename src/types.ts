@@ -3,7 +3,7 @@ export type Track = {
   name: string;
   album: string;
   artists: string[];
-  artist_genres: string[] | null;
+  artist_genres: string[];
   release_date: string;
   analysis_url?: string;
   // TODO: fix below
@@ -13,18 +13,18 @@ export type Track = {
 
   // from audio analysis
   // NOTE: these should all be number not string
-  mode: string | ''; // 1 || 0
-  key: string | ''; // -1 (no key)-11
-  tempo: string | ''; // >0
-  duration: string | ''; // ms
-  energy: string | ''; // 0-1
-  danceability: string | ''; // 0-1
-  acousticness: string | ''; // 0-1
-  instrumentalness: string | ''; // 0-1
-  liveness: string | ''; // 0-1;
-  loudness: string | ''; // -60-0db
-  speechiness: string | ''; // 0-1;
-  valence: string | ''; // 0-1;
+  mode: string; // 1 || 0
+  key: string; // -1 (no key)-11
+  tempo: string; // >0
+  duration: string; // ms
+  energy: string; // 0-1
+  danceability: string; // 0-1
+  acousticness: string; // 0-1
+  instrumentalness: string; // 0-1
+  liveness: string; // 0-1;
+  loudness: string; // -60-0db
+  speechiness: string; // 0-1;
+  valence: string; // 0-1;
   parsedKeys: any[];
 };
 

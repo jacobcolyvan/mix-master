@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { History } from 'history';
 
 import {
   selectSearchResultValues,
@@ -10,7 +11,7 @@ import { Album } from '../types';
 
 const Albums = () => {
   const dispatch = useDispatch();
-  const history: any = useHistory();
+  const history: History = useHistory();
   const { albumResults } = useSelector(selectSearchResultValues);
 
   const handleOnAlbumClick = async (album: any) => {
