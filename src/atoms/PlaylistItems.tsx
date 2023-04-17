@@ -1,24 +1,19 @@
-import { useContext } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import UserContext from '../context/UserContext';
+
+import { pushPlaylistToHistory } from '../slices/itemsSlice';
+import { Playlist } from '../types';
 
 interface Props {
-  playlistsToRender: Array<{ [key: string]: any }> | string;
-  showOnlyPlaylistTracks?: () => void;
+  playlistsToRender: Playlist[];
 }
 
-const PlaylistItems: React.FC<Props> = ({
-  playlistsToRender,
-  showOnlyPlaylistTracks,
-}) => {
+const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
+  const dispatch = useDispatch();
   const history = useHistory();
-  const { pushPlaylistToState } = useContext(UserContext);
 
-  const addPlaylistQuery = (playlist: {}) => {
-    pushPlaylistToState(history, playlist);
-
-    // Playlist Search display cleaning
-    showOnlyPlaylistTracks && showOnlyPlaylistTracks();
+  const dispatchPlaylistHistory = (playlist: Playlist) => {
+    dispatch(pushPlaylistToHistory(history, playlist));
   };
 
   return (
@@ -28,9 +23,7 @@ const PlaylistItems: React.FC<Props> = ({
           <li
             className="playlist-list__li"
             key={`track${index}`}
-            onClick={() => {
-              addPlaylistQuery(playlist);
-            }}
+            onClick={() => dispatchPlaylistHistory(playlist)}
           >
             <div>
               <div className="playlist-name">{playlist.name}</div>

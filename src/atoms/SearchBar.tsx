@@ -1,22 +1,25 @@
-import TextField from '@material-ui/core/TextField';
+import { useDispatch } from 'react-redux';
+import { TextField } from '@material-ui/core';
+
+import { saveSearchQueryChange } from '../slices/controlsSlice';
+import { CurrentSearchQueryOptionsKeys } from '../types';
 
 interface SearchBarProps {
   label: string;
   param: string;
-  setParam: (key: string, value: any) => void;
-  paramName: string;
+  paramName: CurrentSearchQueryOptionsKeys;
   getResults: () => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   label,
   param,
-  setParam,
   paramName,
   getResults,
 }) => {
+  const dispatch = useDispatch();
   const searchOnEnter = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') getResults();
+    if (event?.key === 'Enter') getResults();
   };
 
   return (
@@ -24,7 +27,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       className="searchbar-textfield"
       fullWidth
       label={label}
-      onChange={(e) => setParam(paramName, e.target.value)}
+      onChange={(e) => dispatch(saveSearchQueryChange(paramName, e.target.value))}
       value={param}
       onKeyDown={searchOnEnter}
     />

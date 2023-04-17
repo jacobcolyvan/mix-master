@@ -1,64 +1,67 @@
-import Button from '@material-ui/core/Button';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import SearchBar from './SearchBar';
+import { useHistory } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button, Select, MenuItem } from '@material-ui/core';
 
-interface SearchOptionsProps {
-  getResults: () => void;
-  handleOptionsChange: (key: string, value: any) => void;
-  searchOptionValues: { [key: string]: string };
-}
+import SearchBar from '../atoms/SearchBar';
+import {
+  saveSearchQueryChange,
+  selectCurrentSearchQueries,
+} from '../slices/controlsSlice';
+import { getSearchResults } from '../slices/itemsSlice';
 
-const SearchOptions = ({
-  getResults,
-  handleOptionsChange,
-  searchOptionValues,
-}: SearchOptionsProps) => {
-  const createSearchBars = () => {
-    let searchBars;
-    if (searchOptionValues.searchType === 'playlist') {
-      searchBars = (
-        <SearchBar
-          label={'playlist name'}
-          param={searchOptionValues.playlistSearchQuery}
-          setParam={handleOptionsChange}
-          paramName={'playlistSearchQuery'}
-          getResults={getResults}
-        />
-      );
-    } else {
-      searchBars = (
-        <div>
-          <SearchBar
-            label={'artist'}
-            setParam={handleOptionsChange}
-            param={searchOptionValues.artist}
-            paramName={'artist'}
-            getResults={getResults}
-          />
+const PlaylistSearch = ({ getResults, playlistSearchQuery }) => (
+  <SearchBar
+    label={'playlist name'}
+    param={playlistSearchQuery}
+    paramName={'playlistSearchQuery'}
+    getResults={getResults}
+  />
+);
 
-          {searchOptionValues.searchType === 'album' ? (
-            <SearchBar
-              label={'album name'}
-              setParam={handleOptionsChange}
-              paramName={'albumSearchQuery'}
-              param={searchOptionValues.albumSearchQuery}
-              getResults={getResults}
-            />
-          ) : (
-            <SearchBar
-              label={'track name'}
-              setParam={handleOptionsChange}
-              param={searchOptionValues.trackSearchQuery}
-              paramName={'trackSearchQuery'}
-              getResults={getResults}
-            />
-          )}
-        </div>
-      );
-    }
+const AlbumSearch = ({ getResults, albumSearchQuery, artistSearchQuery }) => (
+  <>
+    <SearchBar
+      label={'artist'}
+      param={artistSearchQuery}
+      paramName={'artistSearchQuery'}
+      getResults={getResults}
+    />
+    <SearchBar
+      label={'album name'}
+      paramName={'albumSearchQuery'}
+      param={albumSearchQuery}
+      getResults={getResults}
+    />
+  </>
+);
 
-    return searchBars;
+const TrackSearch = ({ getResults, trackSearchQuery, artistSearchQuery }) => (
+  <>
+    <SearchBar
+      label={'artist'}
+      param={artistSearchQuery}
+      paramName={'artistSearchQuery'}
+      getResults={getResults}
+    />
+    <SearchBar
+      label={'track name'}
+      param={trackSearchQuery}
+      paramName={'trackSearchQuery'}
+      getResults={getResults}
+    />
+  </>
+);
+
+const SearchOptions = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const currentSearchQueries = useSelector(selectCurrentSearchQueries);
+  const { playlistSearchQuery, albumSearchQuery, trackSearchQuery, artistSearchQuery } =
+    currentSearchQueries;
+
+  const dispatchGetSearchResults = async () => {
+    await dispatch(getSearchResults(history));
   };
 
   return (
@@ -66,8 +69,10 @@ const SearchOptions = ({
       <Select
         labelId="Search Type"
         id="search-type"
-        value={searchOptionValues.searchType}
-        onChange={(e) => handleOptionsChange('searchType', e.target.value)}
+        value={currentSearchQueries.searchType}
+        onChange={(e: React.ChangeEvent<{ value: string | unknown }>) =>
+          dispatch(saveSearchQueryChange('searchType', e.target.value))
+        }
         fullWidth
         variant="outlined"
       >
@@ -76,13 +81,34 @@ const SearchOptions = ({
         <MenuItem value={'playlist'}>Playlists</MenuItem>
       </Select>
 
-      <div className="searchbar__div">{createSearchBars()}</div>
+      <div className="searchbar__div">
+        {currentSearchQueries.searchType === 'playlist' && (
+          <PlaylistSearch
+            getResults={dispatchGetSearchResults}
+            playlistSearchQuery={playlistSearchQuery}
+          />
+        )}
+        {currentSearchQueries.searchType === 'album' && (
+          <AlbumSearch
+            getResults={dispatchGetSearchResults}
+            albumSearchQuery={albumSearchQuery}
+            artistSearchQuery={artistSearchQuery}
+          />
+        )}
+        {currentSearchQueries.searchType === 'track' && (
+          <TrackSearch
+            getResults={dispatchGetSearchResults}
+            trackSearchQuery={trackSearchQuery}
+            artistSearchQuery={artistSearchQuery}
+          />
+        )}
+      </div>
 
       <div className="search-button__div">
         <Button
           variant="outlined"
           color="primary"
-          onClick={getResults}
+          onClick={dispatchGetSearchResults}
           className="button"
           fullWidth
         >

@@ -1,73 +1,51 @@
-import { useContext, useState } from 'react';
-import UserContext from '../context/UserContext';
-
 import Albums from './Albums';
 import Tracks from './Tracks';
-import PlaylistList from './PlaylistList';
-import SortBy from './SortBy';
-import KeySelect from './KeySelect';
+import PlaylistItems from '../atoms/PlaylistItems';
+import SortBy from '../atoms/SortBy';
+import KeySelect from '../atoms/KeySelect';
 
-interface SearchResultsProps {
-  handleResultsChange: (key: string, value: any) => any;
-  showOnlyPlaylistTracks: () => void;
-  searchResultValues: {
-    albums: boolean;
-    playlistSearchResults: string;
-    tracks: boolean;
-  };
-  updateUrl: (slug: string, results: any) => void;
-  albumName: string | boolean;
-  setAlbumName: React.Dispatch<React.SetStateAction<string | boolean>>;
-}
+import { useSelector } from 'react-redux';
+import { selectAlbumName, selectSearchResultValues } from '../slices/controlsSlice';
+import { selectPlaylist, selectTracks } from '../slices/itemsSlice';
 
-const SearchResults = ({
-  handleResultsChange,
-  showOnlyPlaylistTracks,
-  searchResultValues,
-  updateUrl,
-  albumName,
-  setAlbumName,
-}: SearchResultsProps) => {
-  const { tracks, playlist } = useContext(UserContext);
-  const [sortOption, setSortOption] = useState('default');
-  const [keyOption, setKeyOption] = useState('camelot');
+const TrackResults = ({ albumName }): JSX.Element => (
+  <>
+    {albumName ? (
+      <h3 className="results-page-title">{albumName}</h3>
+    ) : (
+      <h3 className="results-page-title">Track Results</h3>
+    )}
+    <KeySelect />
+    <br />
+    <SortBy />
+    <br />
+    <Tracks />
+  </>
+);
+
+const PlaylistResults = ({ playlistsToRender }): JSX.Element => (
+  <>
+    <h3 className="results-page-title">Playlist Results</h3>
+    <PlaylistItems playlistsToRender={playlistsToRender} />
+  </>
+);
+
+const SearchResults = () => {
+  const albumName = useSelector(selectAlbumName);
+  const searchResultValues = useSelector(selectSearchResultValues);
+  const tracks = useSelector(selectTracks);
+  const playlist = useSelector(selectPlaylist);
+
+  // TODO: this feels a little convoluted
+  const { albumResults, trackResults, playlistResults } = searchResultValues;
+  const hasAlbumResults = albumResults && !trackResults;
+  const hasTrackResults = !playlist && !playlistResults && tracks;
 
   return (
     <div>
-      {searchResultValues.albums && !searchResultValues.tracks && (
-        <Albums
-          albums={searchResultValues.albums}
-          handleResultsChange={handleResultsChange}
-          updateUrl={updateUrl}
-          setAlbumName={setAlbumName}
-        />
-      )}
-
-      {!playlist && !searchResultValues.playlistSearchResults && tracks && (
-        <>
-          {albumName ? (
-            <h3 className="results-page-title">{albumName}</h3>
-          ) : (
-            <h3 className="results-page-title">Track Results</h3>
-          )}
-          <KeySelect keyOption={keyOption} setKeyOption={setKeyOption} />
-          <br />
-          <SortBy sortOption={sortOption} setSortOption={setSortOption} />
-          <br />
-
-          <Tracks sortOption={sortOption} keyOption={keyOption} />
-        </>
-      )}
-
-      {searchResultValues.playlistSearchResults && (
-        <>
-          <h3 className="results-page-title">Playlist Results</h3>
-          <PlaylistList
-            playlistsToRender={searchResultValues.playlistSearchResults}
-            showOnlyPlaylistTracks={showOnlyPlaylistTracks}
-          />
-        </>
-      )}
+      {hasAlbumResults && <Albums />}
+      {hasTrackResults && <TrackResults albumName={albumName} />}
+      {playlistResults && <PlaylistResults playlistsToRender={playlistResults} />}
     </div>
   );
 };
