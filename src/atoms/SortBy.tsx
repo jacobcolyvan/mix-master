@@ -1,4 +1,4 @@
-import { MenuItem, Select } from '@material-ui/core';
+import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { selectSortTracksBy, setSortTracksBy } from '../slices/controlsSlice';
@@ -7,7 +7,7 @@ const SortBy = () => {
   const dispatch = useDispatch();
   const sortOption = useSelector(selectSortTracksBy);
 
-  const sortOptionChange = (event: React.ChangeEvent<any>) => {
+  const sortOptionChange = (event: SelectChangeEvent<any>) => {
     if (event?.target.value) {
       dispatch(setSortTracksBy(event.target.value));
     }

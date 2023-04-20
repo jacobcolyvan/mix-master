@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Select, MenuItem } from '@material-ui/core';
+import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { selectKeyDisplayOption, setKeyDisplayOption } from '../slices/settingsSlice';
 
 const KeySelect = () => {
   const dispatch = useDispatch();
   const keyDisplayOption = useSelector(selectKeyDisplayOption);
 
-  const handleKeySettingChange = (event: React.ChangeEvent<any>) => {
+  const handleKeySettingChange = (event: SelectChangeEvent<any>) => {
     if (event?.target.value) dispatch(setKeyDisplayOption(event.target.value));
   };
 

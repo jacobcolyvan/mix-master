@@ -18,7 +18,7 @@ export const spotifyBaseRequest = (token: string) => {
 
 export const createSpotifyAuthHREF = () => {
   return `https://accounts.spotify.com/authorize?response_type=token&client_id=${
-    process.env.REACT_APP_SPOTIFY_CLIENT_ID2
+    process.env.REACT_APP_SPOTIFY_CLIENT_ID || ''
   }&scope=${scopes.join('%20')}&redirect_uri=${encodeURIComponent(
     process.env.REACT_APP_SPOTIFY_CALLBACK_URI || ''
   )}&show_dialog=false`;

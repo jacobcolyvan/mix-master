@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 import { useSelector } from 'react-redux';
 
 import Navbar from './atoms/Navbar';
@@ -18,13 +18,7 @@ const App = () => {
 
   const renderSwitchRoutes = () => {
     if (!token) {
-      return (
-        <Route
-          exact
-          path="/"
-          render={(props) => <SpotifyAuth location={props.location} />}
-        />
-      );
+      return <Route exact path="/" component={SpotifyAuth} />;
     }
 
     if (token && !authError) {

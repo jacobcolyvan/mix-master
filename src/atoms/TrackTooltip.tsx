@@ -1,9 +1,10 @@
-import { withStyles, Tooltip } from '@material-ui/core';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { Tooltip } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 import { Track } from '../types';
 
-const HtmlTooltip = withStyles(() => ({
+const HtmlTooltip: any = withStyles(() => ({
   tooltip: {
     backgroundColor: '#484848',
     maxWidth: 600,

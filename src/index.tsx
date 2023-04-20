@@ -1,20 +1,18 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { CookiesProvider } from 'react-cookie';
+import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+
+import App from './App';
+import { store } from './app/store';
+
 import './stylesheets/global.scss';
 import './stylesheets/pages.scss';
 import './stylesheets/components.scss';
 
-import App from './App';
-import dotenv from 'dotenv';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { CookiesProvider } from 'react-cookie';
-
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-
 const theme = createTheme({
   palette: {
-    type: 'dark',
+    mode: 'dark',
     background: {
       default: '#1E2327',
     },
@@ -28,8 +26,10 @@ const theme = createTheme({
   },
 });
 
-dotenv.config();
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!);
+
+root.render(
   <Provider store={store}>
     <CookiesProvider>
       <ThemeProvider theme={theme}>
@@ -37,6 +37,5 @@ ReactDOM.render(
         <App />
       </ThemeProvider>
     </CookiesProvider>
-  </Provider>,
-  document.getElementById('root')
+  </Provider>
 );

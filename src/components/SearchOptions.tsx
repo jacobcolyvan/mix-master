@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Select, MenuItem } from '@material-ui/core';
+import { Button, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 
 import SearchBar from '../atoms/SearchBar';
 import {
@@ -70,8 +70,8 @@ const SearchOptions = () => {
         labelId="Search Type"
         id="search-type"
         value={currentSearchQueries.searchType}
-        onChange={(e: React.ChangeEvent<{ value: string | unknown }>) =>
-          dispatch(saveSearchQueryChange('searchType', e.target.value))
+        onChange={(event: SelectChangeEvent<any>) =>
+          dispatch(saveSearchQueryChange('searchType', event.target.value))
         }
         fullWidth
         variant="outlined"

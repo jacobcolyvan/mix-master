@@ -1,21 +1,18 @@
 import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setSpotifyToken } from '../slices/settingsSlice';
 import { useCookies } from 'react-cookie';
+import { Button } from '@mui/material';
 
-import InfoOverview from '../atoms/info/InfoOverview';
+import { setSpotifyToken } from '../slices/settingsSlice';
 import { createSpotifyAuthHREF } from '../utils/requestUtils';
+import InfoOverview from '../atoms/info/InfoOverview';
 
-interface AuthProps {
-  location: { hash: string };
-}
-
-const SpotifyAuth = ({ location }: AuthProps) => {
+const SpotifyAuth = () => {
   const [cookies, setCookie] = useCookies(['token']);
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     if (cookies.token) {

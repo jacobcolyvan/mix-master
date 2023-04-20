@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 
 import { saveSearchQueryChange } from '../slices/controlsSlice';
 import { CurrentSearchQueryOptionsKeys } from '../types';

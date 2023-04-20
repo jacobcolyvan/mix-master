@@ -1,4 +1,4 @@
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab } from '@mui/material';
 import RecTweaksInput from '../atoms/RecTweaksInput';
 import RecTweaksGenre from '../atoms/RecTweaksGenre';
 import { AttributeChoiceDetails, SeedAttributes } from '../types';
@@ -25,7 +25,7 @@ const RecTweaksTabs: React.FC<RecTweaksTabsProps> = ({
         value={currentTab}
         onChange={handleTabChange}
         variant="scrollable"
-        scrollButtons="on"
+        scrollButtons={true}
         className="rec-tweaks__tabs"
       >
         {attributeChoices.map((inputItem) => (
