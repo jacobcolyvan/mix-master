@@ -138,14 +138,12 @@ export const getUserPlaylists = (): AppThunk => {
         );
 
         if (response.status === 200) {
-          const playlistTotalAmount = response.data.total;
-          if (playlistTotalAmount > tempPlaylistArray.length) {
-            offset += 50;
-          } else {
-            allPlaylists = true;
-          }
-
+          const playlistItems = response.data.items;
+          offset += 50;
           tempPlaylistArray = [...tempPlaylistArray, ...response.data.items];
+
+          const moreItems = response.data.total >= tempPlaylistArray.length;
+          if (!moreItems || !playlistItems.length) allPlaylists = true;
         }
       }
 
