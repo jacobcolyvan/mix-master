@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
-import { resetItemStates } from '../slices/itemsSlice';
-import { selectAuthError, selectSpotifyToken } from '../slices/settingsSlice';
+import { resetItemStates } from "../slices/itemsSlice";
+import { selectAuthError, selectSpotifyToken } from "../slices/settingsSlice";
 
 interface NavButtonProps {
   activeNavItem: string;
@@ -22,8 +22,8 @@ const NavButton: React.FC<NavButtonProps> = ({
 }) => {
   return (
     <a
-      className={`nav-button ${extraClass ? extraClass : ''} ${
-        activeNavItem === target ? 'active' : ''
+      className={`nav-button ${extraClass ? extraClass : ""} ${
+        activeNavItem === target ? "active" : ""
       }`}
       onClick={() => loadPage(target)}
     >
@@ -39,24 +39,24 @@ const Navbar = () => {
   const authError = useSelector(selectAuthError);
   const spotifyToken = useSelector(selectSpotifyToken);
 
-  const [activeNavItem, setActiveNavItem] = useState('/');
+  const [activeNavItem, setActiveNavItem] = useState("/");
 
   const loadPage = (link: string) => {
     setActiveNavItem(link);
     history.push(link);
 
-    dispatch(resetItemStates);
+    dispatch(resetItemStates());
   };
 
   const navItems = [
-    { target: '/', label: 'Playlists', extraClass: 'nav-button__top' },
-    { target: '/search', label: 'Search' },
-    { target: '/about', label: 'About' },
+    { target: "/", label: "Playlists", extraClass: "nav-button__top" },
+    { target: "/search", label: "Search" },
+    { target: "/about", label: "About" },
   ];
 
   return (
     <header className="navbar">
-      <h1 onClick={() => loadPage('/')}>Mix Master</h1>
+      <h1 onClick={() => loadPage("/")}>Mix Master</h1>
 
       {spotifyToken && !authError && (
         <div className="nav-buttons">

@@ -1,29 +1,32 @@
-import { History } from 'history';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { History } from "history";
+import { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
-import { RootState } from '../app/store';
-import KeySelect from '../atoms/KeySelect';
-import SortBy from '../atoms/SortBy';
-import CurrentTrackRec from '../components/CurrentTrackRec';
-import RecTweaks from '../components/RecTweaks';
-import Tracks from '../components/Tracks';
-import { getRecommendedTracks } from '../slices/itemsSlice';
+import { useAppDispatch, useAppSelector } from "../app/store";
+import KeySelect from "../atoms/KeySelect";
+import SortBy from "../atoms/SortBy";
+import CurrentTrackRec from "../components/CurrentTrackRec";
+import RecTweaks from "../components/RecTweaks";
+import Tracks from "../components/Tracks";
+import { getRecommendedTracks } from "../slices/itemsSlice";
+import { Track } from "../types";
 
-const RecommendedTracks = () => {
-  const dispatch = useDispatch();
+const RecommendedTracks: React.FC = () => {
+  const dispatch = useAppDispatch();
   const history: History = useHistory();
-
-  // TODO: rethink this
-  const recommendedTrack = history.location.state.recommendedTrack;
-  const { matchRecsToSeedTrackKey, seedAttributes } = useSelector(
-    (state: RootState) => state.controlsSlice
+  const { matchRecsToSeedTrackKey, seedAttributes } = useAppSelector(
+    (state) => state.controlsSlice
   );
 
+  // Type the location state properly
+  const locationState = history.location.state as { recommendedTrack?: Track } | undefined;
+  const recommendedTrack = locationState?.recommendedTrack;
+
   useEffect(() => {
-    dispatch(getRecommendedTracks(recommendedTrack));
-  }, [recommendedTrack, matchRecsToSeedTrackKey, seedAttributes]);
+    if (recommendedTrack) {
+      dispatch(getRecommendedTracks(recommendedTrack));
+    }
+  }, [dispatch, recommendedTrack, matchRecsToSeedTrackKey, seedAttributes]);
 
   return (
     <div>
@@ -31,10 +34,13 @@ const RecommendedTracks = () => {
       <KeySelect />
       <SortBy />
 
-      <RecTweaks recommendedTrack={recommendedTrack} />
-      <br />
-
-      <CurrentTrackRec track={recommendedTrack} />
+      {recommendedTrack && (
+        <>
+          <RecTweaks recommendedTrack={recommendedTrack} />
+          <br />
+          <CurrentTrackRec track={recommendedTrack} />
+        </>
+      )}
       <Tracks />
     </div>
   );

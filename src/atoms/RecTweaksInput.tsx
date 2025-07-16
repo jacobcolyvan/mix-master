@@ -1,27 +1,27 @@
-import { FormControlLabel,Radio, RadioGroup, TextField } from '@mui/material';
-import { useEffect,useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { FormControlLabel, Radio, RadioGroup, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 
-import { saveSeedAttribute } from '../slices/controlsSlice';
-import { AttributeChoiceDetails } from '../types';
+import { useAppDispatch } from "../app/store";
+import { saveSeedAttribute } from "../slices/controlsSlice";
+import { AttributeChoiceDetails } from "../types";
 
 interface InputProps {
   paramValue: any;
   inputItem: AttributeChoiceDetails;
 }
 
-const RecTweaksInput = ({ paramValue, inputItem }: InputProps) => {
-  const dispatch = useDispatch();
+const RecTweaksInput: React.FC<InputProps> = ({ paramValue, inputItem }) => {
+  const dispatch = useAppDispatch();
 
   const { input_name, extra_text, range_limit, validateField } = inputItem;
 
   const [validationError, setValidationError] = useState(false);
-  const [maxOrMin, setMaxOrMin] = useState(paramValue?.maxOrMin || 'target');
+  const [maxOrMin, setMaxOrMin] = useState(paramValue?.maxOrMin || "target");
   const [inputValue, setInputValue] = useState(paramValue?.value);
   const [inputLabel, setInputLabel] = useState(getMaxOrMinInputLabel(maxOrMin));
 
   function getMaxOrMinInputLabel(value: string): string {
-    return `${value} ${input_name} (0 – ${range_limit}${extra_text || ''})`;
+    return `${value} ${input_name} (0 – ${range_limit}${extra_text || ""})`;
   }
 
   // Handle updates from outside the component
@@ -38,7 +38,11 @@ const RecTweaksInput = ({ paramValue, inputItem }: InputProps) => {
       setValidationError(false);
     } else {
       // Avoid empty inputs raising validation error
-      value === '0' ? setValidationError(true) : setValidationError(false);
+      if (value === "0") {
+        setValidationError(true);
+      } else {
+        setValidationError(false);
+      }
       dispatch(saveSeedAttribute(input_name, false));
     }
   };
@@ -66,11 +70,7 @@ const RecTweaksInput = ({ paramValue, inputItem }: InputProps) => {
         value={maxOrMin}
         onChange={handleRadioChange}
       >
-        <FormControlLabel
-          value="target"
-          control={<Radio color="primary" />}
-          label="Target"
-        />
+        <FormControlLabel value="target" control={<Radio color="primary" />} label="Target" />
         <FormControlLabel value="min" control={<Radio color="primary" />} label="Min" />
         <FormControlLabel value="max" control={<Radio color="primary" />} label="Max" />
       </RadioGroup>
@@ -83,7 +83,7 @@ const RecTweaksInput = ({ paramValue, inputItem }: InputProps) => {
         className="rec-tweaks__textfield"
         onChange={handleInputChange}
         error={validationError}
-        helperText={validationError ? 'Invalid range value' : false}
+        helperText={validationError ? "Invalid range value" : false}
       />
     </div>
   );

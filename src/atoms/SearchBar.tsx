@@ -1,8 +1,8 @@
-import { TextField } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { TextField } from "@mui/material";
 
-import { saveSearchQueryChange } from '../slices/controlsSlice';
-import { CurrentSearchQueryOptionsKeys } from '../types';
+import { useAppDispatch } from "../app/store";
+import { saveSearchQueryChange } from "../slices/controlsSlice";
+import { CurrentSearchQueryOptionsKeys } from "../types";
 
 interface SearchBarProps {
   label: string;
@@ -11,15 +11,10 @@ interface SearchBarProps {
   getResults: () => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({
-  label,
-  param,
-  paramName,
-  getResults,
-}) => {
-  const dispatch = useDispatch();
+const SearchBar: React.FC<SearchBarProps> = ({ label, param, paramName, getResults }) => {
+  const dispatch = useAppDispatch();
   const searchOnEnter = (event: React.KeyboardEvent) => {
-    if (event?.key === 'Enter') getResults();
+    if (event?.key === "Enter") getResults();
   };
 
   return (

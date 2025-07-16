@@ -1,17 +1,17 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Tooltip } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Tooltip } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
-import { Track } from '../types';
+import { Track } from "../types";
 
 const HtmlTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(() => ({
   [`& .MuiTooltip-tooltip`]: {
-    backgroundColor: '#484848',
+    backgroundColor: "#484848",
     maxWidth: 600,
-    width: 'auto',
-    border: '1px solid #dadde9',
+    width: "auto",
+    border: "1px solid #dadde9",
   },
 }));
 
@@ -43,7 +43,7 @@ const TrackTooltip = ({ track }: TooltipProps) => {
         <ul className="recommended-tooltip__ul">
           <li className="table-date__tooltip-genres">
             <span>Genres: </span>
-            <span>{artist_genres?.join(', ')}.</span>
+            <span>{artist_genres?.join(", ")}.</span>
           </li>
           <li>
             <span>Duration:</span>

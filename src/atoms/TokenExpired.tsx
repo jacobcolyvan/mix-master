@@ -1,13 +1,13 @@
-import { Button } from '@mui/material';
+import { Button } from "@mui/material";
 
-import { createSpotifyAuthHREF } from '../utils/requestUtils';
+import { createSpotifyAuthHREF } from "../utils/requestUtils";
 
 const TokenExpired = () => {
   return (
     <div>
       <p>
-        Your Spotify token has expired. Reauthorise by reloading the page or by clicking
-        the link below.
+        Your Spotify token has expired. Reauthorise by reloading the page or by clicking the link
+        below.
       </p>
 
       <p>

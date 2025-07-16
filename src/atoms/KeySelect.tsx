@@ -1,7 +1,7 @@
-import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 
-import { selectKeyDisplayOption, setKeyDisplayOption } from '../slices/settingsSlice';
+import { selectKeyDisplayOption, setKeyDisplayOption } from "../slices/settingsSlice";
 
 const KeySelect = () => {
   const dispatch = useDispatch();
@@ -21,8 +21,8 @@ const KeySelect = () => {
         fullWidth
         variant="outlined"
       >
-        <MenuItem value={'camelot'}>Camelot Key</MenuItem>
-        <MenuItem value={'standard'}>Standard Key</MenuItem>
+        <MenuItem value={"camelot"}>Camelot Key</MenuItem>
+        <MenuItem value={"standard"}>Standard Key</MenuItem>
       </Select>
     </div>
   );

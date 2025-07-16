@@ -1,15 +1,15 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { History } from 'history';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { History } from "history";
 
-import { AppThunk, RootState } from '../app/store';
+import { AppThunk, RootState } from "../app/store";
 import {
   CurrentSearchQueryOptions,
   CurrentSearchQueryOptionsKeys,
   SearchResultsType,
   SeedAttributes,
   TrackSortByChoices,
-} from '../types';
-import { selectSortedTracks, setSortedTracks, setTracks } from './itemsSlice';
+} from "../types";
+import { selectSortedTracks, setSortedTracks, setTracks } from "./itemsSlice";
 
 export interface ControlsState {
   matchRecsToSeedTrackKey: boolean;
@@ -27,11 +27,11 @@ export interface ControlsState {
 const initialState: ControlsState = {
   matchRecsToSeedTrackKey: false,
   currentSearchQueries: {
-    searchType: 'track',
-    albumSearchQuery: '',
-    artistSearchQuery: '', // previously just artist
-    playlistSearchQuery: '',
-    trackSearchQuery: '',
+    searchType: "track",
+    albumSearchQuery: "",
+    artistSearchQuery: "", // previously just artist
+    playlistSearchQuery: "",
+    trackSearchQuery: "",
   },
   searchResultValues: {
     albumResults: null, // these have been changed
@@ -41,68 +41,65 @@ const initialState: ControlsState = {
   hasCurrentSearchResults: false,
   seedAttributes: {
     tempo: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     energy: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     duration: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     popularity: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     intrumentalness: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     valence: {
       value: false,
-      maxOrMinFilter: 'target',
+      maxOrMinFilter: "target",
     },
     danceability: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     liveness: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     speechiness: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     acousticness: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
     genre: {
-      value: '',
-      maxOrMinFilter: 'target',
+      value: "",
+      maxOrMinFilter: "target",
     },
   },
   activeSeedAttributes: [],
-  sortTracksBy: 'default',
-  albumName: '',
+  sortTracksBy: "default",
+  albumName: "",
   isSearching: false,
 };
 
 // For filter and search controls/params
 const controlsSlice = createSlice({
-  name: 'controlsSlice',
+  name: "controlsSlice",
   initialState,
   reducers: {
     setSeedAttributes: (state, action: PayloadAction<SeedAttributes>) => {
       state.seedAttributes = action.payload;
     },
-    setCurrentSearchQueries: (
-      state,
-      action: PayloadAction<CurrentSearchQueryOptions>
-    ) => {
+    setCurrentSearchQueries: (state, action: PayloadAction<CurrentSearchQueryOptions>) => {
       state.currentSearchQueries = action.payload;
     },
     setHasCurrentSearchResults: (state, action: PayloadAction<boolean>) => {
@@ -141,9 +138,7 @@ export const {
 // --------------------------
 // Selectors
 
-export const selectCurrentSearchQueries = (
-  state: RootState
-): CurrentSearchQueryOptions => {
+export const selectCurrentSearchQueries = (state: RootState): CurrentSearchQueryOptions => {
   return state?.controlsSlice.currentSearchQueries;
 };
 
@@ -180,13 +175,13 @@ export const selectSeedAttributes = (state: RootState): SeedAttributes => {
 export const saveSeedAttribute = (
   attributeName: string,
   value: string | false,
-  maxOrMinFilter: 'max' | 'min' | 'target' = 'target'
+  maxOrMinFilter: "max" | "min" | "target" = "target"
 ): AppThunk => {
   return (dispatch, getState) => {
     const seedAttributes = selectSeedAttributes(getState());
 
-    const updatedValue = value === false ? '' : value;
-    const updatedMaxOrMinFilter = value === false ? 'target' : maxOrMinFilter;
+    const updatedValue = value === false ? "" : value;
+    const updatedMaxOrMinFilter = value === false ? "target" : maxOrMinFilter;
 
     dispatch(
       setSeedAttributes({
@@ -211,7 +206,7 @@ export const saveSearchQueryChange = (
       })
     );
 
-    if (typeof value !== 'string') return;
+    if (typeof value !== "string") return;
 
     const currentSearchQueries = selectCurrentSearchQueries(getState());
     dispatch(setCurrentSearchQueries({ ...currentSearchQueries, [key]: value }));
@@ -235,11 +230,11 @@ export const resetSearchState = (resetSearchQueries = true): AppThunk => {
     if (!resetSearchQueries) return;
     dispatch(
       setCurrentSearchQueries({
-        searchType: 'track',
-        albumSearchQuery: '',
-        artistSearchQuery: '',
-        playlistSearchQuery: '',
-        trackSearchQuery: '',
+        searchType: "track",
+        albumSearchQuery: "",
+        artistSearchQuery: "",
+        playlistSearchQuery: "",
+        trackSearchQuery: "",
       })
     );
   };
@@ -260,14 +255,16 @@ export const handleSearchResultsChange = (key, value): AppThunk => {
 // TODO: this doesn't really work
 export const updateSearchStateFromBrowserState = (history: History): AppThunk => {
   return (dispatch, _) => {
-    const { currentSearchQueries, searchResultValues } = history.location?.state || {};
+    const locationState = history.location?.state as
+      | { currentSearchQueries?: any; searchResultValues?: any }
+      | undefined;
+    const { currentSearchQueries, searchResultValues } = locationState || {};
     if (!currentSearchQueries || !searchResultValues) {
       dispatch(resetSearchState());
       return;
     }
 
-    const isEmptySearch =
-      history.location.search === '?' || history.location.search === '';
+    const isEmptySearch = history.location.search === "?" || history.location.search === "";
 
     dispatch(setCurrentSearchQueries(currentSearchQueries));
 
@@ -275,7 +272,7 @@ export const updateSearchStateFromBrowserState = (history: History): AppThunk =>
       dispatch(resetSearchState(false));
     } else {
       dispatch(setHasCurrentSearchResults(true));
-      dispatch(setTracks(searchResultValues['tracks']));
+      dispatch(setTracks(searchResultValues["tracks"]));
       dispatch(setSearchResultValues(searchResultValues));
     }
   };
@@ -290,7 +287,7 @@ export const updateBrowserHistoryThunk = (slug: string, history: History): AppTh
 
     history.push(
       {
-        pathname: '/search',
+        pathname: "/search",
         search: `?${slug}`,
       },
       {

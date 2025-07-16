@@ -1,9 +1,9 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import TrackTooltip from '../atoms/TrackTooltip';
-import { selectKeyDisplayOption } from '../slices/settingsSlice';
-import { Track } from '../types';
-import { getArtistNames } from '../utils/commonFunctions';
+import TrackTooltip from "../atoms/TrackTooltip";
+import { selectKeyDisplayOption } from "../slices/settingsSlice";
+import { Track } from "../types";
+import { getArtistNames } from "../utils/commonFunctions";
 
 type CurrentTrackRecProps = {
   track: Track;
@@ -24,33 +24,24 @@ const CurrentTrackRec: React.FC<CurrentTrackRecProps> = ({ track }) => {
           <tr>
             <th className="table-data__name">Track</th>
             <th className="table-data__attributes">Key</th>
-            <th className="table-data__attributes table-data__attributes-energy">
-              Energy
-            </th>
+            <th className="table-data__attributes table-data__attributes-energy">Energy</th>
             <th className="table-data__attributes">BPM</th>
           </tr>
         </thead>
 
         <tbody>
           <tr className={`track-name-tr`} id="recommended-track">
-            <td
-              className="table-data__name table-data__name-hover"
-              onClick={handleOnTrackClick}
-            >
+            <td className="table-data__name table-data__name-hover" onClick={handleOnTrackClick}>
               <span>
-                {track.name} –{' '}
-                <span className="table_data__artist-name">
-                  {getArtistNames(track.artists)}
-                </span>
+                {track.name} –{" "}
+                <span className="table_data__artist-name">{getArtistNames(track.artists)}</span>
               </span>
               <TrackTooltip track={track} />
             </td>
             <td className="table-data__attributes key-data">
-              {keyOption === 'camelot' ? track.parsedKeys[0] : track.parsedKeys[1]}
+              {keyOption === "camelot" ? track.parsedKeys[0] : track.parsedKeys[1]}
             </td>
-            <td className="table-data__attributes table-data__attributes-energy">
-              {track.energy}
-            </td>
+            <td className="table-data__attributes table-data__attributes-energy">{track.energy}</td>
             <td className="table-data__attributes">{track.tempo}</td>
           </tr>
         </tbody>

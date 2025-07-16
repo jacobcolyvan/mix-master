@@ -57,7 +57,7 @@ export type Album = { [key: string]: any };
 
 export type SeedAttributeDetails = {
   value: string | false;
-  maxOrMinFilter: 'max' | 'min' | 'target';
+  maxOrMinFilter: "max" | "min" | "target";
 };
 
 export type SeedAttributes = {
@@ -76,7 +76,7 @@ export type SeedAttributes = {
 };
 
 export type CurrentSearchQueryOptions = {
-  searchType: 'track' | 'playlist' | 'album';
+  searchType: "track" | "playlist" | "album";
   albumSearchQuery: string;
   artistSearchQuery: string;
   playlistSearchQuery: string;
@@ -85,11 +85,11 @@ export type CurrentSearchQueryOptions = {
 
 //  not sure why keyof wouldn't work here
 export type CurrentSearchQueryOptionsKeys =
-  | 'searchType'
-  | 'albumSearchQuery'
-  | 'artistSearchQuery'
-  | 'playlistSearchQuery'
-  | 'trackSearchQuery';
+  | "searchType"
+  | "albumSearchQuery"
+  | "artistSearchQuery"
+  | "playlistSearchQuery"
+  | "trackSearchQuery";
 
 export type SearchResultsType = {
   albumResults: Album[] | null;
@@ -105,16 +105,16 @@ export type AttributeChoiceDetails = {
 };
 
 export type TrackSortByChoices =
-  | 'default'
-  | 'duration'
-  | 'popularity'
-  | 'valence'
-  | 'tempo'
-  | 'energy'
-  | 'durationThenKey'
-  | 'major/minor'
-  | 'energyThenKey'
-  | 'tempoThenKey'
-  | 'valenceThenKey';
+  | "default"
+  | "duration"
+  | "popularity"
+  | "valence"
+  | "tempo"
+  | "energy"
+  | "durationThenKey"
+  | "major/minor"
+  | "energyThenKey"
+  | "tempoThenKey"
+  | "valenceThenKey";
 
-export type KeyOptionTypes = 'camelot' | 'standard';
+export type KeyOptionTypes = "camelot" | "standard";

@@ -1,34 +1,30 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
-import Loading from '../atoms/Loading';
-import TrackTooltip from '../atoms/TrackTooltip';
-import { selectSortTracksBy } from '../slices/controlsSlice';
+import { useAppDispatch, useAppSelector } from "../app/store";
+import Loading from "../atoms/Loading";
+import TrackTooltip from "../atoms/TrackTooltip";
+import { selectSortTracksBy } from "../slices/controlsSlice";
 import {
   copyNameAndSaveAsCurrentTrack,
   goToRecommendedTrack,
   selectSortedTracks,
   selectTracks,
   sortTracksByAudioFeatures,
-} from '../slices/itemsSlice';
-import { selectKeyDisplayOption } from '../slices/settingsSlice';
-import { Track } from '../types';
-import { getArtistNames } from '../utils/commonFunctions';
-import {
-  camelotMajorKeyDict,
-  camelotMinorKeyDict,
-  keyDict,
-} from '../utils/commonVariables';
+} from "../slices/itemsSlice";
+import { selectKeyDisplayOption } from "../slices/settingsSlice";
+import { Track } from "../types";
+import { getArtistNames } from "../utils/commonFunctions";
+import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from "../utils/commonVariables";
 
-const Tracks = () => {
-  const dispatch = useDispatch();
+const Tracks: React.FC = () => {
+  const dispatch = useAppDispatch();
   const history = useHistory();
 
-  const tracks = useSelector(selectTracks);
-  const sortedTracks = useSelector(selectSortedTracks);
-  const sortOption = useSelector(selectSortTracksBy);
-  const keyOption = useSelector(selectKeyDisplayOption);
+  const tracks = useAppSelector(selectTracks);
+  const sortedTracks = useAppSelector(selectSortedTracks);
+  const sortOption = useAppSelector(selectSortTracksBy);
+  const keyOption = useAppSelector(selectKeyDisplayOption);
 
   // Sort tracks on tracks, sortOption, and keyOption change
   useEffect(() => {
@@ -40,21 +36,19 @@ const Tracks = () => {
   };
 
   const handleTrackClick = (track: Track) => {
-    dispatch(
-      copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`)
-    );
+    dispatch(copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`));
   };
 
   const getKeyLabel = (keyOption: string, track: Track) => {
     const trackMode = track.mode;
     const trackKey = track.key;
 
-    if (keyOption === 'camelot') {
-      return trackMode === '1'
-        ? camelotMajorKeyDict[trackKey] + 'B'
-        : camelotMinorKeyDict[trackKey] + 'A';
+    if (keyOption === "camelot") {
+      return trackMode === "1"
+        ? camelotMajorKeyDict[trackKey] + "B"
+        : camelotMinorKeyDict[trackKey] + "A";
     } else {
-      return keyDict[trackKey] + (trackMode === '1' ? '' : 'm');
+      return keyDict[trackKey] + (trackMode === "1" ? "" : "m");
     }
   };
 
@@ -67,10 +61,10 @@ const Tracks = () => {
               <td
                 className="table-data__name table-data__name-hover"
                 id={`track-${track.id}`}
-                onClick={() => dispatch(handleTrackClick(track))}
+                onClick={() => handleTrackClick(track)}
               >
                 <span>
-                  {track.name} –{' '}
+                  {track.name} –{" "}
                   <span className="table_data__artist-name">
                     {/* TODO: is this redundant? */}
                     {getArtistNames(track.artists)}
@@ -102,9 +96,7 @@ const Tracks = () => {
         <tr>
           <th className="table-data__name">Track</th>
           <th className="table-data__attributes">Key</th>
-          <th className="table-data__attributes table-data__attributes-energy">
-            Energy
-          </th>
+          <th className="table-data__attributes table-data__attributes-energy">Energy</th>
           <th className="table-data__attributes">BPM</th>
         </tr>
       </thead>

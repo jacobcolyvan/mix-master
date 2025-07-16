@@ -1,13 +1,13 @@
-import { Tab,Tabs } from '@mui/material';
+import { Tab, Tabs } from "@mui/material";
 
-import RecTweaksGenre from '../atoms/RecTweaksGenre';
-import RecTweaksInput from '../atoms/RecTweaksInput';
-import { AttributeChoiceDetails, SeedAttributes } from '../types';
+import RecTweaksGenre from "../atoms/RecTweaksGenre";
+import RecTweaksInput from "../atoms/RecTweaksInput";
+import { AttributeChoiceDetails, SeedAttributes } from "../types";
 
 interface RecTweaksTabsProps {
   currentTab: number;
   handleTabChange: (
-    event: React.ChangeEvent<{}>,
+    event: React.ChangeEvent<object>,
     newValue: React.SetStateAction<number>
   ) => void;
   attributeChoices: AttributeChoiceDetails[];
@@ -47,10 +47,7 @@ const RecTweaksTabs: React.FC<RecTweaksTabsProps> = ({
           key={index}
           className="rec-tweaks__tab-input"
         >
-          <RecTweaksInput
-            inputItem={inputItem}
-            paramValue={attributes[inputItem.input_name]}
-          />
+          <RecTweaksInput inputItem={inputItem} paramValue={attributes[inputItem.input_name]} />
         </div>
       ))}
 
@@ -61,7 +58,7 @@ const RecTweaksTabs: React.FC<RecTweaksTabsProps> = ({
         key={attributeChoices.length}
         className="rec-tweaks__tab-input"
       >
-        <RecTweaksGenre genre={attributes['genre']} />
+        <RecTweaksGenre genre={attributes["genre"]} />
       </div>
     </>
   );

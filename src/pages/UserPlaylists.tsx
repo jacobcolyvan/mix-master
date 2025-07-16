@@ -1,55 +1,57 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from "react";
 
-import { RootState } from '../app/store';
-import Loading from '../atoms/Loading';
-import PlaylistList from '../atoms/PlaylistItems';
-import { getUserPlaylists } from '../slices/itemsSlice';
-import { getUsername, selectSpotifyToken } from '../slices/settingsSlice';
+import { useAppDispatch, useAppSelector } from "../app/store";
+import Loading from "../atoms/Loading";
+import PlaylistItems from "../atoms/PlaylistItems";
+import { getUserPlaylists } from "../slices/itemsSlice";
+import { getUsername, selectSpotifyToken } from "../slices/settingsSlice";
 
 const CreatedPlaylists = ({ createdPlaylists }) => {
-  if (createdPlaylists.length === 0) return null;
   return (
     <>
-      <div className="playlists-title__div" id="created-playlists" tabIndex={0}>
-        <h3>Created</h3>
-      </div>
-      <PlaylistList playlistsToRender={createdPlaylists} />
+      {createdPlaylists.length > 0 && (
+        <div className="playlist-list__header" id="created-playlists">
+          <h3>Created</h3>
+        </div>
+      )}
+      <PlaylistItems playlistsToRender={createdPlaylists} />
       <br />
     </>
   );
 };
 
 const FollowedPlaylists = ({ followedPlaylists }) => {
-  if (followedPlaylists.length === 0) return null;
   return (
     <>
-      <div className="playlists-title__div" id="followed-playlists" tabIndex={0}>
-        <h3>Followed</h3>
-      </div>
-      <PlaylistList playlistsToRender={followedPlaylists} />
+      {followedPlaylists.length > 0 && (
+        <div className="playlist-list__header" id="followed-playlists">
+          <h3>Followed</h3>
+        </div>
+      )}
+      <PlaylistItems playlistsToRender={followedPlaylists} />
       <br />
     </>
   );
 };
 
 const GeneratedPlaylists = ({ generatedPlaylists }) => {
-  if (generatedPlaylists.length === 0) return null;
   return (
     <>
-      <div className="playlists-title__div" id="generated-playlists" tabIndex={0}>
-        <h3>Generated</h3>
-      </div>
-      <PlaylistList playlistsToRender={generatedPlaylists} />
+      {generatedPlaylists.length > 0 && (
+        <div className="playlist-list__header" id="generated-playlists">
+          <h3>Generated</h3>
+        </div>
+      )}
+      <PlaylistItems playlistsToRender={generatedPlaylists} />
       <br />
     </>
   );
 };
 
-const UserPlaylists = () => {
-  const dispatch = useDispatch();
-  const { sortedPlaylists } = useSelector((state: RootState) => state.itemsSlice);
-  const spotifyToken = useSelector(selectSpotifyToken);
+const UserPlaylists: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { sortedPlaylists } = useAppSelector((state) => state.itemsSlice);
+  const spotifyToken = useAppSelector(selectSpotifyToken);
 
   const dispatchPlaylists = async () => {
     await dispatch(getUsername());
@@ -70,11 +72,11 @@ const UserPlaylists = () => {
           See <i>About</i> for more info about how to use this site.
         </p>
         <p>
-          Playlists are automatically separated into ones you've{' '}
+          Playlists are automatically separated into ones you&apos;ve{" "}
           <a href="#created-playlists" className="subpage-link">
             created
           </a>
-          , and ones you{' '}
+          , and ones you{" "}
           <a href="#followed-playlists" className="subpage-link">
             follow
           </a>
@@ -82,7 +84,7 @@ const UserPlaylists = () => {
         </p>
       </div>
 
-      {typeof sortedPlaylists === 'object' && (
+      {typeof sortedPlaylists === "object" && (
         <div>
           <CreatedPlaylists createdPlaylists={sortedPlaylists.created} />
           <FollowedPlaylists followedPlaylists={sortedPlaylists.followed} />

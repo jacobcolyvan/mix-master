@@ -1,9 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import Cookies from 'js-cookie';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 
-import { AppThunk, RootState } from '../app/store';
-import { KeyOptionTypes } from '../types';
-import { spotifyBaseRequest } from '../utils/requestUtils';
+import { AppThunk, RootState } from "../app/store";
+import { KeyOptionTypes } from "../types";
+import { spotifyBaseRequest } from "../utils/requestUtils";
 
 export interface SettingsState {
   spotifyToken: string;
@@ -13,15 +13,15 @@ export interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  spotifyToken: '',
+  spotifyToken: "",
   authError: false,
-  username: '',
-  keyDisplayOption: 'camelot',
+  username: "",
+  keyDisplayOption: "camelot",
 };
 
 // Auth, tokens, cookies and settings
 const settingsSlice = createSlice({
-  name: 'settingsSlice',
+  name: "settingsSlice",
   initialState,
   reducers: {
     // To add:  group by separate followed/owned
@@ -70,7 +70,7 @@ export const getUsername = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
       const spotifyToken = selectSpotifyToken(getState());
-      const response = await spotifyBaseRequest(spotifyToken).get('me/');
+      const response = await spotifyBaseRequest(spotifyToken).get("me/");
 
       if (response.status === 200) {
         dispatch(setUsername(response.data.display_name));
@@ -85,7 +85,7 @@ export const getUsername = (): AppThunk => {
 export const handleAuthError = () => (dispatch, getState: () => RootState) => {
   // checks if token in cookies is different from token in state
   const currentToken = selectSpotifyToken(getState());
-  const cookiesToken = Cookies.get('token');
+  const cookiesToken = Cookies.get("token");
 
   if (cookiesToken && cookiesToken !== currentToken) {
     dispatch(setSpotifyToken(cookiesToken));

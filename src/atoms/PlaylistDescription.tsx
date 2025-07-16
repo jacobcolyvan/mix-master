@@ -1,18 +1,17 @@
-import { History } from 'history';
-import parse from 'html-react-parser';
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
+import parse from "html-react-parser";
+import React from "react";
+import { useHistory } from "react-router-dom";
 
-import { goToPlaylist } from '../slices/itemsSlice';
+import { useAppDispatch } from "../app/store";
+import { goToPlaylist } from "../slices/itemsSlice";
 
-interface ParsedDescriptionProps {
+interface PlaylistDescriptionProps {
   description: string;
 }
 
-const PlaylistDescription: React.FC<ParsedDescriptionProps> = ({ description }) => {
-  const dispatch = useDispatch();
-  const history: History = useHistory();
+const PlaylistDescription: React.FC<PlaylistDescriptionProps> = ({ description }) => {
+  const dispatch = useAppDispatch();
+  const history = useHistory();
 
   const getParsedDescription = () => {
     const parsedDescription = description.replaceAll(
@@ -22,7 +21,7 @@ const PlaylistDescription: React.FC<ParsedDescriptionProps> = ({ description }) 
 
     const replacedDescription = parse(parsedDescription, {
       replace: (domNode: any) => {
-        if (domNode.name === 'a' && domNode.attribs.id === 'replace') {
+        if (domNode.name === "a" && domNode.attribs.id === "replace") {
           return (
             <span
               onClick={() => {
@@ -32,7 +31,7 @@ const PlaylistDescription: React.FC<ParsedDescriptionProps> = ({ description }) 
               {[...domNode.children][0].data}
             </span>
           );
-        } else if (domNode.name === 'a') {
+        } else if (domNode.name === "a") {
           return (
             <a {...domNode.attribs} target="_blank">
               {[...domNode.children][0].data}

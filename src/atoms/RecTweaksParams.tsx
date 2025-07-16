@@ -1,23 +1,23 @@
-import CloseIcon from '@mui/icons-material/Close';
-import { IconButton } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import CloseIcon from "@mui/icons-material/Close";
+import { IconButton } from "@mui/material";
 
-import { saveSeedAttribute } from '../slices/controlsSlice';
-import { SeedAttributes } from '../types';
+import { useAppDispatch } from "../app/store";
+import { saveSeedAttribute } from "../slices/controlsSlice";
+import { SeedAttributes } from "../types";
 
 interface RecTweaksParamsProps {
   attributes: SeedAttributes;
 }
 
 const RecTweaksParams: React.FC<RecTweaksParamsProps> = ({ attributes }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const getListItemText = (
     attribute: string,
     maxOrMin: string | undefined,
     value: number | undefined
   ): string => {
-    return `– ${maxOrMin || ''} ${attribute}: ${value || ''}`;
+    return `– ${maxOrMin || ""} ${attribute}: ${value || ""}`;
   };
 
   return (

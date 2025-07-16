@@ -1,20 +1,17 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
-import { RootState } from '../app/store';
-import Loading from '../atoms/Loading';
-import SearchOptions from '../components/SearchOptions';
-import SearchResults from '../components/SearchResults';
-import { updateSearchStateFromBrowserState } from '../slices/controlsSlice';
+import { useAppDispatch, useAppSelector } from "../app/store";
+import Loading from "../atoms/Loading";
+import SearchOptions from "../components/SearchOptions";
+import SearchResults from "../components/SearchResults";
+import { updateSearchStateFromBrowserState } from "../slices/controlsSlice";
 
-const Search = () => {
-  const dispatch = useDispatch();
+const Search: React.FC = () => {
+  const dispatch = useAppDispatch();
   const history = useHistory();
 
-  const { isSearching, hasCurrentSearchResults } = useSelector(
-    (state: RootState) => state.controlsSlice
-  );
+  const { isSearching, hasCurrentSearchResults } = useAppSelector((state) => state.controlsSlice);
 
   // Refresh state on search re-render
   useEffect(() => {

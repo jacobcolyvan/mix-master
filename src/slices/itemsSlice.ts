@@ -1,16 +1,16 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { History } from 'history';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { History } from "history";
 
-import { AppThunk, RootState } from '../app/store';
-import { Album, Playlist, SortedPlaylists,Track } from '../types';
-import { camelotKeySort, standardKeySort } from '../utils/commonFunctions';
+import { AppThunk, RootState } from "../app/store";
+import { Album, Playlist, SortedPlaylists, Track } from "../types";
+import { camelotKeySort, standardKeySort } from "../utils/commonFunctions";
 import {
   createSearchRequestUrl,
   generateRecommendedTrackUrl,
   getTrackAndArtistFeatures,
   getTracksFromSpotify,
   spotifyBaseRequest,
-} from '../utils/requestUtils';
+} from "../utils/requestUtils";
 import {
   handleSearchResultsChange,
   selectSortTracksBy,
@@ -19,12 +19,8 @@ import {
   setIsSearching,
   setSearchResultValues,
   updateBrowserHistoryThunk,
-} from './controlsSlice';
-import {
-  handleAuthError,
-  selectKeyDisplayOption,
-  selectSpotifyToken,
-} from './settingsSlice';
+} from "./controlsSlice";
+import { handleAuthError, selectKeyDisplayOption, selectSpotifyToken } from "./settingsSlice";
 
 export interface ItemsState {
   userPlaylists: Playlist[];
@@ -52,7 +48,7 @@ const initialState: ItemsState = {
 
 // For all Spotify media objects
 const itemsSlice = createSlice({
-  name: 'itemsSlice',
+  name: "itemsSlice",
   initialState,
   reducers: {
     setUserPlaylists: (state, action: PayloadAction<Playlist[]>) => {
@@ -95,6 +91,7 @@ export default itemsSlice.reducer;
 export const {
   setUserPlaylists,
   setSortedPlaylists,
+  setPlaylist,
   setSortedTracks,
   setTracks,
   setRecommendedTrack,
@@ -166,7 +163,7 @@ const sortPlaylists = (playlists: Playlist[], username: string): SortedPlaylists
 
   // ADD conditional filteredBy followed/created option here
   playlists.forEach((playlist: Playlist) => {
-    if (playlist.name.slice(0, 4) === 'gena') {
+    if (playlist.name.slice(0, 4) === "gena") {
       tempSortedPlaylists.generated.push(playlist);
     } else if (playlist.owner.display_name === username) {
       tempSortedPlaylists.created.push(playlist);
@@ -187,12 +184,7 @@ const handleAlbumSearch = async (response, dispatch, searchResultValues) => {
   await dispatch(setSearchResultValues(results));
 };
 
-const handleTrackSearch = async (
-  response,
-  dispatch,
-  searchResultValues,
-  spotifyToken
-) => {
+const handleTrackSearch = async (response, dispatch, searchResultValues, spotifyToken) => {
   const trackArray = response.data.tracks.items;
   if (trackArray.length) {
     const splicedTracks = await getTrackAndArtistFeatures(trackArray, spotifyToken);
@@ -224,21 +216,21 @@ export const getSearchResults = (history: History): AppThunk => {
     const { currentSearchQueries, searchResultValues } = getState().controlsSlice;
 
     dispatch(setIsSearching(true));
-    dispatch(updateBrowserHistoryThunk('', history));
+    dispatch(updateBrowserHistoryThunk("", history));
 
     try {
       const searchUrl = await createSearchRequestUrl(currentSearchQueries);
       if (!searchUrl) {
-        console.log('Search failed as query was empty.');
+        console.log("Search failed as query was empty.");
         return;
       }
       const response = await spotifyBaseRequest(spotifyToken).get(searchUrl);
 
       switch (currentSearchQueries.searchType) {
-        case 'album':
+        case "album":
           await handleAlbumSearch(response, dispatch, searchResultValues);
           break;
-        case 'track':
+        case "track":
           await handleTrackSearch(response, dispatch, searchResultValues, spotifyToken);
           break;
         default:
@@ -270,7 +262,7 @@ export const getAlbumTracks = (album: Album): AppThunk => {
         setAlbumName(
           `${album.name} – ${
             album.artists.length > 1
-              ? [album.artists[0].name, album.artists[1].name].join(', ')
+              ? [album.artists[0].name, album.artists[1].name].join(", ")
               : album.artists[0].name
           }`
         )
@@ -282,9 +274,7 @@ export const getAlbumTracks = (album: Album): AppThunk => {
           trackResults: null,
         })
       );
-      const results = await dispatch(
-        handleSearchResultsChange('tracks', splicedTracks)
-      );
+      const results = await dispatch(handleSearchResultsChange("tracks", splicedTracks));
 
       return results;
     } catch (err) {
@@ -313,20 +303,20 @@ export const sortTracksByAudioFeatures = (): AppThunk => {
 
     switch (sortType) {
       // cases without explicit code fall through to the next case with code
-      case 'tempo':
-      case 'duration':
-      case 'popularity':
-      case 'valence':
+      case "tempo":
+      case "duration":
+      case "popularity":
+      case "valence":
         tempTracks = [...tracks].sort(sortByKeyFunction(sortType));
         break;
-      case 'durationThenKey':
-      case 'tempoThenKey':
-      case 'energyThenKey':
-      case 'valenceThenKey':
+      case "durationThenKey":
+      case "tempoThenKey":
+      case "energyThenKey":
+      case "valenceThenKey":
         tempTracks = [...tracks].sort(sortByKeyFunction(sortType.slice(0, -7)));
         sortThenKey = true;
         break;
-      case 'major/minor':
+      case "major/minor":
         tempTracks = [...tracks];
         sortThenKey = true;
         break;
@@ -336,9 +326,7 @@ export const sortTracksByAudioFeatures = (): AppThunk => {
 
     if (sortThenKey) {
       tempTracks =
-        keyOption === 'camelot'
-          ? camelotKeySort(tempTracks)
-          : standardKeySort(tempTracks);
+        keyOption === "camelot" ? camelotKeySort(tempTracks) : standardKeySort(tempTracks);
     }
 
     await dispatch(setSortedTracks(tempTracks));
@@ -359,22 +347,17 @@ export const getTracks = (currentPlaylist: Playlist): AppThunk => {
           currentPlaylist.href + `/tracks?offset=${offset}&limit=50`
         );
 
-        const rawTracksPage = tracksResponse.data.items.filter(
-          (item: { [key: string]: any[] }) => {
-            if (item.track) {
-              return true;
-            } else {
-              // TODO: why is this needed?
-              trackTotalAmount--;
-              return false;
-            }
+        const rawTracksPage = tracksResponse.data.items.filter((item: { [key: string]: any[] }) => {
+          if (item.track) {
+            return true;
+          } else {
+            // TODO: why is this needed?
+            trackTotalAmount--;
+            return false;
           }
-        );
+        });
 
-        const splicedTracksPage = await getTrackAndArtistFeatures(
-          rawTracksPage,
-          spotifyToken
-        );
+        const splicedTracksPage = await getTrackAndArtistFeatures(rawTracksPage, spotifyToken);
         splicedTracks = [...splicedTracks, ...splicedTracksPage];
 
         offset += 50;
@@ -437,10 +420,7 @@ export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
         return accumulator;
       }, []);
 
-      const splicedTracks = await getTrackAndArtistFeatures(
-        filteredRawTracks,
-        spotifyToken
-      );
+      const splicedTracks = await getTrackAndArtistFeatures(filteredRawTracks, spotifyToken);
       await dispatch(setTracks(splicedTracks));
       await dispatch(setSortedTracks(splicedTracks));
     } catch (err) {
@@ -468,25 +448,22 @@ export const copyNameAndSaveAsCurrentTrack =
     const lastClickedTrack = selectLastClickedTrack(getState());
     if (lastClickedTrack) {
       const currentlySelected = document.getElementById(lastClickedTrack);
-      if (currentlySelected) currentlySelected.classList.remove('currently-selected');
+      if (currentlySelected) currentlySelected.classList.remove("currently-selected");
     }
 
     const nowSelected = document.getElementById(clickedTrackId);
-    if (nowSelected) nowSelected.classList.add('currently-selected');
+    if (nowSelected) nowSelected.classList.add("currently-selected");
 
     dispatch(setLastClickedTrack(clickedTrackId));
   };
 
-export const pushPlaylistToHistory = (
-  history: History,
-  playlist: Playlist
-): AppThunk => {
+export const pushPlaylistToHistory = (history: History, playlist: Playlist): AppThunk => {
   return async (dispatch) => {
     dispatch(resetItemStates);
 
     history.push(
       {
-        pathname: '/playlist',
+        pathname: "/playlist",
         search: `?id=${playlist.id}`,
       },
       {

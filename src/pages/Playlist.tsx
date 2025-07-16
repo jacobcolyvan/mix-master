@@ -1,26 +1,30 @@
-import { History } from 'history';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { History } from "history";
+import { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
-import KeySelect from '../atoms/KeySelect';
-import PlaylistDescription from '../atoms/PlaylistDescription';
-import SortBy from '../atoms/SortBy';
-import Tracks from '../components/Tracks';
-import { getTracks } from '../slices/itemsSlice';
-import { selectUsername } from '../slices/settingsSlice';
+import { useAppDispatch, useAppSelector } from "../app/store";
+import KeySelect from "../atoms/KeySelect";
+import PlaylistDescription from "../atoms/PlaylistDescription";
+import SortBy from "../atoms/SortBy";
+import Tracks from "../components/Tracks";
+import { getTracks } from "../slices/itemsSlice";
+import { selectUsername } from "../slices/settingsSlice";
+import { Playlist as PlaylistType } from "../types";
 
-const Playlist = () => {
-  const username = useSelector(selectUsername);
+const Playlist: React.FC = () => {
+  const dispatch = useAppDispatch();
   const history: History = useHistory();
-  const dispatch = useDispatch();
+  const username = useAppSelector(selectUsername);
 
-  // TODO: rethink this
-  const playlist = history.location.state.playlist;
+  // Type the location state properly
+  const locationState = history.location.state as { playlist?: PlaylistType } | undefined;
+  const playlist = locationState?.playlist;
 
   useEffect(() => {
-    dispatch(getTracks(playlist));
-  }, []);
+    if (playlist) {
+      dispatch(getTracks(playlist));
+    }
+  }, [dispatch, playlist]);
 
   return (
     <div>
@@ -28,11 +32,9 @@ const Playlist = () => {
       <SortBy />
 
       {playlist && <h3 className="playlist-page-title">{playlist.name}</h3>}
-      {playlist.description && (
-        <PlaylistDescription description={playlist.description} />
-      )}
-      {playlist.owner.display_name !== username && (
-        <p className="playlist-page-description">({playlist.owner.display_name}).</p>
+      {playlist?.description && <PlaylistDescription description={playlist.description} />}
+      {playlist?.owner.display_name !== username && (
+        <p className="playlist-page-description">({playlist?.owner.display_name}).</p>
       )}
 
       <Tracks />

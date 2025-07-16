@@ -1,4 +1,4 @@
-import { LinearProgress } from '@mui/material';
+import { LinearProgress } from "@mui/material";
 
 const Loading = (): JSX.Element => {
   return (

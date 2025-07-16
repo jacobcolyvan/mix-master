@@ -1,15 +1,15 @@
-import { Button } from '@mui/material';
-import { useEffect } from 'react';
-import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Button } from "@mui/material";
+import { useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 
-import InfoOverview from '../atoms/info/InfoOverview';
-import { setSpotifyToken } from '../slices/settingsSlice';
-import { createSpotifyAuthHREF } from '../utils/requestUtils';
+import InfoOverview from "../atoms/info/InfoOverview";
+import { setSpotifyToken } from "../slices/settingsSlice";
+import { createSpotifyAuthHREF } from "../utils/requestUtils";
 
 const SpotifyAuth = () => {
-  const [cookies, setCookie] = useCookies(['token']);
+  const [cookies, setCookie] = useCookies(["token"]);
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -21,17 +21,17 @@ const SpotifyAuth = () => {
   }, []);
 
   useEffect(() => {
-    if (location?.hash.split('=')[1]) {
-      const newToken = location.hash.split('=')[1].split('&token')[0];
+    if (location?.hash.split("=")[1]) {
+      const newToken = location.hash.split("=")[1].split("&token")[0];
       dispatch(setSpotifyToken(newToken));
 
-      setCookie('token', newToken, {
-        path: '/',
+      setCookie("token", newToken, {
+        path: "/",
         maxAge: 3600,
         secure: false,
-        sameSite: 'lax',
+        sameSite: "lax",
       });
-      history.replace('/');
+      history.replace("/");
     }
   }, [location]);
 

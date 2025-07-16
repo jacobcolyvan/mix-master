@@ -1,28 +1,27 @@
-import { Button, FormControlLabel, Switch } from '@mui/material';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Button, FormControlLabel, Switch } from "@mui/material";
+import { useState } from "react";
 
-import { RootState } from '../app/store';
-import RecTweaksParams from '../atoms/RecTweaksParams';
-import { invertMatchRecsToSeedTrackKey } from '../slices/controlsSlice';
-import { getRecommendedTracks } from '../slices/itemsSlice';
-import { Track } from '../types';
-import { attributeChoices } from '../utils/commonVariables';
-import RecTweaksTabs from './RecTweaksTabs';
+import { useAppDispatch, useAppSelector } from "../app/store";
+import RecTweaksParams from "../atoms/RecTweaksParams";
+import { invertMatchRecsToSeedTrackKey } from "../slices/controlsSlice";
+import { getRecommendedTracks } from "../slices/itemsSlice";
+import { Track } from "../types";
+import { attributeChoices } from "../utils/commonVariables";
+import RecTweaksTabs from "./RecTweaksTabs";
 
 interface RecTweakProps {
   recommendedTrack: Track;
 }
 
-const RecTweaks = ({ recommendedTrack }: RecTweakProps) => {
-  const dispatch = useDispatch();
-  const { matchRecsToSeedTrackKey, seedAttributes } = useSelector(
-    (state: RootState) => state.controlsSlice
+const RecTweaks: React.FC<RecTweakProps> = ({ recommendedTrack }) => {
+  const dispatch = useAppDispatch();
+  const { matchRecsToSeedTrackKey, seedAttributes } = useAppSelector(
+    (state) => state.controlsSlice
   );
   const [currentTab, setCurrentTab] = useState(0);
 
   const handleTabChange = (
-    _: React.ChangeEvent<{}>,
+    _: React.ChangeEvent<object>,
     newValue: React.SetStateAction<number>
   ): void => {
     setCurrentTab(newValue);

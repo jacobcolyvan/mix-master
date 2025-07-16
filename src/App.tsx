@@ -1,16 +1,16 @@
-import { Container } from '@mui/material';
-import { useSelector } from 'react-redux';
-import { BrowserRouter as Router, Redirect,Route, Switch } from 'react-router-dom';
+import { Container } from "@mui/material";
+import { useSelector } from "react-redux";
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 
-import Navbar from './atoms/Navbar';
-import TokenExpired from './atoms/TokenExpired';
-import About from './pages/About';
-import Playlist from './pages/Playlist';
-import RecommendedTracks from './pages/RecommendedTracks';
-import Search from './pages/Search';
-import SpotifyAuth from './pages/SpotifyAuth';
-import UserPlaylists from './pages/UserPlaylists';
-import { selectAuthError,selectSpotifyToken } from './slices/settingsSlice';
+import Navbar from "./atoms/Navbar";
+import TokenExpired from "./atoms/TokenExpired";
+import About from "./pages/About";
+import Playlist from "./pages/Playlist";
+import RecommendedTracks from "./pages/RecommendedTracks";
+import Search from "./pages/Search";
+import SpotifyAuth from "./pages/SpotifyAuth";
+import UserPlaylists from "./pages/UserPlaylists";
+import { selectAuthError, selectSpotifyToken } from "./slices/settingsSlice";
 
 const App = () => {
   const token = useSelector(selectSpotifyToken);

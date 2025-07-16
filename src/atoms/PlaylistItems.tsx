@@ -1,15 +1,15 @@
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 
-import { pushPlaylistToHistory } from '../slices/itemsSlice';
-import { Playlist } from '../types';
+import { useAppDispatch } from "../app/store";
+import { pushPlaylistToHistory } from "../slices/itemsSlice";
+import { Playlist } from "../types";
 
 interface Props {
   playlistsToRender: Playlist[];
 }
 
 const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const history = useHistory();
 
   const dispatchPlaylistHistory = (playlist: Playlist) => {
@@ -28,12 +28,7 @@ const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
             <div>
               <div className="playlist-name">{playlist.name}</div>
               {playlist.images[0] && (
-                <img
-                  src={playlist.images[0].url}
-                  alt={`playlist img`}
-                  width="60"
-                  height="60"
-                />
+                <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" />
               )}
             </div>
           </li>

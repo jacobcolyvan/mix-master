@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "target": "es2021",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "checkJs": false,
     "skipLibCheck": true,
@@ -21,7 +17,7 @@
     "noEmitOnError": true,
     "jsx": "react-jsx",
     "sourceMap": true,
-    "declaration": true,
+    "declaration": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitAny": false,
@@ -32,12 +28,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "build"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "build"]
 }

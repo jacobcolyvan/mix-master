@@ -1,62 +1,52 @@
-import { Button, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { Button, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { useHistory } from "react-router-dom";
 
-import SearchBar from '../atoms/SearchBar';
-import {
-  saveSearchQueryChange,
-  selectCurrentSearchQueries,
-} from '../slices/controlsSlice';
-import { getSearchResults } from '../slices/itemsSlice';
+import { useAppDispatch, useAppSelector } from "../app/store";
+import SearchBar from "../atoms/SearchBar";
+import { saveSearchQueryChange, selectCurrentSearchQueries } from "../slices/controlsSlice";
+import { getSearchResults } from "../slices/itemsSlice";
 
 const PlaylistSearch = ({ getResults, playlistSearchQuery }) => (
   <SearchBar
-    label={'playlist name'}
+    label="Playlist"
     param={playlistSearchQuery}
-    paramName={'playlistSearchQuery'}
+    paramName="playlistSearchQuery"
     getResults={getResults}
   />
 );
 
-const AlbumSearch = ({ getResults, albumSearchQuery, artistSearchQuery }) => (
-  <>
-    <SearchBar
-      label={'artist'}
-      param={artistSearchQuery}
-      paramName={'artistSearchQuery'}
-      getResults={getResults}
-    />
-    <SearchBar
-      label={'album name'}
-      paramName={'albumSearchQuery'}
-      param={albumSearchQuery}
-      getResults={getResults}
-    />
-  </>
+const AlbumSearch = ({ getResults, albumSearchQuery, artistSearchQuery: _artistSearchQuery }) => (
+  <SearchBar
+    label="Album"
+    param={albumSearchQuery}
+    paramName="albumSearchQuery"
+    getResults={getResults}
+  />
 );
 
-const TrackSearch = ({ getResults, trackSearchQuery, artistSearchQuery }) => (
-  <>
-    <SearchBar
-      label={'artist'}
-      param={artistSearchQuery}
-      paramName={'artistSearchQuery'}
-      getResults={getResults}
-    />
-    <SearchBar
-      label={'track name'}
-      param={trackSearchQuery}
-      paramName={'trackSearchQuery'}
-      getResults={getResults}
-    />
-  </>
+const ArtistSearch = ({ getResults, artistSearchQuery }) => (
+  <SearchBar
+    label="Artist"
+    param={artistSearchQuery}
+    paramName="artistSearchQuery"
+    getResults={getResults}
+  />
 );
 
-const SearchOptions = () => {
-  const dispatch = useDispatch();
+const TrackSearch = ({ getResults, trackSearchQuery, artistSearchQuery: _artistSearchQuery }) => (
+  <SearchBar
+    label="Track"
+    param={trackSearchQuery}
+    paramName="trackSearchQuery"
+    getResults={getResults}
+  />
+);
+
+const SearchOptions: React.FC = () => {
+  const dispatch = useAppDispatch();
   const history = useHistory();
 
-  const currentSearchQueries = useSelector(selectCurrentSearchQueries);
+  const currentSearchQueries = useAppSelector(selectCurrentSearchQueries);
   const { playlistSearchQuery, albumSearchQuery, trackSearchQuery, artistSearchQuery } =
     currentSearchQueries;
 
@@ -71,31 +61,37 @@ const SearchOptions = () => {
         id="search-type"
         value={currentSearchQueries.searchType}
         onChange={(event: SelectChangeEvent<any>) =>
-          dispatch(saveSearchQueryChange('searchType', event.target.value))
+          dispatch(saveSearchQueryChange("searchType", event.target.value))
         }
         fullWidth
         variant="outlined"
       >
-        <MenuItem value={'track'}>Tracks</MenuItem>
-        <MenuItem value={'album'}>Albums</MenuItem>
-        <MenuItem value={'playlist'}>Playlists</MenuItem>
+        <MenuItem value={"track"}>Tracks</MenuItem>
+        <MenuItem value={"album"}>Albums</MenuItem>
+        <MenuItem value={"playlist"}>Playlists</MenuItem>
       </Select>
 
       <div className="searchbar__div">
-        {currentSearchQueries.searchType === 'playlist' && (
+        {currentSearchQueries.searchType === "playlist" && (
           <PlaylistSearch
             getResults={dispatchGetSearchResults}
             playlistSearchQuery={playlistSearchQuery}
           />
         )}
-        {currentSearchQueries.searchType === 'album' && (
-          <AlbumSearch
-            getResults={dispatchGetSearchResults}
-            albumSearchQuery={albumSearchQuery}
-            artistSearchQuery={artistSearchQuery}
-          />
+        {currentSearchQueries.searchType === "album" && (
+          <>
+            <ArtistSearch
+              getResults={dispatchGetSearchResults}
+              artistSearchQuery={artistSearchQuery}
+            />
+            <AlbumSearch
+              getResults={dispatchGetSearchResults}
+              albumSearchQuery={albumSearchQuery}
+              artistSearchQuery={artistSearchQuery}
+            />
+          </>
         )}
-        {currentSearchQueries.searchType === 'track' && (
+        {currentSearchQueries.searchType === "track" && (
           <TrackSearch
             getResults={dispatchGetSearchResults}
             trackSearchQuery={trackSearchQuery}
