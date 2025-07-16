@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 import { CurrentSearchQueryOptions, SeedAttributes, Track } from '../types';
-import { scopes } from './commonVariables';
 import { getKeyInfoArray } from './commonFunctions';
+import { scopes } from './commonVariables';
 
 /* Use .get() on returned value, with everything in url after v1/ */
 export const spotifyBaseRequest = (token: string) => {

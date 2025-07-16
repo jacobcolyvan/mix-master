@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
+
 import { AppThunk, RootState } from '../app/store';
 import { KeyOptionTypes } from '../types';
 import { spotifyBaseRequest } from '../utils/requestUtils';

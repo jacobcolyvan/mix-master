@@ -1,5 +1,6 @@
+import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { Select, MenuItem, SelectChangeEvent } from '@mui/material';
+
 import { selectKeyDisplayOption, setKeyDisplayOption } from '../slices/settingsSlice';
 
 const KeySelect = () => {

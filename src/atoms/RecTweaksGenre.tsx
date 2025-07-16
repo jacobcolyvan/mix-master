@@ -1,11 +1,11 @@
 import { Autocomplete } from '@mui/lab';
 import { TextField } from '@mui/material';
+import { useDispatch } from 'react-redux';
 
+import { saveSeedAttribute } from '../slices/controlsSlice';
 // NOTE: this file can be updated from this link --
 //       https://developer.spotify.com/console/get-available-genre-seeds/
 import genres from '../utils/genres.json';
-import { useDispatch } from 'react-redux';
-import { saveSeedAttribute } from '../slices/controlsSlice';
 
 interface InputProps {
   genre: { [key: string]: any } | false;

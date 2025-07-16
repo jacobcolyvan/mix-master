@@ -1,14 +1,14 @@
+import { Button, FormControlLabel, Switch } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, FormControlLabel, Switch } from '@mui/material';
 
 import { RootState } from '../app/store';
-import { Track } from '../types';
+import RecTweaksParams from '../atoms/RecTweaksParams';
 import { invertMatchRecsToSeedTrackKey } from '../slices/controlsSlice';
 import { getRecommendedTracks } from '../slices/itemsSlice';
+import { Track } from '../types';
 import { attributeChoices } from '../utils/commonVariables';
 import RecTweaksTabs from './RecTweaksTabs';
-import RecTweaksParams from '../atoms/RecTweaksParams';
 
 interface RecTweakProps {
   recommendedTrack: Track;

@@ -1,16 +1,15 @@
-import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { History } from 'history';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { RootState } from '../app/store';
-import Tracks from '../components/Tracks';
-import SortBy from '../atoms/SortBy';
 import KeySelect from '../atoms/KeySelect';
-import RecTweaks from '../components/RecTweaks';
-
-import { getRecommendedTracks } from '../slices/itemsSlice';
+import SortBy from '../atoms/SortBy';
 import CurrentTrackRec from '../components/CurrentTrackRec';
+import RecTweaks from '../components/RecTweaks';
+import Tracks from '../components/Tracks';
+import { getRecommendedTracks } from '../slices/itemsSlice';
 
 const RecommendedTracks = () => {
   const dispatch = useDispatch();

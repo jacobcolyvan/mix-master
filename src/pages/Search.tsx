@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { RootState } from '../app/store';
-import { updateSearchStateFromBrowserState } from '../slices/controlsSlice';
-
+import Loading from '../atoms/Loading';
 import SearchOptions from '../components/SearchOptions';
 import SearchResults from '../components/SearchResults';
-import Loading from '../atoms/Loading';
+import { updateSearchStateFromBrowserState } from '../slices/controlsSlice';
 
 const Search = () => {
   const dispatch = useDispatch();

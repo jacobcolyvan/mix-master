@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useCookies } from 'react-cookie';
 import { Button } from '@mui/material';
+import { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 
+import InfoOverview from '../atoms/info/InfoOverview';
 import { setSpotifyToken } from '../slices/settingsSlice';
 import { createSpotifyAuthHREF } from '../utils/requestUtils';
-import InfoOverview from '../atoms/info/InfoOverview';
 
 const SpotifyAuth = () => {
   const [cookies, setCookie] = useCookies(['token']);

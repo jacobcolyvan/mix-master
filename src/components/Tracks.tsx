@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
+import Loading from '../atoms/Loading';
+import TrackTooltip from '../atoms/TrackTooltip';
+import { selectSortTracksBy } from '../slices/controlsSlice';
 import {
   copyNameAndSaveAsCurrentTrack,
   goToRecommendedTrack,
@@ -9,18 +12,14 @@ import {
   selectTracks,
   sortTracksByAudioFeatures,
 } from '../slices/itemsSlice';
-import { selectSortTracksBy } from '../slices/controlsSlice';
 import { selectKeyDisplayOption } from '../slices/settingsSlice';
-
-import Loading from '../atoms/Loading';
-import TrackTooltip from '../atoms/TrackTooltip';
-import {
-  keyDict,
-  camelotMajorKeyDict,
-  camelotMinorKeyDict,
-} from '../utils/commonVariables';
 import { Track } from '../types';
 import { getArtistNames } from '../utils/commonFunctions';
+import {
+  camelotMajorKeyDict,
+  camelotMinorKeyDict,
+  keyDict,
+} from '../utils/commonVariables';
 
 const Tracks = () => {
   const dispatch = useDispatch();

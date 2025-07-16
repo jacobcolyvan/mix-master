@@ -1,7 +1,7 @@
 import { Track } from '../types';
 import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from './commonVariables';
 
-export const getArtistNames = (artistNameArray: String[]) => {
+export const getArtistNames = (artistNameArray: string[]) => {
   // only show first two artists
   if (artistNameArray.length > 1) {
     return `${artistNameArray[0]}, ${artistNameArray[1]}`;

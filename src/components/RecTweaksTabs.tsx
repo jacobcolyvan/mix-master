@@ -1,6 +1,7 @@
-import { Tabs, Tab } from '@mui/material';
-import RecTweaksInput from '../atoms/RecTweaksInput';
+import { Tab,Tabs } from '@mui/material';
+
 import RecTweaksGenre from '../atoms/RecTweaksGenre';
+import RecTweaksInput from '../atoms/RecTweaksInput';
 import { AttributeChoiceDetails, SeedAttributes } from '../types';
 
 interface RecTweaksTabsProps {

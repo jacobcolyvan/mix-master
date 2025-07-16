@@ -1,6 +1,6 @@
+import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { History } from 'history';
 
 import {
   selectSearchResultValues,

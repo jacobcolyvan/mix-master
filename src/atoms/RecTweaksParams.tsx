@@ -1,9 +1,9 @@
-import { useDispatch } from 'react-redux';
-import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { IconButton } from '@mui/material';
+import { useDispatch } from 'react-redux';
 
-import { SeedAttributes } from '../types';
 import { saveSeedAttribute } from '../slices/controlsSlice';
+import { SeedAttributes } from '../types';
 
 interface RecTweaksParamsProps {
   attributes: SeedAttributes;

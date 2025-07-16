@@ -1,4 +1,5 @@
 import { Button } from '@mui/material';
+
 import { createSpotifyAuthHREF } from '../utils/requestUtils';
 
 const TokenExpired = () => {

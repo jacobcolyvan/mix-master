@@ -1,8 +1,8 @@
-import React from 'react';
+import { History } from 'history';
 import parse from 'html-react-parser';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
-import { History } from 'history';
 
 import { goToPlaylist } from '../slices/itemsSlice';
 

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { FormControlLabel,Radio, RadioGroup, TextField } from '@mui/material';
+import { useEffect,useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { TextField, Radio, RadioGroup, FormControlLabel } from '@mui/material';
 
 import { saveSeedAttribute } from '../slices/controlsSlice';
 import { AttributeChoiceDetails } from '../types';

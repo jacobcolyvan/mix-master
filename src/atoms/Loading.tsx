@@ -1,6 +1,6 @@
 import { LinearProgress } from '@mui/material';
 
-const Loading = () => {
+const Loading = (): JSX.Element => {
   return (
     <div className="loading-animation__div">
       <LinearProgress />

@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux';
+
+import TrackTooltip from '../atoms/TrackTooltip';
 import { selectKeyDisplayOption } from '../slices/settingsSlice';
 import { Track } from '../types';
-import TrackTooltip from '../atoms/TrackTooltip';
 import { getArtistNames } from '../utils/commonFunctions';
 
 type CurrentTrackRecProps = {

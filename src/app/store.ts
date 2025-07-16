@@ -1,5 +1,6 @@
-import { configureStore, Action } from '@reduxjs/toolkit';
+import { Action,configureStore } from '@reduxjs/toolkit';
 import thunk, { ThunkAction } from 'redux-thunk';
+
 import controlsSlice from '../slices/controlsSlice';
 import itemsSlice from '../slices/itemsSlice';
 import settingsSlice from '../slices/settingsSlice';

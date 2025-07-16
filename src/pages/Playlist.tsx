@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { History } from 'history';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
-import Tracks from '../components/Tracks';
-import SortBy from '../atoms/SortBy';
 import KeySelect from '../atoms/KeySelect';
-import { selectUsername } from '../slices/settingsSlice';
-import { getTracks } from '../slices/itemsSlice';
 import PlaylistDescription from '../atoms/PlaylistDescription';
+import SortBy from '../atoms/SortBy';
+import Tracks from '../components/Tracks';
+import { getTracks } from '../slices/itemsSlice';
+import { selectUsername } from '../slices/settingsSlice';
 
 const Playlist = () => {
   const username = useSelector(selectUsername);

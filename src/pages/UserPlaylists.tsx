@@ -2,11 +2,10 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '../app/store';
+import Loading from '../atoms/Loading';
+import PlaylistList from '../atoms/PlaylistItems';
 import { getUserPlaylists } from '../slices/itemsSlice';
 import { getUsername, selectSpotifyToken } from '../slices/settingsSlice';
-
-import PlaylistList from '../atoms/PlaylistItems';
-import Loading from '../atoms/Loading';
 
 const CreatedPlaylists = ({ createdPlaylists }) => {
   if (createdPlaylists.length === 0) return null;

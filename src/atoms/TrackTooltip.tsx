@@ -1,17 +1,19 @@
-import { Tooltip } from '@mui/material';
-import { withStyles } from '@mui/styles';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Tooltip } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 import { Track } from '../types';
 
-const HtmlTooltip: any = withStyles(() => ({
-  tooltip: {
+const HtmlTooltip = styled(({ className, ...props }: any) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(() => ({
+  [`& .MuiTooltip-tooltip`]: {
     backgroundColor: '#484848',
     maxWidth: 600,
     width: 'auto',
     border: '1px solid #dadde9',
   },
-}))(Tooltip);
+}));
 
 interface TooltipProps {
   track: Track;

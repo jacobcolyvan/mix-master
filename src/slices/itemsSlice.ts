@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { History } from 'history';
 
-import { Track, Playlist, Album, SortedPlaylists } from '../types';
 import { AppThunk, RootState } from '../app/store';
+import { Album, Playlist, SortedPlaylists,Track } from '../types';
+import { camelotKeySort, standardKeySort } from '../utils/commonFunctions';
 import {
   createSearchRequestUrl,
   generateRecommendedTrackUrl,
@@ -10,7 +11,6 @@ import {
   getTracksFromSpotify,
   spotifyBaseRequest,
 } from '../utils/requestUtils';
-import { camelotKeySort, standardKeySort } from '../utils/commonFunctions';
 import {
   handleSearchResultsChange,
   selectSortTracksBy,
@@ -158,7 +158,7 @@ export const getUserPlaylists = (): AppThunk => {
 };
 
 const sortPlaylists = (playlists: Playlist[], username: string): SortedPlaylists => {
-  let tempSortedPlaylists: SortedPlaylists = {
+  const tempSortedPlaylists: SortedPlaylists = {
     created: [],
     followed: [],
     generated: [],

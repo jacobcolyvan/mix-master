@@ -1,6 +1,6 @@
-import { useHistory } from 'react-router';
+import { Button, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { useHistory } from 'react-router';
 
 import SearchBar from '../atoms/SearchBar';
 import {
