@@ -28,6 +28,28 @@ Vite env vars, **`VITE_`-prefixed** (read via `import.meta.env.VITE_*`):
 
 Copy `.env.example` to `.env` and fill in your Spotify client ID (register an app at https://developer.spotify.com).
 
+## Setup
+
+### Remote/cloud environment
+
+If setting up in a remote or cloud development environment, do not rely on local symlinks from another checkout. From the repository root:
+
+1. Use Node 22 (`.nvmrc`).
+2. Install dependencies with `pnpm install`.
+3. Copy `.env.example` to `.env`.
+4. Run `pnpm check` before handing off changes.
+5. Start the app only when needed with `pnpm dev`.
+
+### Secondary local git worktree
+
+If setting up a secondary local git worktree that has access to the main checkout, run:
+
+```sh
+./setup_worktree.sh
+```
+
+The script symlinks shared local-only paths from the main worktree (`.zed/`, `.docs/`, `.env`) and then runs `pnpm install`.
+
 ## Architecture
 
 ### State: three Redux Toolkit slices (`src/slices/`)
