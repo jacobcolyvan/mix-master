@@ -1,28 +1,6 @@
-import axios from "axios";
-
+import { spotifyApi } from "../auth";
 import { CurrentSearchQueryOptions, SeedAttributes, Track } from "../types";
 import { getKeyInfoArray } from "./commonFunctions";
-import { scopes } from "./commonVariables";
-
-/* Use .get() on returned value, with everything in url after v1/ */
-export const spotifyBaseRequest = (token: string) => {
-  // try/catch should go here (?)
-  return axios.create({
-    baseURL: "https://api.spotify.com/v1/",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-};
-
-export const createSpotifyAuthHREF = () => {
-  return `https://accounts.spotify.com/authorize?response_type=token&client_id=${
-    import.meta.env.VITE_SPOTIFY_CLIENT_ID || ""
-  }&scope=${scopes.join("%20")}&redirect_uri=${encodeURIComponent(
-    import.meta.env.VITE_SPOTIFY_CALLBACK_URI || ""
-  )}&show_dialog=false`;
-};
 
 export const createSearchRequestUrl = (currentSearchQueries: CurrentSearchQueryOptions) => {
   // if all search queries are empty, return null
@@ -100,7 +78,7 @@ export const createTrackObject = (item, trackFeature, artistFeature): Track => {
   };
 };
 
-export const getTrackAndArtistFeatures = async (rawTracks: any[], spotifyToken: string) => {
+export const getTrackAndArtistFeatures = async (rawTracks: any[]) => {
   const trackIds: string[] = [];
   const artistIds: string[] = [];
 
@@ -111,12 +89,8 @@ export const getTrackAndArtistFeatures = async (rawTracks: any[], spotifyToken: 
     artistIds.push(track.artists[0].id);
   });
 
-  const trackFeaturesResponse = await spotifyBaseRequest(spotifyToken).get(
-    `audio-features/?ids=${trackIds.join(",")}`
-  );
-  const artistFeaturesResponse = await spotifyBaseRequest(spotifyToken).get(
-    `artists?ids=${artistIds.join(",")}`
-  );
+  const trackFeaturesResponse = await spotifyApi.get(`audio-features/?ids=${trackIds.join(",")}`);
+  const artistFeaturesResponse = await spotifyApi.get(`artists?ids=${artistIds.join(",")}`);
 
   const trackFeatures = [...trackFeaturesResponse.data.audio_features];
   const artistFeatures = [...artistFeaturesResponse.data.artists];
@@ -167,8 +141,8 @@ export const generateRecommendedTrackUrl = (
   return urlWithSeedAttributes;
 };
 
-export const getTracksFromSpotify = async (url: string, spotifyToken: string) => {
-  const tracks = await spotifyBaseRequest(spotifyToken).get(url);
+export const getTracksFromSpotify = async (url: string) => {
+  const tracks = await spotifyApi.get(url);
 
   return tracks.data.tracks;
 };

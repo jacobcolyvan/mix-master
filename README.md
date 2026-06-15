@@ -13,7 +13,7 @@ This is basic project intended to help users make better playlists and mixes, by
 <ins>Note:</ins> that all data comes from Spotify, and will only be as accurate as Spotify's analysis algorithms'. \
 <ins>Note#2:</ins> (for music nerds) Spotify only provides estimations for major/minor, and as such at this point will not tell you whether the key is in a different Mode to those.
 
-It is built with React, and styled using SCSS/Material-UI. Requests are done using axios, and Spotify-auth is done completely client-side using the <a href="https://developer.spotify.com/documentation/general/guides/authorization-guide/">Client Credentials Authorisation Flow</a>. This means none of your personal data ever actually leaves your browser.
+It is built with React, and styled using SCSS/Material-UI. Requests are done using axios, and Spotify-auth is done completely client-side using the <a href="https://developer.spotify.com/documentation/general/guides/authorization/code-flow/">Authorization Code with PKCE flow</a>. This means none of your personal data ever actually leaves your browser.
 
 <hr>
 <h4>Features</h4>
@@ -29,11 +29,11 @@ It is built with React, and styled using SCSS/Material-UI. Requests are done usi
 <hr>
 <h4>Setup</h4>
 
-To build your own setup, run `yarn install` after cloning, and create a copy of `.env.base` as `.env` file in the root directory (or set it in your local environment) with your own Spotify ClientID and a callback URI.
+To build your own setup, run `pnpm install` after cloning, and create a copy of `.env.example` as `.env` in the root directory with your own Spotify Client ID and callback URI. For local dev, use `http://127.0.0.1:3000/` as the redirect URI (register this exact URL in the Spotify dashboard — `localhost` is not accepted for PKCE callbacks).
 
 <br>
 
-Your Spotify ClientID can be found by <a href='https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app'>registering your app</a>.
+Your Spotify Client ID can be found by <a href='https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app'>registering your app</a>.
 
 <hr>
 

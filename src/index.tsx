@@ -3,12 +3,13 @@ import "./stylesheets/pages.scss";
 import "./stylesheets/components.scss";
 
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import { CookiesProvider } from "react-cookie";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 
 import App from "./App";
 import { store } from "./app/store";
+import { bootstrap, subscribe } from "./auth";
+import { setSessionReady, setSpotifyToken, setUsername } from "./slices/settingsSlice";
 
 const theme = createTheme({
   palette: {
@@ -26,17 +27,23 @@ const theme = createTheme({
   },
 });
 
+// The single auth wiring point: mirror token changes into Redux (so components
+// re-render on login/logout), then run bootstrap once at module load.
+subscribe((token) => {
+  store.dispatch(setSpotifyToken(token));
+  // clear username on logout (UI concern)
+  if (!token) store.dispatch(setUsername(""));
+});
+bootstrap().finally(() => store.dispatch(setSessionReady(true)));
+
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
 root.render(
   <Provider store={store}>
-    {/* @ts-expect-error - CookiesProvider compatibility issue with React 18 */}
-    <CookiesProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </CookiesProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
   </Provider>
 );

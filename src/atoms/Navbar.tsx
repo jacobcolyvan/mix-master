@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import { resetItemStates } from "../slices/itemsSlice";
-import { selectAuthError, selectSpotifyToken } from "../slices/settingsSlice";
+import { selectSpotifyToken } from "../slices/settingsSlice";
 
 interface NavButtonProps {
   activeNavItem: string;
@@ -36,7 +36,6 @@ const Navbar = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const authError = useSelector(selectAuthError);
   const spotifyToken = useSelector(selectSpotifyToken);
 
   const [activeNavItem, setActiveNavItem] = useState("/");
@@ -58,7 +57,7 @@ const Navbar = () => {
     <header className="navbar">
       <h1 onClick={() => loadPage("/")}>Mix Master</h1>
 
-      {spotifyToken && !authError && (
+      {spotifyToken && (
         <div className="nav-buttons">
           {navItems.map(({ target, label, extraClass }) => (
             <NavButton

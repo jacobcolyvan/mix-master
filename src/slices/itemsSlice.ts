@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { History } from "history";
 
 import { AppThunk, RootState } from "../app/store";
+import { spotifyApi } from "../auth";
 import { Album, Playlist, SortedPlaylists, Track } from "../types";
 import { camelotKeySort, standardKeySort } from "../utils/commonFunctions";
 import {
@@ -9,7 +10,6 @@ import {
   generateRecommendedTrackUrl,
   getTrackAndArtistFeatures,
   getTracksFromSpotify,
-  spotifyBaseRequest,
 } from "../utils/requestUtils";
 import {
   handleSearchResultsChange,
@@ -20,7 +20,7 @@ import {
   setSearchResultValues,
   updateBrowserHistoryThunk,
 } from "./controlsSlice";
-import { handleAuthError, selectKeyDisplayOption, selectSpotifyToken } from "./settingsSlice";
+import { selectKeyDisplayOption } from "./settingsSlice";
 
 export interface ItemsState {
   userPlaylists: Playlist[];
@@ -124,15 +124,13 @@ export const selectLastClickedTrack = (state: RootState): string | null => {
 export const getUserPlaylists = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
-      const { spotifyToken, username } = getState().settingsSlice;
+      const { username } = getState().settingsSlice;
       let allPlaylists = false;
       let tempPlaylistArray: Playlist[] = [];
       let offset = 0;
 
       while (!allPlaylists) {
-        const response = await spotifyBaseRequest(spotifyToken).get(
-          `me/playlists?limit=50&offset=${offset}`
-        );
+        const response = await spotifyApi.get(`me/playlists?limit=50&offset=${offset}`);
 
         if (response.status === 200) {
           const playlistItems = response.data.items;
@@ -148,7 +146,6 @@ export const getUserPlaylists = (): AppThunk => {
       dispatch(setUserPlaylists(tempPlaylistArray));
       dispatch(setSortedPlaylists(sortedPlaylists));
     } catch (err) {
-      if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);
     }
   };
@@ -184,10 +181,10 @@ const handleAlbumSearch = async (response, dispatch, searchResultValues) => {
   await dispatch(setSearchResultValues(results));
 };
 
-const handleTrackSearch = async (response, dispatch, searchResultValues, spotifyToken) => {
+const handleTrackSearch = async (response, dispatch, searchResultValues) => {
   const trackArray = response.data.tracks.items;
   if (trackArray.length) {
-    const splicedTracks = await getTrackAndArtistFeatures(trackArray, spotifyToken);
+    const splicedTracks = await getTrackAndArtistFeatures(trackArray);
 
     await dispatch(setSortedTracks(splicedTracks));
     await dispatch(setTracks(splicedTracks));
@@ -212,7 +209,6 @@ const handlePlaylistSearch = async (response, dispatch, searchResultValues) => {
 
 export const getSearchResults = (history: History): AppThunk => {
   return async (dispatch, getState) => {
-    const spotifyToken = selectSpotifyToken(getState());
     const { currentSearchQueries, searchResultValues } = getState().controlsSlice;
 
     dispatch(setIsSearching(true));
@@ -224,14 +220,14 @@ export const getSearchResults = (history: History): AppThunk => {
         console.log("Search failed as query was empty.");
         return;
       }
-      const response = await spotifyBaseRequest(spotifyToken).get(searchUrl);
+      const response = await spotifyApi.get(searchUrl);
 
       switch (currentSearchQueries.searchType) {
         case "album":
           await handleAlbumSearch(response, dispatch, searchResultValues);
           break;
         case "track":
-          await handleTrackSearch(response, dispatch, searchResultValues, spotifyToken);
+          await handleTrackSearch(response, dispatch, searchResultValues);
           break;
         default:
           await handlePlaylistSearch(response, dispatch, searchResultValues);
@@ -240,20 +236,18 @@ export const getSearchResults = (history: History): AppThunk => {
       dispatch(setHasCurrentSearchResults(true));
       dispatch(setIsSearching(false));
     } catch (err) {
-      if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);
     }
   };
 };
 
 export const getAlbumTracks = (album: Album): AppThunk => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     try {
-      const spotifyToken = selectSpotifyToken(getState());
-      const tracksResponse = await spotifyBaseRequest(spotifyToken).get(album.href);
+      const tracksResponse = await spotifyApi.get(album.href);
 
       const tracklist = [tracksResponse.data.tracks.items][0];
-      const splicedTracks = await getTrackAndArtistFeatures(tracklist, spotifyToken);
+      const splicedTracks = await getTrackAndArtistFeatures(tracklist);
 
       await dispatch(setSortedTracks(splicedTracks));
       await dispatch(setTracks(splicedTracks));
@@ -278,7 +272,6 @@ export const getAlbumTracks = (album: Album): AppThunk => {
 
       return results;
     } catch (err) {
-      if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);
     }
   };
@@ -334,16 +327,14 @@ export const sortTracksByAudioFeatures = (): AppThunk => {
 };
 
 export const getTracks = (currentPlaylist: Playlist): AppThunk => {
-  return async (dispatch, getState) => {
-    const spotifyToken = selectSpotifyToken(getState());
-
+  return async (dispatch) => {
     let trackTotalAmount = currentPlaylist.tracks.total;
     let offset = 0;
     let splicedTracks: Track[] = [];
 
     try {
       while (trackTotalAmount > splicedTracks.length) {
-        const tracksResponse = await spotifyBaseRequest(spotifyToken).get(
+        const tracksResponse = await spotifyApi.get(
           currentPlaylist.href + `/tracks?offset=${offset}&limit=50`
         );
 
@@ -357,13 +348,12 @@ export const getTracks = (currentPlaylist: Playlist): AppThunk => {
           }
         });
 
-        const splicedTracksPage = await getTrackAndArtistFeatures(rawTracksPage, spotifyToken);
+        const splicedTracksPage = await getTrackAndArtistFeatures(rawTracksPage);
         splicedTracks = [...splicedTracks, ...splicedTracksPage];
 
         offset += 50;
       }
     } catch (err) {
-      if (err.response?.status === 401) dispatch(handleAuthError());
       console.log(err.message);
     }
 
@@ -377,7 +367,6 @@ export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
     await dispatch(setSortedTracks(null));
 
     const { matchRecsToSeedTrackKey, seedAttributes } = getState().controlsSlice;
-    const spotifyToken = selectSpotifyToken(getState());
 
     try {
       let rawTracks: any[] = [];
@@ -401,15 +390,12 @@ export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
           recommendedTrack.parsedKeys[2][1]
         );
 
-        rawTracks = [
-          ...(await getTracksFromSpotify(url1, spotifyToken)),
-          ...(await getTracksFromSpotify(url2, spotifyToken)),
-        ];
+        rawTracks = [...(await getTracksFromSpotify(url1)), ...(await getTracksFromSpotify(url2))];
       } else {
         // Recommendations without key param
         const url = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=40`;
 
-        rawTracks = await getTracksFromSpotify(url, spotifyToken);
+        rawTracks = await getTracksFromSpotify(url);
       }
 
       // remove duplicates (result of multiple calls)
@@ -420,12 +406,11 @@ export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
         return accumulator;
       }, []);
 
-      const splicedTracks = await getTrackAndArtistFeatures(filteredRawTracks, spotifyToken);
+      const splicedTracks = await getTrackAndArtistFeatures(filteredRawTracks);
       await dispatch(setTracks(splicedTracks));
       await dispatch(setSortedTracks(splicedTracks));
     } catch (err) {
       console.log(err.message);
-      if (err.response?.status === 401) dispatch(handleAuthError());
     }
   };
 };
@@ -474,11 +459,9 @@ export const pushPlaylistToHistory = (history: History, playlist: Playlist): App
 };
 
 export const goToPlaylist = (history: History, playlistId: string): AppThunk => {
-  return async (dispatch, getState) => {
-    const spotifyToken = selectSpotifyToken(getState());
-
+  return async (dispatch) => {
     try {
-      const newPlaylist = await spotifyBaseRequest(spotifyToken).get(
+      const newPlaylist = await spotifyApi.get(
         `https://api.spotify.com/v1/playlists/${playlistId}`
       );
 
