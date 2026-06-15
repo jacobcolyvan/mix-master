@@ -43,7 +43,8 @@ const App = () => {
             <div className="main-content__div">
               <Switch>
                 {renderSwitchRoutes()}
-                <Redirect to="/" />
+                {/* logout() writes ?reason= via replaceState; use window.location.search, not RR location */}
+                <Redirect to={{ pathname: "/", search: window.location.search }} />
               </Switch>
             </div>
           </div>

@@ -34,19 +34,19 @@ Copy `.env.example` to `.env` and fill in your Spotify client ID (register an ap
 
 State management is the spine of the app. All async Spotify work lives in **thunks at the bottom of each slice file**, not in components. Components dispatch thunks and read via typed selectors (`useAppSelector`/`useAppDispatch` from `src/app/store.ts`).
 
-- **`settingsSlice`** — auth/token/user/key-display. Holds `spotifyToken`, `authError`, `username`, `keyDisplayOption` (`"camelot"` | standard). `handleAuthError` reconciles the Redux token against the `token` cookie.
+- **`settingsSlice`** — mirrors auth token/user/key-display. Holds `spotifyToken`, `username`, `keyDisplayOption` (`"camelot"` | standard), and `sessionReady` (bootstrap finished). Token source of truth is `src/auth/`; Redux is updated via `subscribe()` in `index.tsx`.
 - **`itemsSlice`** — all Spotify media objects (playlists, albums, tracks, recommendation seed). This is where the heavy data-fetching thunks live: `getUserPlaylists`, `getTracks`, `getAlbumTracks`, `getSearchResults`, `getRecommendedTracks`, plus `sortTracksByAudioFeatures`. Note the dual `tracks` + `sortedTracks` pattern: `tracks` is the canonical fetch result, `sortedTracks` is the display copy that sort operations mutate.
 - **`controlsSlice`** — UI filter/search controls: current search queries, search results, `seedAttributes` (recommendation tuning), `sortTracksBy`, `matchRecsToSeedTrackKey`. Several thunks here are marked `// TODO: delete this` / "half works" (browser-history sync) — they are known-flaky; don't rely on them.
 
 Cross-slice imports between `itemsSlice` and `controlsSlice` are normal here and intentionally circular-ish — both reference each other's actions/selectors.
 
-### Auth flow (Implicit Grant, client-side)
+### Auth flow (Authorization Code + PKCE, client-side)
 
-`createSpotifyAuthHREF()` (`utils/requestUtils.ts`) builds the Spotify authorize URL with `response_type=token`. On redirect back, `pages/SpotifyAuth.tsx` parses the access token out of `location.hash`, stores it in Redux **and** a `token` cookie (`maxAge: 3600`). `App.tsx` gates all routes on token presence: no token → only `SpotifyAuth`; token + no error → app routes; `authError` → `TokenExpired`. A `401` from any request dispatches `handleAuthError()`.
+Auth lives in **`src/auth/`** (`session.ts`, `oauth.ts`, `storage.ts`, `reasons.ts`) — self-contained, no imports from slices or components. `login()` redirects to Spotify; on callback `bootstrap()` exchanges `?code=` for tokens and stores them in a `spotify_auth` JSON cookie (access + refresh). `spotifyApi` is the authenticated axios client with 401 → refresh → retry. Redux mirrors the in-memory token via `subscribe()` in `index.tsx`. `App.tsx` shows `Loading` until `sessionReady`, then gates routes on token presence: no token → `SpotifyLogin`; token → app routes.
 
 ### Spotify requests
 
-All HTTP goes through `spotifyBaseRequest(token)` in `utils/requestUtils.ts` — an axios factory bound to `https://api.spotify.com/v1/` with the bearer header. Paginated fetches (playlists, playlist tracks) loop with `offset`/`limit=50`. `getTrackAndArtistFeatures()` is the key enrichment step: it batches `audio-features` + `artists` lookups and maps raw Spotify items into the app's `Track` shape via `createTrackObject()`.
+All authenticated HTTP goes through **`spotifyApi`** from `src/auth/` — an axios instance bound to `https://api.spotify.com/v1/` with bearer header and token refresh. Slice thunks import `spotifyApi` directly. Paginated fetches (playlists, playlist tracks) loop with `offset`/`limit=50`. `getTrackAndArtistFeatures()` in `utils/requestUtils.ts` is the key enrichment step: it batches `audio-features` + `artists` lookups and maps raw Spotify items into the app's `Track` shape via `createTrackObject()`.
 
 ### Music theory core (`utils/commonFunctions.ts` + `commonVariables.ts`)
 
@@ -54,7 +54,7 @@ This is the domain heart. `commonVariables.ts` holds the key dictionaries: `keyD
 
 ### UI layering (atomic design)
 
-- `src/pages/` — route components (`UserPlaylists`, `Playlist`, `Search`, `RecommendedTracks`, `About`, `SpotifyAuth`); they dispatch thunks and own data fetching
+- `src/pages/` — route components (`UserPlaylists`, `Playlist`, `Search`, `RecommendedTracks`, `About`, `SpotifyLogin`); they dispatch thunks and own data fetching
 - `src/components/` — feature composites (`SearchOptions`, `SearchResults`, `Tracks`, `Albums`, `RecTweaks*`, `CurrentTrackRec`)
 - `src/atoms/` — UI primitives (`Navbar`, `SortBy`, `KeySelect`, `TrackTooltip`, etc.) and `atoms/info/` (the About-page explainer sections)
 

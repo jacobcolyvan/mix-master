@@ -1,11 +1,18 @@
-import { Button } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 
 import InfoOverview from "../atoms/info/InfoOverview";
-import { login } from "../auth";
+import { getLogoutMessage, login } from "../auth";
 
 const SpotifyLogin = () => {
+  const logoutMessage = getLogoutMessage();
+
   return (
     <div>
+      {logoutMessage && (
+        <Alert severity="warning" className="spotify-login__alert">
+          {logoutMessage}
+        </Alert>
+      )}
       <InfoOverview />
       <p>
         <i>Authorise Spotify to start: </i>

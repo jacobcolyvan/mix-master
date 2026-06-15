@@ -10,6 +10,7 @@ import {
   refreshAccessToken,
   SpotifyTokenPair,
 } from "./oauth";
+import { LogoutReason } from "./reasons";
 import {
   clearAuthStorage,
   getInitialAuthState,
@@ -17,6 +18,17 @@ import {
   readAuthCookie,
   writeAuthCookie,
 } from "./storage";
+
+const setLogoutReasonInUrl = (reason: LogoutReason) => {
+  const url = new URL(window.location.href);
+  url.pathname = "/";
+  url.searchParams.set("reason", reason);
+  url.searchParams.delete("code");
+  url.searchParams.delete("state");
+  window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+};
+
+const hadActiveSession = () => !!accessToken || !!readAuthCookie();
 
 // In-memory access token, seeded synchronously at module load so the common
 // (already-logged-in) path renders without a Loading flash.
@@ -56,13 +68,13 @@ export const refresh = (): Promise<string | null> => {
   refreshPromise = (async () => {
     const refreshToken = readAuthCookie()?.refreshToken;
     if (!refreshToken) {
-      logout();
+      logout("session_expired");
       return null;
     }
 
     const tokens = await refreshAccessToken(refreshToken);
     if (!tokens) {
-      logout();
+      logout("session_expired");
       return null;
     }
 
@@ -99,7 +111,7 @@ export const bootstrap = async (): Promise<void> => {
   } else if (refreshToken) {
     await refresh();
   } else {
-    logout();
+    logout("session_expired");
   }
 };
 
@@ -108,8 +120,12 @@ export const login = async () => {
 };
 
 // UI-agnostic: clears auth state only. Username/UI concerns are handled by the
-// subscribe listener in index.tsx.
-export const logout = () => {
+// subscribe listener in index.tsx. Logouts with a reason set ?reason= on / for
+// the login screen to read.
+export const logout = (reason?: LogoutReason) => {
+  if (reason && hadActiveSession()) {
+    setLogoutReasonInUrl(reason);
+  }
   clearAuthStorage();
   setToken("");
 };
@@ -119,5 +135,5 @@ export const logout = () => {
 export const spotifyApi = createSpotifyApi({
   getAccessToken: () => accessToken,
   refreshAccessToken: refresh,
-  onAuthFailure: logout,
+  onAuthFailure: () => logout("unauthorized"),
 });

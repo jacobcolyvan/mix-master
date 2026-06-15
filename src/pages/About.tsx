@@ -13,7 +13,7 @@ const About = () => {
       <InfoExtra />
       <InfoCamelot />
       <div className="about-page__auth-actions">
-        <Button variant="outlined" color="primary" onClick={() => logout()}>
+        <Button variant="outlined" color="primary" onClick={() => logout("signed_out")}>
           Logout
         </Button>
 
