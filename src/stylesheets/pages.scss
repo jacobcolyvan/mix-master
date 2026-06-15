@@ -17,6 +17,10 @@
   }
 }
 
+.spotify-login__alert {
+  margin-bottom: 1rem;
+}
+
 // about page
 .about-page__div {
   p,
@@ -26,6 +30,12 @@
 
   li span {
     font-style: italic;
+  }
+
+  .about-page__auth-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
   }
 
   .camelot-info {

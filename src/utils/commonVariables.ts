@@ -45,13 +45,6 @@ export const camelotMinorKeyDict: { [key: number]: string } = {
   "11": "10",
 };
 
-export const scopes: string[] = [
-  "user-read-private",
-  "playlist-read-private",
-  "user-library-read",
-  "user-top-read",
-];
-
 export const attributeChoices: AttributeChoiceDetails[] = [
   {
     input_name: "tempo",

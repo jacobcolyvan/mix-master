@@ -2,41 +2,37 @@ import { Container } from "@mui/material";
 import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 
+import Loading from "./atoms/Loading";
 import Navbar from "./atoms/Navbar";
-import TokenExpired from "./atoms/TokenExpired";
 import About from "./pages/About";
 import Playlist from "./pages/Playlist";
 import RecommendedTracks from "./pages/RecommendedTracks";
 import Search from "./pages/Search";
-import SpotifyAuth from "./pages/SpotifyAuth";
+import SpotifyLogin from "./pages/SpotifyLogin";
 import UserPlaylists from "./pages/UserPlaylists";
-import { selectAuthError, selectSpotifyToken } from "./slices/settingsSlice";
+import { selectSessionReady, selectSpotifyToken } from "./slices/settingsSlice";
 
 const App = () => {
   const token = useSelector(selectSpotifyToken);
-  const authError = useSelector(selectAuthError);
+  const sessionReady = useSelector(selectSessionReady);
 
   const renderSwitchRoutes = () => {
     if (!token) {
-      return <Route exact path="/" component={SpotifyAuth} />;
+      return <Route exact path="/" component={SpotifyLogin} />;
     }
 
-    if (token && !authError) {
-      return (
-        <>
-          <Route exact path="/" component={UserPlaylists} />
-          <Route exact path="/about" component={About} />
-          <Route path="/search" component={Search} />
-          <Route path="/playlist" component={Playlist} />
-          <Route path="/recommended" component={RecommendedTracks} />
-        </>
-      );
-    }
-
-    if (authError) {
-      return <Route path="/" component={TokenExpired} />;
-    }
+    return (
+      <>
+        <Route exact path="/" component={UserPlaylists} />
+        <Route exact path="/about" component={About} />
+        <Route path="/search" component={Search} />
+        <Route path="/playlist" component={Playlist} />
+        <Route path="/recommended" component={RecommendedTracks} />
+      </>
+    );
   };
+
+  if (!sessionReady) return <Loading />;
 
   return (
     <div>
@@ -47,7 +43,8 @@ const App = () => {
             <div className="main-content__div">
               <Switch>
                 {renderSwitchRoutes()}
-                <Redirect to="/" />
+                {/* logout() writes ?reason= via replaceState; use window.location.search, not RR location */}
+                <Redirect to={{ pathname: "/", search: window.location.search }} />
               </Switch>
             </div>
           </div>
