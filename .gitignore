@@ -16,13 +16,15 @@ tsconfig.tsbuildinfo
 # misc
 .DS_Store
 .env
-.docs/
 .zed/
+.vscode/
 
-.eslintcache
+# scratch docs
 .docs/
+.delete/
 
 
 # symlinked file refs
 .docs
 .zed
+.delete

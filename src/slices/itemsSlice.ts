@@ -20,7 +20,7 @@ import {
   setSearchResultValues,
   updateBrowserHistoryThunk,
 } from "./controlsSlice";
-import { selectKeyDisplayOption } from "./settingsSlice";
+import { getUsername, selectKeyDisplayOption } from "./settingsSlice";
 
 export interface ItemsState {
   userPlaylists: Playlist[];
@@ -124,31 +124,56 @@ export const selectLastClickedTrack = (state: RootState): string | null => {
 export const getUserPlaylists = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
-      const { username } = getState().settingsSlice;
-      let allPlaylists = false;
-      let tempPlaylistArray: Playlist[] = [];
-      let offset = 0;
+      // Kick off the username fetch in parallel with the first playlist page
+      // so it is not a serial round-trip on the critical path. (Task 2)
+      const usernamePromise = dispatch(getUsername());
 
-      while (!allPlaylists) {
-        const response = await spotifyApi.get(`me/playlists?limit=50&offset=${offset}`);
+      // First page tells us the total up front.
+      const firstResponse = await spotifyApi.get(`me/playlists?limit=${PAGE_LIMIT}&offset=0`);
+      const total: number = firstResponse.data.total ?? 0;
+      let allItems: Playlist[] = [...firstResponse.data.items];
 
-        if (response.status === 200) {
-          const playlistItems = response.data.items;
-          offset += 50;
-          tempPlaylistArray = [...tempPlaylistArray, ...response.data.items];
+      // Remaining offsets: 50, 100, ... < total. Empty for single-page accounts.
+      const offsets: number[] = [];
+      for (let offset = PAGE_LIMIT; offset < total; offset += PAGE_LIMIT) {
+        offsets.push(offset);
+      }
 
-          const moreItems = response.data.total >= tempPlaylistArray.length;
-          if (!moreItems || !playlistItems.length) allPlaylists = true;
+      // Fetch remaining pages in bounded-concurrency batches, preserving order.
+      for (const offsetBatch of chunk(offsets, PAGE_CONCURRENCY)) {
+        const responses = await Promise.all(
+          offsetBatch.map((offset) =>
+            spotifyApi.get(`me/playlists?limit=${PAGE_LIMIT}&offset=${offset}`)
+          )
+        );
+        for (const response of responses) {
+          allItems = [...allItems, ...response.data.items];
         }
       }
 
-      const sortedPlaylists = sortPlaylists(tempPlaylistArray, username);
-      dispatch(setUserPlaylists(tempPlaylistArray));
+      // Ensure username is populated before sorting created vs followed. (Task 2)
+      await usernamePromise;
+      const { username } = getState().settingsSlice;
+
+      const sortedPlaylists = sortPlaylists(allItems, username);
+      dispatch(setUserPlaylists(allItems));
       dispatch(setSortedPlaylists(sortedPlaylists));
     } catch (err) {
       console.log(err.message);
     }
   };
+};
+
+const PAGE_LIMIT = 50;
+const PAGE_CONCURRENCY = 8;
+
+// Split an array into consecutive sub-arrays of at most `size`.
+const chunk = <T>(arr: T[], size: number): T[][] => {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
 };
 
 const sortPlaylists = (playlists: Playlist[], username: string): SortedPlaylists => {

@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from "../app/store";
 import Loading from "../atoms/Loading";
 import PlaylistItems from "../atoms/PlaylistItems";
 import { getUserPlaylists } from "../slices/itemsSlice";
-import { getUsername } from "../slices/settingsSlice";
 
 const CreatedPlaylists = ({ createdPlaylists }) => {
   return (
@@ -51,13 +50,8 @@ const GeneratedPlaylists = ({ generatedPlaylists }) => {
 const UserPlaylists: React.FC = () => {
   const dispatch = useAppDispatch();
   const { sortedPlaylists } = useAppSelector((state) => state.itemsSlice);
-  const dispatchPlaylists = async () => {
-    await dispatch(getUsername());
-    dispatch(getUserPlaylists());
-  };
-
   useEffect(() => {
-    dispatchPlaylists();
+    dispatch(getUserPlaylists());
   }, []);
 
   return sortedPlaylists ? (
