@@ -28,7 +28,14 @@ const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
             <div>
               <div className="playlist-name">{playlist.name}</div>
               {playlist.images[0] && (
-                <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" />
+                <img
+                  src={playlist.images[playlist.images.length - 1]?.url}
+                  alt={`playlist img`}
+                  width="60"
+                  height="60"
+                  loading="lazy"
+                  decoding="async"
+                />
               )}
             </div>
           </li>

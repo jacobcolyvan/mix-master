@@ -38,7 +38,14 @@ const Albums: React.FC = () => {
           {album.name} –<i>{getAlbumDetailsDisplay(album)}</i>
         </p>
         {album.images[0] && (
-          <img src={album.images[0].url} alt={`playlist img`} width="60" height="60" />
+          <img
+            src={album.images[album.images.length - 1]?.url}
+            alt={`playlist img`}
+            width="60"
+            height="60"
+            loading="lazy"
+            decoding="async"
+          />
         )}
       </div>
     </li>
