@@ -3,8 +3,18 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "ax
 import { OAUTH_STATE_KEY, PKCE_VERIFIER_KEY } from "./storage";
 
 const MAX_RETRY_AFTER_SECONDS = 60;
+const RATE_LIMIT_JITTER_MS = 200;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+let rateLimitUntil = 0;
+
+const sleepUntil = async (timestampMs: number) => {
+  const delay = timestampMs - Date.now();
+  if (delay > 0) {
+    await sleep(delay);
+  }
+};
 
 // ----------------------------------------------------------------------------
 // PKCE / OAuth token exchange
@@ -167,7 +177,11 @@ export const createSpotifyApi = (auth: SpotifyApiAuth): AxiosInstance => {
           return Promise.reject(error);
         }
 
-        await sleep(waitSeconds * 1000);
+        // Spread concurrent retries slightly so parallel 429s don't re-burst as one wave.
+        const jitterMs = Math.floor(Math.random() * RATE_LIMIT_JITTER_MS);
+        const wakeAt = Date.now() + waitSeconds * 1000 + jitterMs;
+        rateLimitUntil = Math.max(rateLimitUntil, wakeAt);
+        await sleepUntil(rateLimitUntil);
         return instance.request(originalRequest);
       }
 

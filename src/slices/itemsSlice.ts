@@ -121,11 +121,22 @@ export const selectLastClickedTrack = (state: RootState): string | null => {
 // --------------------------
 // Thunks
 
+const PAGE_LIMIT = 50;
+const PAGE_CONCURRENCY = 8;
+
+// Split a list into consecutive batches of at most `batchSize` (for bounded-concurrency fetches).
+const chunkIntoBatches = <T>(items: T[], batchSize: number): T[][] => {
+  const batches: T[][] = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    batches.push(items.slice(i, i + batchSize));
+  }
+  return batches;
+};
+
 export const getUserPlaylists = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
-      // Kick off the username fetch in parallel with the first playlist page
-      // so it is not a serial round-trip on the critical path. (Task 2)
+      // Fetch display name in parallel — sortPlaylists needs it for created vs followed.
       const usernamePromise = dispatch(getUsername());
 
       // First page tells us the total up front.
@@ -140,7 +151,7 @@ export const getUserPlaylists = (): AppThunk => {
       }
 
       // Fetch remaining pages in bounded-concurrency batches, preserving order.
-      for (const offsetBatch of chunk(offsets, PAGE_CONCURRENCY)) {
+      for (const offsetBatch of chunkIntoBatches(offsets, PAGE_CONCURRENCY)) {
         const responses = await Promise.all(
           offsetBatch.map((offset) =>
             spotifyApi.get(`me/playlists?limit=${PAGE_LIMIT}&offset=${offset}`)
@@ -151,9 +162,10 @@ export const getUserPlaylists = (): AppThunk => {
         }
       }
 
-      // Ensure username is populated before sorting created vs followed. (Task 2)
-      await usernamePromise;
-      const { username } = getState().settingsSlice;
+      const username = (await usernamePromise) ?? getState().settingsSlice.username;
+      if (!username) {
+        throw new Error("Failed to load Spotify profile");
+      }
 
       const sortedPlaylists = sortPlaylists(allItems, username);
       dispatch(setUserPlaylists(allItems));
@@ -162,18 +174,6 @@ export const getUserPlaylists = (): AppThunk => {
       console.log(err.message);
     }
   };
-};
-
-const PAGE_LIMIT = 50;
-const PAGE_CONCURRENCY = 8;
-
-// Split an array into consecutive sub-arrays of at most `size`.
-const chunk = <T>(arr: T[], size: number): T[][] => {
-  const out: T[][] = [];
-  for (let i = 0; i < arr.length; i += size) {
-    out.push(arr.slice(i, i + size));
-  }
-  return out;
 };
 
 const sortPlaylists = (playlists: Playlist[], username: string): SortedPlaylists => {

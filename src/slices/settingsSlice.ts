@@ -65,16 +65,21 @@ export const selectKeyDisplayOption = (state: RootState): string => {
 // ----------------------------------------------------------------------------
 // UI thunks
 
-export const getUsername = (): AppThunk => {
+export const getUsername = (): AppThunk<Promise<string | null>> => {
   return async (dispatch) => {
     try {
       const response = await spotifyApi.get("me/");
 
       if (response.status === 200) {
-        dispatch(setUsername(response.data.display_name));
+        const displayName = response.data.display_name;
+        dispatch(setUsername(displayName));
+        return displayName;
       }
+
+      return null;
     } catch (err) {
       console.log(err.message);
+      return null;
     }
   };
 };

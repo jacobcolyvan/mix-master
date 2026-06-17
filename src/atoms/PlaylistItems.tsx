@@ -19,27 +19,31 @@ const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
   return (
     <ul>
       {Array.isArray(playlistsToRender) &&
-        playlistsToRender.map((playlist, index) => (
-          <li
-            className="playlist-list__li"
-            key={`track${index}`}
-            onClick={() => dispatchPlaylistHistory(playlist)}
-          >
-            <div>
-              <div className="playlist-name">{playlist.name}</div>
-              {playlist.images[0] && (
-                <img
-                  src={playlist.images[playlist.images.length - 1]?.url}
-                  alt={`playlist img`}
-                  width="60"
-                  height="60"
-                  loading="lazy"
-                  decoding="async"
-                />
-              )}
-            </div>
-          </li>
-        ))}
+        playlistsToRender.map((playlist, index) => {
+          const cover = playlist.images.at(-1);
+
+          return (
+            <li
+              className="playlist-list__li"
+              key={`track${index}`}
+              onClick={() => dispatchPlaylistHistory(playlist)}
+            >
+              <div>
+                <div className="playlist-name">{playlist.name}</div>
+                {cover?.url && (
+                  <img
+                    src={cover.url}
+                    alt={`"${playlist.name}" cover`}
+                    width="60"
+                    height="60"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
+            </li>
+          );
+        })}
     </ul>
   );
 };

@@ -27,29 +27,33 @@ const Albums: React.FC = () => {
     return `${artistName} (${releaseYear})`;
   };
 
-  const renderAlbum = (album, index) => (
-    <li
-      className="album-list__li album item"
-      key={`track${index}`}
-      onClick={() => handleOnAlbumClick(album)}
-    >
-      <div className="single-playlist-div">
-        <p className="playlist-name">
-          {album.name} –<i>{getAlbumDetailsDisplay(album)}</i>
-        </p>
-        {album.images[0] && (
-          <img
-            src={album.images[album.images.length - 1]?.url}
-            alt={`playlist img`}
-            width="60"
-            height="60"
-            loading="lazy"
-            decoding="async"
-          />
-        )}
-      </div>
-    </li>
-  );
+  const renderAlbum = (album, index) => {
+    const cover = album.images.at(-1);
+
+    return (
+      <li
+        className="album-list__li album item"
+        key={`track${index}`}
+        onClick={() => handleOnAlbumClick(album)}
+      >
+        <div className="single-playlist-div">
+          <p className="playlist-name">
+            {album.name} –<i>{getAlbumDetailsDisplay(album)}</i>
+          </p>
+          {cover?.url && (
+            <img
+              src={cover.url}
+              alt={`"${album.name}" cover`}
+              width="60"
+              height="60"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+        </div>
+      </li>
+    );
+  };
 
   return (
     <div>
