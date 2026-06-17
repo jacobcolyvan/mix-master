@@ -2,6 +2,10 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "ax
 
 import { OAUTH_STATE_KEY, PKCE_VERIFIER_KEY } from "./storage";
 
+const MAX_RETRY_AFTER_SECONDS = 60;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 // ----------------------------------------------------------------------------
 // PKCE / OAuth token exchange
 
@@ -145,7 +149,27 @@ export const createSpotifyApi = (auth: SpotifyApiAuth): AxiosInstance => {
   instance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+      const originalRequest = error.config as InternalAxiosRequestConfig & {
+        _retry?: boolean;
+        _rateLimitRetry?: boolean;
+      };
+
+      // 429 rate limit: honour Retry-After once, then retry the original request.
+      if (error.response?.status === 429 && originalRequest && !originalRequest._rateLimitRetry) {
+        originalRequest._rateLimitRetry = true;
+
+        const retryAfterRaw = error.response.headers?.["retry-after"];
+        const retryAfter = Number(retryAfterRaw);
+        const waitSeconds = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : 1;
+
+        // Don't hang the UI on an unreasonably large Retry-After.
+        if (waitSeconds > MAX_RETRY_AFTER_SECONDS) {
+          return Promise.reject(error);
+        }
+
+        await sleep(waitSeconds * 1000);
+        return instance.request(originalRequest);
+      }
 
       if (error.response?.status !== 401 || !originalRequest) {
         return Promise.reject(error);
