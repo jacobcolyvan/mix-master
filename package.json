@@ -39,7 +39,8 @@
     "sass": "^1.85.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.37.0",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vitest": "^4.1.11"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
@@ -52,6 +53,7 @@
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
     "ts:check": "tsc --noEmit",
+    "test": "vitest run",
     "check": "pnpm lint:check && pnpm format:check && pnpm ts:check",
     "fix": "pnpm lint:fix && pnpm format:fix"
   },
