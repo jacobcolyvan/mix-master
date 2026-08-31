@@ -1,3 +1,4 @@
+import { Alert } from "@mui/material";
 import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -10,6 +11,7 @@ import {
   goToRecommendedTrack,
   selectSortedTracks,
   selectTracks,
+  selectTracksError,
   sortTracksByAudioFeatures,
 } from "../slices/itemsSlice";
 import { selectKeyDisplayOption } from "../slices/settingsSlice";
@@ -23,6 +25,7 @@ const Tracks: React.FC = () => {
 
   const tracks = useAppSelector(selectTracks);
   const sortedTracks = useAppSelector(selectSortedTracks);
+  const tracksError = useAppSelector(selectTracksError);
   const sortOption = useAppSelector(selectSortTracksBy);
   const keyOption = useAppSelector(selectKeyDisplayOption);
 
@@ -89,6 +92,10 @@ const Tracks: React.FC = () => {
       </tbody>
     );
   };
+
+  if (tracksError) {
+    return <Alert severity="error">{tracksError}</Alert>;
+  }
 
   return sortedTracks ? (
     <table className="tracks-table">

@@ -1,6 +1,11 @@
 import { spotifyApi } from "../auth";
 import { CurrentSearchQueryOptions, SeedAttributes, Track } from "../types";
 import { getKeyInfoArray } from "./commonFunctions";
+import { mapWithConcurrency, splitIntoChunks } from "./spotifyFetch";
+
+const AUDIO_FEATURES_REQUEST_LIMIT = 100;
+const ARTISTS_REQUEST_LIMIT = 50;
+const MAX_CONCURRENT_METADATA_GROUPS = 4;
 
 export const createSearchRequestUrl = (currentSearchQueries: CurrentSearchQueryOptions) => {
   // if all search queries are empty, return null
@@ -82,32 +87,37 @@ export const createTrackObject = (item, trackFeature, artistFeature): Track => {
   };
 };
 
-export const getTrackAndArtistFeatures = async (rawTracks: any[]) => {
-  const trackIds: string[] = [];
-  const artistIds: string[] = [];
+const enrichTrackGroup = async (rawTrackGroup: any[]): Promise<Track[]> => {
+  const tracks = rawTrackGroup.map((item) => item.track || item);
+  const trackIds = tracks.map((track) => track.id);
+  const artistIds = tracks.map((track) => track.artists[0].id);
+  const artistIdChunks = splitIntoChunks(artistIds, ARTISTS_REQUEST_LIMIT);
 
-  rawTracks.forEach((item: { [key: string]: any }) => {
-    const track = item.track || item;
+  const [trackFeaturesResponse, ...artistResponses] = await Promise.all([
+    spotifyApi.get(`audio-features/?ids=${trackIds.join(",")}`),
+    ...artistIdChunks.map((ids) => spotifyApi.get(`artists?ids=${ids.join(",")}`)),
+  ]);
 
-    trackIds.push(track.id);
-    artistIds.push(track.artists[0].id);
-  });
+  const trackFeatures = trackFeaturesResponse.data.audio_features as (any | null)[];
+  const artistFeatures = artistResponses.flatMap((response) => response.data.artists);
 
-  const trackFeaturesResponse = await spotifyApi.get(`audio-features/?ids=${trackIds.join(",")}`);
-  const artistFeaturesResponse = await spotifyApi.get(`artists?ids=${artistIds.join(",")}`);
-
-  const trackFeatures = [...trackFeaturesResponse.data.audio_features];
-  const artistFeatures = [...artistFeaturesResponse.data.artists];
-
-  const splicedTracks: Track[] = rawTracks.reduce((acc, item, index) => {
+  return rawTrackGroup.reduce((enrichedTracks, item, index) => {
     if (trackFeatures[index] !== null) {
-      const trackObject = createTrackObject(item, trackFeatures[index], artistFeatures[index]);
-      acc.push(trackObject);
+      enrichedTracks.push(createTrackObject(item, trackFeatures[index], artistFeatures[index]));
     }
-    return acc;
-  }, []);
+    return enrichedTracks;
+  }, [] as Track[]);
+};
 
-  return splicedTracks;
+export const getTrackAndArtistFeatures = async (rawTracks: any[]): Promise<Track[]> => {
+  const trackGroups = splitIntoChunks(rawTracks, AUDIO_FEATURES_REQUEST_LIMIT);
+  const enrichedTrackGroups = await mapWithConcurrency(
+    trackGroups,
+    MAX_CONCURRENT_METADATA_GROUPS,
+    enrichTrackGroup
+  );
+
+  return enrichedTrackGroups.flat();
 };
 
 export const generateRecommendedTrackUrl = (

@@ -11,6 +11,7 @@ import {
   getTrackAndArtistFeatures,
   getTracksFromSpotify,
 } from "../utils/requestUtils";
+import { fetchOffsetPages } from "../utils/spotifyFetch";
 import {
   handleSearchResultsChange,
   selectSortTracksBy,
@@ -29,6 +30,7 @@ export interface ItemsState {
   albums: Album[] | null;
   tracks: Track[] | null;
   sortedTracks: Track[] | null;
+  tracksError: string | null;
 
   recommendedTrackSeed: Track | null;
   lastClickedTrack: string | null;
@@ -41,6 +43,7 @@ const initialState: ItemsState = {
   playlist: null,
   tracks: null,
   sortedTracks: null,
+  tracksError: null,
   albums: null,
   recommendedTrackSeed: null,
   lastClickedTrack: null,
@@ -66,6 +69,9 @@ const itemsSlice = createSlice({
     setSortedTracks: (state, action: PayloadAction<Track[] | null>) => {
       state.sortedTracks = action.payload;
     },
+    setTracksError: (state, action: PayloadAction<string | null>) => {
+      state.tracksError = action.payload;
+    },
     setAlbums: (state, action: PayloadAction<Album[]>) => {
       state.albums = action.payload;
     },
@@ -81,6 +87,7 @@ const itemsSlice = createSlice({
       state.playlist = null;
       state.tracks = null;
       state.sortedTracks = null;
+      state.tracksError = null;
       state.recommendedTrackSeed = null;
       state.lastClickedTrack = null;
     },
@@ -94,6 +101,7 @@ export const {
   setPlaylist,
   setSortedTracks,
   setTracks,
+  setTracksError,
   setRecommendedTrack,
   setLastClickedTrack,
   resetItemStates,
@@ -110,6 +118,10 @@ export const selectSortedTracks = (state: RootState): Track[] | null => {
   return state?.itemsSlice.sortedTracks;
 };
 
+export const selectTracksError = (state: RootState): string | null => {
+  return state?.itemsSlice.tracksError;
+};
+
 export const selectPlaylist = (state: RootState): Playlist | null => {
   return state?.itemsSlice.playlist;
 };
@@ -121,46 +133,20 @@ export const selectLastClickedTrack = (state: RootState): string | null => {
 // --------------------------
 // Thunks
 
-const PAGE_LIMIT = 50;
-const PAGE_CONCURRENCY = 8;
-
-// Split a list into consecutive batches of at most `batchSize` (for bounded-concurrency fetches).
-const chunkIntoBatches = <T>(items: T[], batchSize: number): T[][] => {
-  const batches: T[][] = [];
-  for (let i = 0; i < items.length; i += batchSize) {
-    batches.push(items.slice(i, i + batchSize));
-  }
-  return batches;
-};
+const TRACKS_ERROR_MESSAGE = "Unable to load tracks from Spotify. Please try again.";
 
 export const getUserPlaylists = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
-      // Fetch display name in parallel — sortPlaylists needs it for created vs followed.
       const usernamePromise = dispatch(getUsername());
 
-      // First page tells us the total up front.
-      const firstResponse = await spotifyApi.get(`me/playlists?limit=${PAGE_LIMIT}&offset=0`);
-      const total: number = firstResponse.data.total ?? 0;
-      let allItems: Playlist[] = [...firstResponse.data.items];
-
-      // Remaining offsets: 50, 100, ... < total. Empty for single-page accounts.
-      const offsets: number[] = [];
-      for (let offset = PAGE_LIMIT; offset < total; offset += PAGE_LIMIT) {
-        offsets.push(offset);
-      }
-
-      // Fetch remaining pages in bounded-concurrency batches, preserving order.
-      for (const offsetBatch of chunkIntoBatches(offsets, PAGE_CONCURRENCY)) {
-        const responses = await Promise.all(
-          offsetBatch.map((offset) =>
-            spotifyApi.get(`me/playlists?limit=${PAGE_LIMIT}&offset=${offset}`)
-          )
-        );
-        for (const response of responses) {
-          allItems = [...allItems, ...response.data.items];
-        }
-      }
+      const allItems = await fetchOffsetPages<Playlist>(async (offset, limit) => {
+        const response = await spotifyApi.get(`me/playlists?limit=${limit}&offset=${offset}`);
+        return {
+          items: response.data.items,
+          total: response.data.total ?? 0,
+        };
+      });
 
       const username = (await usernamePromise) ?? getState().settingsSlice.username;
       if (!username) {
@@ -268,10 +254,19 @@ export const getSearchResults = (history: History): AppThunk => {
 
 export const getAlbumTracks = (album: Album): AppThunk => {
   return async (dispatch) => {
-    try {
-      const tracksResponse = await spotifyApi.get(album.href);
+    dispatch(setTracksError(null));
 
-      const tracklist = [tracksResponse.data.tracks.items][0];
+    try {
+      const tracklist = await fetchOffsetPages(async (offset, limit) => {
+        const response = await spotifyApi.get(
+          `${album.href}/tracks?offset=${offset}&limit=${limit}`
+        );
+        return {
+          items: response.data.items,
+          total: response.data.total ?? 0,
+        };
+      });
+
       const splicedTracks = await getTrackAndArtistFeatures(tracklist);
 
       await dispatch(setSortedTracks(splicedTracks));
@@ -298,6 +293,9 @@ export const getAlbumTracks = (album: Album): AppThunk => {
       return results;
     } catch (err) {
       console.log(err.message);
+      dispatch(setTracks([]));
+      dispatch(setSortedTracks([]));
+      dispatch(setTracksError(TRACKS_ERROR_MESSAGE));
     }
   };
 };
@@ -353,43 +351,38 @@ export const sortTracksByAudioFeatures = (): AppThunk => {
 
 export const getTracks = (currentPlaylist: Playlist): AppThunk => {
   return async (dispatch) => {
-    let trackTotalAmount = currentPlaylist.tracks.total;
-    let offset = 0;
-    let splicedTracks: Track[] = [];
+    dispatch(setTracksError(null));
 
     try {
-      while (trackTotalAmount > splicedTracks.length) {
-        const tracksResponse = await spotifyApi.get(
-          currentPlaylist.href + `/tracks?offset=${offset}&limit=50`
+      const allRawItems = await fetchOffsetPages<{ [key: string]: any }>(async (offset, limit) => {
+        const response = await spotifyApi.get(
+          `${currentPlaylist.href}/tracks?offset=${offset}&limit=${limit}`
         );
+        return {
+          items: response.data.items,
+          total: response.data.total ?? currentPlaylist.tracks.total,
+        };
+      });
 
-        const rawTracksPage = tracksResponse.data.items.filter((item: { [key: string]: any[] }) => {
-          if (item.track) {
-            return true;
-          } else {
-            // TODO: why is this needed?
-            trackTotalAmount--;
-            return false;
-          }
-        });
+      const rawTracks = allRawItems.filter((item: { [key: string]: any }) => item.track);
 
-        const splicedTracksPage = await getTrackAndArtistFeatures(rawTracksPage);
-        splicedTracks = [...splicedTracks, ...splicedTracksPage];
+      const splicedTracks = await getTrackAndArtistFeatures(rawTracks);
 
-        offset += 50;
-      }
+      dispatch(setTracks([...splicedTracks]));
+      dispatch(setSortedTracks([...splicedTracks]));
     } catch (err) {
       console.log(err.message);
+      dispatch(setTracks([]));
+      dispatch(setSortedTracks([]));
+      dispatch(setTracksError(TRACKS_ERROR_MESSAGE));
     }
-
-    await dispatch(setTracks([...splicedTracks]));
-    await dispatch(setSortedTracks([...splicedTracks]));
   };
 };
 
 export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
   return async (dispatch, getState) => {
-    await dispatch(setSortedTracks(null));
+    dispatch(setSortedTracks(null));
+    dispatch(setTracksError(null));
 
     const { matchRecsToSeedTrackKey, seedAttributes } = getState().controlsSlice;
 
@@ -415,7 +408,11 @@ export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
           recommendedTrack.parsedKeys[2][1]
         );
 
-        rawTracks = [...(await getTracksFromSpotify(url1)), ...(await getTracksFromSpotify(url2))];
+        const [tracksFromUrl1, tracksFromUrl2] = await Promise.all([
+          getTracksFromSpotify(url1),
+          getTracksFromSpotify(url2),
+        ]);
+        rawTracks = [...tracksFromUrl1, ...tracksFromUrl2];
       } else {
         // Recommendations without key param
         const url = `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrack.id}&limit=40`;
@@ -436,6 +433,9 @@ export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
       await dispatch(setSortedTracks(splicedTracks));
     } catch (err) {
       console.log(err.message);
+      dispatch(setTracks([]));
+      dispatch(setSortedTracks([]));
+      dispatch(setTracksError(TRACKS_ERROR_MESSAGE));
     }
   };
 };
