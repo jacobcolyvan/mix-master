@@ -12,11 +12,15 @@ export const createSearchRequestUrl = (currentSearchQueries: CurrentSearchQueryO
   const { searchType, albumSearchQuery, artistSearchQuery, trackSearchQuery, playlistSearchQuery } =
     currentSearchQueries;
 
-  const encodedAlbumQuery = albumSearchQuery ? `album%3A$${encodeURI(albumSearchQuery)}%20` : "";
-  const encodedArtistQuery = artistSearchQuery
-    ? `artist%3A$${encodeURI(artistSearchQuery)}%20`
+  const encodedAlbumQuery = albumSearchQuery
+    ? `album%3A${encodeURIComponent(albumSearchQuery)}%20`
     : "";
-  const encodedTrackQuery = trackSearchQuery ? `track%3A$${encodeURI(trackSearchQuery)}%20` : "";
+  const encodedArtistQuery = artistSearchQuery
+    ? `artist%3A${encodeURIComponent(artistSearchQuery)}%20`
+    : "";
+  const encodedTrackQuery = trackSearchQuery
+    ? `track%3A${encodeURIComponent(trackSearchQuery)}%20`
+    : "";
 
   if (searchType === "album") {
     return `${baseSearchUrl}${encodedAlbumQuery}${encodedArtistQuery}&type=album&limit=50`;
