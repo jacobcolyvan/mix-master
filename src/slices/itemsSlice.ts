@@ -469,7 +469,7 @@ export const copyNameAndSaveAsCurrentTrack =
 
 export const pushPlaylistToHistory = (history: History, playlist: Playlist): AppThunk => {
   return async (dispatch) => {
-    dispatch(resetItemStates);
+    dispatch(resetItemStates());
 
     history.push(
       {

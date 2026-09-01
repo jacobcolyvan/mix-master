@@ -224,8 +224,8 @@ export const resetSearchState = (resetSearchQueries = true): AppThunk => {
       })
     );
     dispatch(setAlbumName(null));
-    setSortedTracks(null);
-    setTracks(null);
+    dispatch(setSortedTracks(null));
+    dispatch(setTracks(null));
 
     if (!resetSearchQueries) return;
     dispatch(
