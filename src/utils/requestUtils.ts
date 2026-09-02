@@ -154,7 +154,9 @@ export const generateRecommendedTrackUrl = (
         const durationInMs = parseInt(seedAttributes[param].value || "1") * 1000;
         return url + `&${seedAttributes[param].maxOrMinFilter}_${param}=${durationInMs}`;
       } else {
-        return url + `&${seedAttributes[param].maxOrMin}_${param}=${seedAttributes[param].value}`;
+        return (
+          url + `&${seedAttributes[param].maxOrMinFilter}_${param}=${seedAttributes[param].value}`
+        );
       }
     }
     return url;

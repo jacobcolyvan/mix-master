@@ -185,7 +185,7 @@ export const saveSeedAttribute = (
     dispatch(
       setSeedAttributes({
         ...seedAttributes,
-        [attributeName]: { value: updatedValue, maxOrMin: updatedMaxOrMinFilter },
+        [attributeName]: { value: updatedValue, maxOrMinFilter: updatedMaxOrMinFilter },
       })
     );
   };

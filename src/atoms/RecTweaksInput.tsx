@@ -16,7 +16,7 @@ const RecTweaksInput: React.FC<InputProps> = ({ paramValue, inputItem }) => {
   const { input_name, extra_text, range_limit, validateField } = inputItem;
 
   const [validationError, setValidationError] = useState(false);
-  const [maxOrMin, setMaxOrMin] = useState(paramValue?.maxOrMin || "target");
+  const [maxOrMin, setMaxOrMin] = useState(paramValue?.maxOrMinFilter || "target");
   const [inputValue, setInputValue] = useState(paramValue?.value);
   const [inputLabel, setInputLabel] = useState(getMaxOrMinInputLabel(maxOrMin));
 

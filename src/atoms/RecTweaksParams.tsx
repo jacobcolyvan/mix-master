@@ -30,7 +30,7 @@ const RecTweaksParams: React.FC<RecTweaksParamsProps> = ({ attributes }) => {
               <li key={`currently-selected-attribute-li__${attribute}`}>
                 {getListItemText(
                   attribute,
-                  attributes[attribute].maxOrMin,
+                  attributes[attribute].maxOrMinFilter,
                   attributes[attribute].value
                 )}
                 <IconButton
