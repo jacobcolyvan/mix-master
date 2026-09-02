@@ -6,20 +6,19 @@ import { spotifyApi } from "../auth";
 import { Album, Playlist, SortedPlaylists, Track } from "../types";
 import { camelotKeySort, standardKeySort } from "../utils/commonFunctions";
 import {
-  createSearchRequestUrl,
+  createSpotifySearchUrl,
   generateRecommendedTrackUrl,
   getTrackAndArtistFeatures,
   getTracksFromSpotify,
 } from "../utils/requestUtils";
+import { SearchQuery } from "../utils/searchRoute";
 import { fetchOffsetPages } from "../utils/spotifyFetch";
 import {
-  handleSearchResultsChange,
   selectSortTracksBy,
   setAlbumName,
   setHasCurrentSearchResults,
   setIsSearching,
   setSearchResultValues,
-  updateBrowserHistoryThunk,
 } from "./controlsSlice";
 import { getUsername, selectKeyDisplayOption } from "./settingsSlice";
 
@@ -183,119 +182,133 @@ const sortPlaylists = (playlists: Playlist[], username: string): SortedPlaylists
   return tempSortedPlaylists;
 };
 
-const handleAlbumSearch = async (response, dispatch, searchResultValues) => {
-  const results = {
-    ...searchResultValues,
-    albumResults: response.data.albums.items,
+// All async track loaders share this generation so stale responses cannot overwrite newer tracks.
+let latestTracksRequest = 0;
+
+const beginTracksRequest = () => ++latestTracksRequest;
+const isLatestTracksRequest = (requestId: number) => requestId === latestTracksRequest;
+
+export const invalidateTracksRequest = (): AppThunk => {
+  return () => {
+    latestTracksRequest += 1;
   };
-
-  await dispatch(setSearchResultValues(results));
 };
 
-const handleTrackSearch = async (response, dispatch, searchResultValues) => {
-  const trackArray = response.data.tracks.items;
-  if (trackArray.length) {
-    const splicedTracks = await getTrackAndArtistFeatures(trackArray);
+export const getSearchResults = (query: SearchQuery): AppThunk => {
+  return async (dispatch) => {
+    const requestId = beginTracksRequest();
 
-    await dispatch(setSortedTracks(splicedTracks));
-    await dispatch(setTracks(splicedTracks));
-
-    const results = {
-      ...searchResultValues,
-      trackResults: splicedTracks,
-    };
-
-    await dispatch(setSearchResultValues(results));
-  }
-};
-
-const handlePlaylistSearch = async (response, dispatch, searchResultValues) => {
-  const results = {
-    ...searchResultValues,
-    playlistResults: response.data.playlists.items,
-  };
-
-  await dispatch(setSearchResultValues(results));
-};
-
-export const getSearchResults = (history: History): AppThunk => {
-  return async (dispatch, getState) => {
-    const { currentSearchQueries, searchResultValues } = getState().controlsSlice;
-
+    dispatch(setTracksError(null));
     dispatch(setIsSearching(true));
-    dispatch(updateBrowserHistoryThunk("", history));
 
     try {
-      const searchUrl = await createSearchRequestUrl(currentSearchQueries);
-      if (!searchUrl) {
-        console.log("Search failed as query was empty.");
-        return;
-      }
-      const response = await spotifyApi.get(searchUrl);
+      const response = await spotifyApi.get(createSpotifySearchUrl(query));
+      let tracks: Track[] | null = null;
 
-      switch (currentSearchQueries.searchType) {
+      if (query.kind === "track") {
+        tracks = await getTrackAndArtistFeatures(response.data.tracks.items);
+      }
+
+      // Ignore a response superseded by a newer track-loading request.
+      if (!isLatestTracksRequest(requestId)) return;
+
+      switch (query.kind) {
         case "album":
-          await handleAlbumSearch(response, dispatch, searchResultValues);
+          dispatch(
+            setSearchResultValues({
+              albumResults: response.data.albums.items,
+              playlistResults: null,
+              trackResults: null,
+            })
+          );
           break;
         case "track":
-          await handleTrackSearch(response, dispatch, searchResultValues);
+          dispatch(setSortedTracks(tracks));
+          dispatch(setTracks(tracks));
+          dispatch(
+            setSearchResultValues({
+              albumResults: null,
+              playlistResults: null,
+              trackResults: tracks,
+            })
+          );
           break;
-        default:
-          await handlePlaylistSearch(response, dispatch, searchResultValues);
+        case "playlist":
+          dispatch(
+            setSearchResultValues({
+              albumResults: null,
+              playlistResults: response.data.playlists.items,
+              trackResults: null,
+            })
+          );
+          break;
       }
 
       dispatch(setHasCurrentSearchResults(true));
-      dispatch(setIsSearching(false));
     } catch (err) {
-      console.log(err.message);
+      if (isLatestTracksRequest(requestId)) {
+        console.log(err.message);
+      }
+    } finally {
+      if (isLatestTracksRequest(requestId)) {
+        dispatch(setIsSearching(false));
+      }
     }
   };
 };
 
-export const getAlbumTracks = (album: Album): AppThunk => {
+export const getAlbumTracks = (albumId: string): AppThunk => {
   return async (dispatch) => {
+    const requestId = beginTracksRequest();
+
     dispatch(setTracksError(null));
+    dispatch(setIsSearching(true));
 
     try {
-      const tracklist = await fetchOffsetPages(async (offset, limit) => {
-        const response = await spotifyApi.get(
-          `${album.href}/tracks?offset=${offset}&limit=${limit}`
-        );
-        return {
-          items: response.data.items,
-          total: response.data.total ?? 0,
-        };
-      });
-
+      const [albumResponse, tracklist] = await Promise.all([
+        // Album request
+        spotifyApi.get(`albums/${encodeURIComponent(albumId)}`),
+        // Tracklist request
+        fetchOffsetPages(async (offset, limit) => {
+          const response = await spotifyApi.get(
+            `albums/${encodeURIComponent(albumId)}/tracks?offset=${offset}&limit=${limit}`
+          );
+          return {
+            items: response.data.items,
+            total: response.data.total ?? 0,
+          };
+        }),
+      ]);
       const splicedTracks = await getTrackAndArtistFeatures(tracklist);
 
-      await dispatch(setSortedTracks(splicedTracks));
-      await dispatch(setTracks(splicedTracks));
+      if (!isLatestTracksRequest(requestId)) return;
 
-      await dispatch(
-        setAlbumName(
-          `${album.name} – ${
-            album.artists.length > 1
-              ? [album.artists[0].name, album.artists[1].name].join(", ")
-              : album.artists[0].name
-          }`
-        )
-      );
-      await dispatch(
+      const album: Album = albumResponse.data;
+      const artistNames = album.artists.slice(0, 2).map((artist) => artist.name);
+
+      dispatch(setSortedTracks(splicedTracks));
+      dispatch(setTracks(splicedTracks));
+      dispatch(setAlbumName(`${album.name} – ${artistNames.join(", ")}`));
+      dispatch(
         setSearchResultValues({
           albumResults: null,
           playlistResults: null,
           trackResults: null,
         })
       );
-      const results = await dispatch(handleSearchResultsChange("tracks", splicedTracks));
-
-      return results;
+      dispatch(setHasCurrentSearchResults(true));
     } catch (err) {
+      if (!isLatestTracksRequest(requestId)) return;
+
       console.log(err.message);
       dispatch(setTracks([]));
       dispatch(setSortedTracks([]));
       dispatch(setTracksError(TRACKS_ERROR_MESSAGE));
+      dispatch(setHasCurrentSearchResults(true));
+    } finally {
+      if (isLatestTracksRequest(requestId)) {
+        dispatch(setIsSearching(false));
+      }
     }
   };
 };
@@ -345,12 +358,16 @@ export const sortTracksByAudioFeatures = (): AppThunk => {
         keyOption === "camelot" ? camelotKeySort(tempTracks) : standardKeySort(tempTracks);
     }
 
-    await dispatch(setSortedTracks(tempTracks));
+    dispatch(setSortedTracks(tempTracks));
   };
 };
 
 export const getTracks = (currentPlaylist: Playlist): AppThunk => {
   return async (dispatch) => {
+    const requestId = beginTracksRequest();
+
+    dispatch(setTracks(null));
+    dispatch(setSortedTracks(null));
     dispatch(setTracksError(null));
 
     try {
@@ -368,9 +385,13 @@ export const getTracks = (currentPlaylist: Playlist): AppThunk => {
 
       const splicedTracks = await getTrackAndArtistFeatures(rawTracks);
 
+      if (!isLatestTracksRequest(requestId)) return;
+
       dispatch(setTracks([...splicedTracks]));
       dispatch(setSortedTracks([...splicedTracks]));
     } catch (err) {
+      if (!isLatestTracksRequest(requestId)) return;
+
       console.log(err.message);
       dispatch(setTracks([]));
       dispatch(setSortedTracks([]));
@@ -381,6 +402,9 @@ export const getTracks = (currentPlaylist: Playlist): AppThunk => {
 
 export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
   return async (dispatch, getState) => {
+    const requestId = beginTracksRequest();
+
+    dispatch(setTracks(null));
     dispatch(setSortedTracks(null));
     dispatch(setTracksError(null));
 
@@ -429,9 +453,14 @@ export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
       }, []);
 
       const splicedTracks = await getTrackAndArtistFeatures(filteredRawTracks);
-      await dispatch(setTracks(splicedTracks));
-      await dispatch(setSortedTracks(splicedTracks));
+
+      if (!isLatestTracksRequest(requestId)) return;
+
+      dispatch(setTracks(splicedTracks));
+      dispatch(setSortedTracks(splicedTracks));
     } catch (err) {
+      if (!isLatestTracksRequest(requestId)) return;
+
       console.log(err.message);
       dispatch(setTracks([]));
       dispatch(setSortedTracks([]));
@@ -443,7 +472,7 @@ export const getRecommendedTracks = (recommendedTrack: Track): AppThunk => {
 export const goToRecommendedTrack =
   (history: History, track: Track): AppThunk =>
   async (dispatch) => {
-    await dispatch(resetItemStates());
+    dispatch(resetItemStates());
 
     history.push(`/recommended/?id=${track.id}`, {
       recommendedTrack: track,

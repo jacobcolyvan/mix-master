@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { History } from "history";
 
 import { AppThunk, RootState } from "../app/store";
 import {
@@ -9,7 +8,7 @@ import {
   SeedAttributes,
   TrackSortByChoices,
 } from "../types";
-import { selectSortedTracks, setSortedTracks, setTracks } from "./itemsSlice";
+import { setSortedTracks, setTracks } from "./itemsSlice";
 
 export interface ControlsState {
   matchRecsToSeedTrackKey: boolean;
@@ -224,6 +223,7 @@ export const resetSearchState = (resetSearchQueries = true): AppThunk => {
       })
     );
     dispatch(setAlbumName(null));
+    dispatch(setIsSearching(false));
     dispatch(setSortedTracks(null));
     dispatch(setTracks(null));
 
@@ -236,66 +236,6 @@ export const resetSearchState = (resetSearchQueries = true): AppThunk => {
         playlistSearchQuery: "",
         trackSearchQuery: "",
       })
-    );
-  };
-};
-
-// TODO: delete this
-// Is this actually a thunk?
-export const handleSearchResultsChange = (key, value): AppThunk => {
-  return async (dispatch, getState) => {
-    const searchResultValues = getState().controlsSlice.searchResultValues;
-    const updatedSearchResultValues = { ...searchResultValues, [key]: value };
-
-    await dispatch(setSearchResultValues(updatedSearchResultValues));
-    return updatedSearchResultValues;
-  };
-};
-
-// TODO: this doesn't really work
-export const updateSearchStateFromBrowserState = (history: History): AppThunk => {
-  return (dispatch, _) => {
-    const locationState = history.location?.state as
-      | { currentSearchQueries?: any; searchResultValues?: any }
-      | undefined;
-    const { currentSearchQueries, searchResultValues } = locationState || {};
-    if (!currentSearchQueries || !searchResultValues) {
-      dispatch(resetSearchState());
-      return;
-    }
-
-    const isEmptySearch = history.location.search === "?" || history.location.search === "";
-
-    dispatch(setCurrentSearchQueries(currentSearchQueries));
-
-    if (isEmptySearch) {
-      dispatch(resetSearchState(false));
-    } else {
-      dispatch(setHasCurrentSearchResults(true));
-      dispatch(setTracks(searchResultValues["tracks"]));
-      dispatch(setSearchResultValues(searchResultValues));
-    }
-  };
-};
-
-// TODO: pretty useless (half works)
-export const updateBrowserHistoryThunk = (slug: string, history: History): AppThunk => {
-  return (_, getState) => {
-    const { currentSearchQueries, searchResultValues, hasCurrentSearchResults } =
-      getState().controlsSlice;
-    const tracks = selectSortedTracks(getState());
-
-    history.push(
-      {
-        pathname: "/search",
-        search: `?${slug}`,
-      },
-      {
-        currentSearchQueries: currentSearchQueries,
-        searchResultValues: searchResultValues,
-        currentSearchResults: hasCurrentSearchResults,
-        tracks: tracks,
-      }
     );
   };
 };

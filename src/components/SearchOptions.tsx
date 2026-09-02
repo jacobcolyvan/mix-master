@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/store";
 import SearchBar from "../atoms/SearchBar";
 import { saveSearchQueryChange, selectCurrentSearchQueries } from "../slices/controlsSlice";
-import { getSearchResults } from "../slices/itemsSlice";
+import { buildSearchUrl, searchQueryFromForm } from "../utils/searchRoute";
 
 const PlaylistSearch = ({ getResults, playlistSearchQuery }) => (
   <SearchBar
@@ -50,8 +50,16 @@ const SearchOptions: React.FC = () => {
   const { playlistSearchQuery, albumSearchQuery, trackSearchQuery, artistSearchQuery } =
     currentSearchQueries;
 
-  const dispatchGetSearchResults = async () => {
-    await dispatch(getSearchResults(history));
+  const submitSearch = () => {
+    const query = searchQueryFromForm(currentSearchQueries);
+    const target = query ? buildSearchUrl(query) : "/search";
+    const currentUrl = `${history.location.pathname}${history.location.search}`;
+
+    if (target === currentUrl) {
+      history.replace(target);
+    } else {
+      history.push(target);
+    }
   };
 
   return (
@@ -73,19 +81,13 @@ const SearchOptions: React.FC = () => {
 
       <div className="searchbar__div">
         {currentSearchQueries.searchType === "playlist" && (
-          <PlaylistSearch
-            getResults={dispatchGetSearchResults}
-            playlistSearchQuery={playlistSearchQuery}
-          />
+          <PlaylistSearch getResults={submitSearch} playlistSearchQuery={playlistSearchQuery} />
         )}
         {currentSearchQueries.searchType === "album" && (
           <>
-            <ArtistSearch
-              getResults={dispatchGetSearchResults}
-              artistSearchQuery={artistSearchQuery}
-            />
+            <ArtistSearch getResults={submitSearch} artistSearchQuery={artistSearchQuery} />
             <AlbumSearch
-              getResults={dispatchGetSearchResults}
+              getResults={submitSearch}
               albumSearchQuery={albumSearchQuery}
               artistSearchQuery={artistSearchQuery}
             />
@@ -93,7 +95,7 @@ const SearchOptions: React.FC = () => {
         )}
         {currentSearchQueries.searchType === "track" && (
           <TrackSearch
-            getResults={dispatchGetSearchResults}
+            getResults={submitSearch}
             trackSearchQuery={trackSearchQuery}
             artistSearchQuery={artistSearchQuery}
           />
@@ -104,7 +106,7 @@ const SearchOptions: React.FC = () => {
         <Button
           variant="outlined"
           color="primary"
-          onClick={dispatchGetSearchResults}
+          onClick={submitSearch}
           className="button"
           fullWidth
         >

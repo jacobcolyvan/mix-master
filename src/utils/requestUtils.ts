@@ -1,39 +1,47 @@
 import { spotifyApi } from "../auth";
-import { CurrentSearchQueryOptions, SeedAttributes, Track } from "../types";
+import { SeedAttributes, Track } from "../types";
 import { getKeyInfoArray } from "./commonFunctions";
+import { SearchQuery } from "./searchRoute";
 import { mapWithConcurrency, splitIntoChunks } from "./spotifyFetch";
 
 const AUDIO_FEATURES_REQUEST_LIMIT = 100;
 const ARTISTS_REQUEST_LIMIT = 50;
 const MAX_CONCURRENT_METADATA_GROUPS = 4;
 
-export const createSearchRequestUrl = (currentSearchQueries: CurrentSearchQueryOptions) => {
-  // if all search queries are empty, return null
-  if (!Object.values(currentSearchQueries).some((query) => query.length)) {
-    return null;
+export const createSpotifySearchUrl = (route: SearchQuery): string => {
+  const params = new URLSearchParams({ limit: "50" });
+
+  // Spotify combines field filters in one space-separated `q` parameter.
+  switch (route.kind) {
+    case "track": {
+      const query = [
+        route.track && `track:${route.track}`,
+        route.artist && `artist:${route.artist}`,
+      ]
+        .filter(Boolean)
+        .join(" ");
+      params.set("q", query);
+      params.set("type", "track");
+      break;
+    }
+    case "album": {
+      const query = [
+        route.album && `album:${route.album}`,
+        route.artist && `artist:${route.artist}`,
+      ]
+        .filter(Boolean)
+        .join(" ");
+      params.set("q", query);
+      params.set("type", "album");
+      break;
+    }
+    case "playlist":
+      params.set("q", route.playlist);
+      params.set("type", "playlist");
+      break;
   }
 
-  const baseSearchUrl = "https://api.spotify.com/v1/search?q=";
-  const { searchType, albumSearchQuery, artistSearchQuery, trackSearchQuery, playlistSearchQuery } =
-    currentSearchQueries;
-
-  const encodedAlbumQuery = albumSearchQuery
-    ? `album%3A${encodeURIComponent(albumSearchQuery)}%20`
-    : "";
-  const encodedArtistQuery = artistSearchQuery
-    ? `artist%3A${encodeURIComponent(artistSearchQuery)}%20`
-    : "";
-  const encodedTrackQuery = trackSearchQuery
-    ? `track%3A${encodeURIComponent(trackSearchQuery)}%20`
-    : "";
-
-  if (searchType === "album") {
-    return `${baseSearchUrl}${encodedAlbumQuery}${encodedArtistQuery}&type=album&limit=50`;
-  } else if (searchType === "track") {
-    return `${baseSearchUrl}${encodedTrackQuery}${encodedArtistQuery}&type=track&limit=50`;
-  } else {
-    return `${baseSearchUrl}${encodeURI(playlistSearchQuery)}&type=playlist&limit=50`;
-  }
+  return `search?${params.toString()}`;
 };
 
 export const millisToMinutesAndSeconds = (millis: number) => {

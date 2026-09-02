@@ -1,5 +1,5 @@
 import { History } from "history";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "../app/store";
@@ -7,7 +7,7 @@ import KeySelect from "../atoms/KeySelect";
 import PlaylistDescription from "../atoms/PlaylistDescription";
 import SortBy from "../atoms/SortBy";
 import Tracks from "../components/Tracks";
-import { getTracks } from "../slices/itemsSlice";
+import { getTracks, invalidateTracksRequest } from "../slices/itemsSlice";
 import { selectUsername } from "../slices/settingsSlice";
 import { Playlist as PlaylistType } from "../types";
 
@@ -20,10 +20,15 @@ const Playlist: React.FC = () => {
   const locationState = history.location.state as { playlist?: PlaylistType } | undefined;
   const playlist = locationState?.playlist;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (playlist) {
       dispatch(getTracks(playlist));
     }
+
+    // Ignore a response that finishes after this playlist is superseded or the page unmounts.
+    return () => {
+      dispatch(invalidateTracksRequest());
+    };
   }, [dispatch, playlist]);
 
   return (

@@ -1,5 +1,5 @@
 import { History } from "history";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "../app/store";
@@ -8,7 +8,7 @@ import SortBy from "../atoms/SortBy";
 import CurrentTrackRec from "../components/CurrentTrackRec";
 import RecTweaks from "../components/RecTweaks";
 import Tracks from "../components/Tracks";
-import { getRecommendedTracks } from "../slices/itemsSlice";
+import { getRecommendedTracks, invalidateTracksRequest } from "../slices/itemsSlice";
 import { Track } from "../types";
 
 const RecommendedTracks: React.FC = () => {
@@ -22,10 +22,15 @@ const RecommendedTracks: React.FC = () => {
   const locationState = history.location.state as { recommendedTrack?: Track } | undefined;
   const recommendedTrack = locationState?.recommendedTrack;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (recommendedTrack) {
       dispatch(getRecommendedTracks(recommendedTrack));
     }
+
+    // Ignore a response that finishes after these recommendations are superseded or unmounted.
+    return () => {
+      dispatch(invalidateTracksRequest());
+    };
   }, [dispatch, recommendedTrack, matchRecsToSeedTrackKey, seedAttributes]);
 
   return (

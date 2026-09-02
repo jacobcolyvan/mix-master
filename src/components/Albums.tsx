@@ -1,19 +1,16 @@
-import { History } from "history";
 import { useHistory } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
-import { selectSearchResultValues, updateBrowserHistoryThunk } from "../slices/controlsSlice";
-import { getAlbumTracks } from "../slices/itemsSlice";
+import { useAppSelector } from "../app/store";
+import { selectSearchResultValues } from "../slices/controlsSlice";
 import { Album } from "../types";
+import { buildSearchUrl } from "../utils/searchRoute";
 
 const Albums: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const history: History = useHistory();
+  const history = useHistory();
   const { albumResults } = useAppSelector(selectSearchResultValues);
 
-  const handleOnAlbumClick = async (album: any) => {
-    await dispatch(getAlbumTracks(album));
-    dispatch(updateBrowserHistoryThunk("album-tracks", history));
+  const handleOnAlbumClick = (album: Album) => {
+    history.push(buildSearchUrl({ kind: "albumTracks", albumId: album.id }));
   };
 
   const getAlbumDetailsDisplay = (album: Album) => {

@@ -1,22 +1,36 @@
-import { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useLayoutEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "../app/store";
 import Loading from "../atoms/Loading";
 import SearchOptions from "../components/SearchOptions";
 import SearchResults from "../components/SearchResults";
-import { updateSearchStateFromBrowserState } from "../slices/controlsSlice";
+import { resetSearchState, setCurrentSearchQueries } from "../slices/controlsSlice";
+import { getAlbumTracks, getSearchResults, invalidateTracksRequest } from "../slices/itemsSlice";
+import { parseSearchRoute, searchFormFromQuery } from "../utils/searchRoute";
 
 const Search: React.FC = () => {
   const dispatch = useAppDispatch();
-  const history = useHistory();
+  const location = useLocation();
 
   const { isSearching, hasCurrentSearchResults } = useAppSelector((state) => state.controlsSlice);
 
-  // Refresh state on search re-render
-  useEffect(() => {
-    dispatch(updateSearchStateFromBrowserState(history));
-  }, [history.location.state]);
+  useLayoutEffect(() => {
+    const route = parseSearchRoute(location.search);
+
+    dispatch(resetSearchState());
+
+    if (route?.kind === "albumTracks") {
+      dispatch(getAlbumTracks(route.albumId));
+    } else if (route) {
+      dispatch(setCurrentSearchQueries(searchFormFromQuery(route)));
+      dispatch(getSearchResults(route));
+    }
+
+    return () => {
+      dispatch(invalidateTracksRequest());
+    };
+  }, [dispatch, location.key, location.search]);
 
   return (
     <div>
