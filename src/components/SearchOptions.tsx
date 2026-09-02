@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/store";
 import SearchBar from "../atoms/SearchBar";
 import { saveSearchQueryChange, selectCurrentSearchQueries } from "../slices/controlsSlice";
+import { CurrentSearchQueryOptions } from "../types";
 import { buildSearchUrl, searchQueryFromForm } from "../utils/searchRoute";
 
 const PlaylistSearch = ({ getResults, playlistSearchQuery }) => (
@@ -68,7 +69,7 @@ const SearchOptions: React.FC = () => {
         labelId="Search Type"
         id="search-type"
         value={currentSearchQueries.searchType}
-        onChange={(event: SelectChangeEvent<any>) =>
+        onChange={(event: SelectChangeEvent<CurrentSearchQueryOptions["searchType"]>) =>
           dispatch(saveSearchQueryChange("searchType", event.target.value))
         }
         fullWidth

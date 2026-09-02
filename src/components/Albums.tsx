@@ -24,7 +24,7 @@ const Albums: React.FC = () => {
     return `${artistName} (${releaseYear})`;
   };
 
-  const renderAlbum = (album, index) => {
+  const renderAlbum = (album: Album, index: number) => {
     const cover = album.images.at(-1);
 
     return (

@@ -21,7 +21,7 @@ export const trackFactory = (overrides: Partial<Track> = {}): Track => ({
   loudness: "-10",
   speechiness: "0.1",
   valence: "0.5",
-  parsedKeys: [],
+  parsedKeys: ["", "", ["", "0"]],
   ...overrides,
 });
 

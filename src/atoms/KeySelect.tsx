@@ -2,12 +2,13 @@ import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
 import { selectKeyDisplayOption, setKeyDisplayOption } from "../slices/settingsSlice";
+import { KeyOptionTypes } from "../types";
 
 const KeySelect = () => {
   const dispatch = useDispatch();
   const keyDisplayOption = useSelector(selectKeyDisplayOption);
 
-  const handleKeySettingChange = (event: SelectChangeEvent<any>) => {
+  const handleKeySettingChange = (event: SelectChangeEvent<KeyOptionTypes>) => {
     if (event?.target.value) dispatch(setKeyDisplayOption(event.target.value));
   };
 
