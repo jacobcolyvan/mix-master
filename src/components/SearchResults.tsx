@@ -4,7 +4,7 @@ import KeySelect from "../atoms/KeySelect";
 import PlaylistItems from "../atoms/PlaylistItems";
 import SortBy from "../atoms/SortBy";
 import { selectAlbumName, selectSearchResultValues } from "../slices/controlsSlice";
-import { selectPlaylist, selectTracks } from "../slices/itemsSlice";
+import { selectTracks } from "../slices/itemsSlice";
 import Albums from "./Albums";
 import Tracks from "./Tracks";
 
@@ -34,12 +34,10 @@ const SearchResults = () => {
   const albumName = useSelector(selectAlbumName);
   const searchResultValues = useSelector(selectSearchResultValues);
   const tracks = useSelector(selectTracks);
-  const playlist = useSelector(selectPlaylist);
 
-  // TODO: this feels a little convoluted
   const { albumResults, trackResults, playlistResults } = searchResultValues;
   const hasAlbumResults = albumResults && !trackResults;
-  const hasTrackResults = !playlist && !playlistResults && tracks;
+  const hasTrackResults = !playlistResults && tracks;
 
   return (
     <div>

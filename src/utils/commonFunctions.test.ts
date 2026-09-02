@@ -1,37 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import type { Track } from "../types";
 import {
   camelotKeySort,
   getArtistNames,
   getKeyInfoArray,
   standardKeySort,
 } from "./commonFunctions";
-
-const trackFactory = (overrides: Partial<Track> = {}): Track => ({
-  id: "default-track",
-  name: "Default Track",
-  album: "Default Album",
-  artists: ["Default Artist"],
-  artist_genres: ["default genre"],
-  release_date: "2020-01-01",
-  analysis_url: "https://example.com/audio-analysis/default-track",
-  track_popularity: "50",
-  mode: "1",
-  key: "0",
-  tempo: "120",
-  duration: "180000",
-  energy: "0.5",
-  danceability: "0.5",
-  acousticness: "0.5",
-  instrumentalness: "0.5",
-  liveness: "0.5",
-  loudness: "-10",
-  speechiness: "0.1",
-  valence: "0.5",
-  parsedKeys: [],
-  ...overrides,
-});
+import { trackFactory } from "./testFixtures";
 
 describe("getArtistNames", () => {
   it("returns the artist name when there is one artist", () => {

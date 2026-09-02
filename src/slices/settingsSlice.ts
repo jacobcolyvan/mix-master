@@ -58,7 +58,7 @@ export const selectUsername = (state: RootState): string => {
   return state?.settingsSlice.username;
 };
 
-export const selectKeyDisplayOption = (state: RootState): string => {
+export const selectKeyDisplayOption = (state: RootState): KeyOptionTypes => {
   return state?.settingsSlice.keyDisplayOption;
 };
 

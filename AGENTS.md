@@ -11,13 +11,16 @@ Package manager is **pnpm** (enforced via `preinstall: only-allow pnpm`); Node 2
 - `pnpm dev` / `pnpm start` — Vite dev server on **port 3000** (auto-opens browser)
 - `pnpm build` — production build to `build/` (not `dist/`)
 - `pnpm preview` — serve the production build
-- `pnpm check` — run lint + prettier + tsc together (the canonical pre-commit gate)
+- `pnpm check` — lint + prettier + tsc.
+- `pnpm test` — `vitest run`. Does not lint or type-check.
 - `pnpm fix` — auto-fix lint + format
 - `pnpm lint:check` / `pnpm lint:fix` — ESLint only
 - `pnpm format:check` / `pnpm format:fix` — Prettier only
 - `pnpm ts:check` — `tsc --noEmit` type-check only
 
-There is **no test runner configured** — no `test` script, no test files. Don't assume Jest/Vitest is available.
+The pre-commit gate is **both** `pnpm check` and `pnpm test` — neither covers the other.
+
+Tests run on **Vitest**. Test files live beside the code they cover as `*.test.ts`, currently all under `src/utils/`. There is no jsdom or component-testing setup — these are plain unit tests of pure functions.
 
 ## Environment variables
 
@@ -57,10 +60,10 @@ The script symlinks shared local-only paths from the main worktree (`.zed/`, `.d
 State management is the spine of the app. All async Spotify work lives in **thunks at the bottom of each slice file**, not in components. Components dispatch thunks and read via typed selectors (`useAppSelector`/`useAppDispatch` from `src/app/store.ts`).
 
 - **`settingsSlice`** — mirrors auth token/user/key-display. Holds `spotifyToken`, `username`, `keyDisplayOption` (`"camelot"` | standard), and `sessionReady` (bootstrap finished). Token source of truth is `src/auth/`; Redux is updated via `subscribe()` in `index.tsx`.
-- **`itemsSlice`** — all Spotify media objects (playlists, albums, tracks, recommendation seed). This is where the heavy data-fetching thunks live: `getUserPlaylists`, `getTracks`, `getAlbumTracks`, `getSearchResults`, `getRecommendedTracks`, plus `sortTracksByAudioFeatures`. Note the dual `tracks` + `sortedTracks` pattern: `tracks` is the canonical fetch result, `sortedTracks` is the display copy that sort operations mutate.
+- **`itemsSlice`** — async Spotify data only: `userPlaylists`, `tracks`, `tracksError`. This is where the heavy data-fetching thunks live: `getUserPlaylists`, `getTracks`, `getAlbumTracks`, `getSearchResults`, `getRecommendedTracks`. Each `Track[]` here is the canonical fetch result and is never re-ordered in place — display ordering is derived in the component (see "Derived state" below). Also holds the navigation thunks (`goToRecommendedTrack`, `pushPlaylistToHistory`, `goToPlaylist`), the stale-response guard `invalidateTracksRequest`, and `resetItemStates`.
 - **`controlsSlice`** — UI filter/search controls: current search queries, search results, `seedAttributes` (recommendation tuning), `sortTracksBy`, `matchRecsToSeedTrackKey`. Several thunks here are marked `// TODO: delete this` / "half works" (browser-history sync) — they are known-flaky; don't rely on them.
 
-Cross-slice imports between `itemsSlice` and `controlsSlice` are normal here and intentionally circular-ish — both reference each other's actions/selectors. `itemsSlice` may also import `settingsSlice` one-way (e.g. `selectKeyDisplayOption`, `getUsername` for playlist owner sort); `settingsSlice` does not import `itemsSlice`.
+Cross-slice imports between `itemsSlice` and `controlsSlice` are normal here and intentionally circular-ish — `itemsSlice` dispatches `controlsSlice`'s search/loading setters, and `controlsSlice`'s `resetSearchState` dispatches `setTracks`. `itemsSlice` no longer imports `settingsSlice` at all: key display and username are read where they are used, not inside thunks. `settingsSlice` imports neither of the others.
 
 ### Auth flow (Authorization Code + PKCE, client-side)
 

@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { useAppDispatch, useAppSelector } from "../app/store";
 import Loading from "../atoms/Loading";
 import PlaylistItems from "../atoms/PlaylistItems";
 import { getUserPlaylists } from "../slices/itemsSlice";
+import { selectUsername } from "../slices/settingsSlice";
+import { groupPlaylists } from "../utils/collectionTransforms";
 
 const CreatedPlaylists = ({ createdPlaylists }) => {
   return (
@@ -49,10 +51,18 @@ const GeneratedPlaylists = ({ generatedPlaylists }) => {
 
 const UserPlaylists: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { sortedPlaylists } = useAppSelector((state) => state.itemsSlice);
+  const userPlaylists = useAppSelector((state) => state.itemsSlice.userPlaylists);
+  const username = useAppSelector(selectUsername);
+
   useEffect(() => {
     dispatch(getUserPlaylists());
   }, []);
+
+  // Null until the fetch lands, which is what drives the Loading gate below.
+  const sortedPlaylists = useMemo(
+    () => (userPlaylists ? groupPlaylists(userPlaylists, username) : null),
+    [userPlaylists, username]
+  );
 
   return sortedPlaylists ? (
     <div>

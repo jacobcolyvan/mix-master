@@ -8,7 +8,7 @@ import {
   SeedAttributes,
   TrackSortByChoices,
 } from "../types";
-import { setSortedTracks, setTracks } from "./itemsSlice";
+import { setTracks } from "./itemsSlice";
 
 export interface ControlsState {
   matchRecsToSeedTrackKey: boolean;
@@ -224,7 +224,6 @@ export const resetSearchState = (resetSearchQueries = true): AppThunk => {
     );
     dispatch(setAlbumName(null));
     dispatch(setIsSearching(false));
-    dispatch(setSortedTracks(null));
     dispatch(setTracks(null));
 
     if (!resetSearchQueries) return;

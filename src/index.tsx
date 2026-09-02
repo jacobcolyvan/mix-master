@@ -9,7 +9,7 @@ import { Provider } from "react-redux";
 import App from "./App";
 import { store } from "./app/store";
 import { bootstrap, subscribe } from "./auth";
-import { setSessionReady, setSpotifyToken, setUsername } from "./slices/settingsSlice";
+import { getUsername, setSessionReady, setSpotifyToken, setUsername } from "./slices/settingsSlice";
 
 const theme = createTheme({
   palette: {
@@ -31,8 +31,19 @@ const theme = createTheme({
 // re-render on login/logout), then run bootstrap once at module load.
 subscribe((token) => {
   store.dispatch(setSpotifyToken(token));
+
   // clear username on logout (UI concern)
-  if (!token) store.dispatch(setUsername(""));
+  if (!token) {
+    store.dispatch(setUsername(""));
+    return;
+  }
+
+  // Fetch the profile once per session. This listener also fires on silent
+  // token refreshes, and the username never changes within a session, so guard
+  // on it being empty rather than refetching every refresh.
+  if (!store.getState().settingsSlice.username) {
+    store.dispatch(getUsername());
+  }
 });
 bootstrap().finally(() => store.dispatch(setSessionReady(true)));
 
