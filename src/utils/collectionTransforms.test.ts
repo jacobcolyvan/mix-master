@@ -188,37 +188,23 @@ const theirs = (id: string, name: string) =>
   playlistFactory({ id, name, owner: { display_name: "DJ You" } });
 
 describe("groupPlaylists", () => {
-  it("splits a mixed list across all three buckets, preserving input order within each", () => {
+  it("splits a mixed list by ownership, preserving input order within each bucket", () => {
     const result = groupPlaylists(
       [
-        owned("1", "gena One"),
-        owned("2", "Mine One"),
-        theirs("3", "Theirs One"),
-        owned("4", "Mine Two"),
-        theirs("5", "gena Two"),
+        owned("1", "Mine One"),
+        theirs("2", "Theirs One"),
+        owned("3", "Mine Two"),
+        theirs("4", "Theirs Two"),
       ],
       "DJ Me"
     );
 
-    // The "gena" prefix is checked BEFORE ownership, so a generated playlist you
-    // own lands in `generated`, not `created` — and one you follow lands there too.
-    expect(playlistNames(result.generated)).toEqual(["gena One", "gena Two"]);
     expect(playlistNames(result.created)).toEqual(["Mine One", "Mine Two"]);
-    expect(playlistNames(result.followed)).toEqual(["Theirs One"]);
+    expect(playlistNames(result.followed)).toEqual(["Theirs One", "Theirs Two"]);
   });
 
-  it("matches the generated prefix on exactly four case-sensitive characters", () => {
-    const result = groupPlaylists(
-      [owned("a", "Gena Uppercase"), owned("b", "gen"), owned("c", "genb Nearly")],
-      "DJ Me"
-    );
-
-    expect(result.generated).toEqual([]);
-    expect(playlistNames(result.created)).toEqual(["Gena Uppercase", "gen", "genb Nearly"]);
-  });
-
-  it("returns three empty buckets for an empty list", () => {
-    expect(groupPlaylists([], "DJ Me")).toEqual({ created: [], followed: [], generated: [] });
+  it("returns two empty buckets for an empty list", () => {
+    expect(groupPlaylists([], "DJ Me")).toEqual({ created: [], followed: [] });
   });
 
   it("does not mutate its input and returns a fresh object each call", () => {

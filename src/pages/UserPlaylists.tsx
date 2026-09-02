@@ -35,20 +35,6 @@ const FollowedPlaylists = ({ followedPlaylists }) => {
   );
 };
 
-const GeneratedPlaylists = ({ generatedPlaylists }) => {
-  return (
-    <>
-      {generatedPlaylists.length > 0 && (
-        <div className="playlist-list__header" id="generated-playlists">
-          <h3>Generated</h3>
-        </div>
-      )}
-      <PlaylistItems playlistsToRender={generatedPlaylists} />
-      <br />
-    </>
-  );
-};
-
 const UserPlaylists: React.FC = () => {
   const dispatch = useAppDispatch();
   const userPlaylists = useAppSelector((state) => state.itemsSlice.userPlaylists);
@@ -90,7 +76,6 @@ const UserPlaylists: React.FC = () => {
         <div>
           <CreatedPlaylists createdPlaylists={sortedPlaylists.created} />
           <FollowedPlaylists followedPlaylists={sortedPlaylists.followed} />
-          <GeneratedPlaylists generatedPlaylists={sortedPlaylists.generated} />
         </div>
       )}
     </div>

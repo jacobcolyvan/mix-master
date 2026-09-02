@@ -51,23 +51,17 @@ export const sortTracks = (
 };
 
 /**
- * Buckets a user's playlists into the three groups the Playlists page renders.
- *
- * The "gena" prefix marks playlists this app generated, and is checked before
- * ownership so a generated playlist you own lands in `generated`, not `created`.
+ * Buckets a user's playlists by ownership into the groups the Playlists page renders.
  * Pure: the input is never mutated and a fresh object is always returned.
  */
 export const groupPlaylists = (playlists: Playlist[], username: string): SortedPlaylists => {
   const tempSortedPlaylists: SortedPlaylists = {
     created: [],
     followed: [],
-    generated: [],
   };
 
   playlists.forEach((playlist: Playlist) => {
-    if (playlist.name.slice(0, 4) === "gena") {
-      tempSortedPlaylists.generated.push(playlist);
-    } else if (playlist.owner.display_name === username) {
+    if (playlist.owner.display_name === username) {
       tempSortedPlaylists.created.push(playlist);
     } else {
       tempSortedPlaylists.followed.push(playlist);

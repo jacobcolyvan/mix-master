@@ -49,7 +49,6 @@ export type Playlist = {
 export type SortedPlaylists = {
   created: Playlist[];
   followed: Playlist[];
-  generated: Playlist[];
 };
 
 // TODO: make this more strict
