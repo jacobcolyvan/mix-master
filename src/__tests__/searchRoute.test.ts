@@ -7,7 +7,7 @@ import {
   searchFormFromQuery,
   searchQueryFromForm,
   type SearchRoute,
-} from "./searchRoute";
+} from "../utils/searchRoute";
 
 const searchQueriesFactory = (
   overrides: Partial<CurrentSearchQueryOptions> = {}

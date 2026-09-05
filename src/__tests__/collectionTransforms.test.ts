@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import type { KeyOptionTypes, Playlist, Track, TrackSortByChoices } from "../types";
-import { groupPlaylists, sortTracks } from "./collectionTransforms";
-import { playlistFactory, trackFactory } from "./testFixtures";
+import { groupPlaylists, sortTracks } from "../utils/collectionTransforms";
+import { playlistFactory, trackFactory } from "../utils/testFixtures";
 
 const names = (tracks: Track[]) => tracks.map((track) => track.name);
 
