@@ -1,5 +1,6 @@
 import { Button } from "@mui/material";
 
+import { usePageTitle } from "../app/usePageTitle";
 import InfoAfterword from "../atoms/info/InfoAfterword";
 import InfoCamelot from "../atoms/info/InfoCamelot";
 import InfoExtra from "../atoms/info/InfoExtra";
@@ -7,6 +8,7 @@ import InfoGeneral from "../atoms/info/InfoOverview";
 import { logout, refresh } from "../auth";
 
 const About = () => {
+  usePageTitle("About");
   return (
     <div className="about-page__div">
       <InfoGeneral />

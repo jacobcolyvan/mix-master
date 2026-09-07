@@ -2,6 +2,7 @@ import { Alert } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
 import { useAppSelector } from "../app/store";
+import { usePageTitle } from "../app/usePageTitle";
 import KeySelect from "../atoms/KeySelect";
 import Loading from "../atoms/Loading";
 import Offline from "../atoms/Offline";
@@ -12,6 +13,7 @@ import Tracks from "../components/Tracks";
 import { useRecommendedTracks, useSeedTrack } from "../queries/trackQueries";
 
 const RecommendedTracks: React.FC = () => {
+  usePageTitle("Recommendations");
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
 

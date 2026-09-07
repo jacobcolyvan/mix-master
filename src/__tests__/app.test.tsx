@@ -22,6 +22,7 @@ vi.mock("../auth", async (importOriginal) => ({
 beforeEach(() => {
   vi.mocked(isSignedIn).mockReturnValue(true);
   vi.mocked(logout).mockClear();
+  document.title = "Mix Master";
   window.history.replaceState(null, "", "/");
 });
 
@@ -59,6 +60,7 @@ it("keeps navigation visible while startup and the profile gate page content", a
   expect(screen.getByText("Search")).toBeTruthy();
   expect(screen.getByRole("progressbar").closest(".main-content__div")).not.toBeNull();
   expect(requests).toEqual([]);
+  expect(document.title).toBe("Mix Master");
 
   // Once startup finishes, wait for the profile before showing the page.
   await act(async () => startupReady.resolve());
@@ -68,10 +70,13 @@ it("keeps navigation visible while startup and the profile gate page content", a
   expect(screen.getByRole("progressbar").closest(".main-content__div")).not.toBeNull();
   expect(screen.queryByRole("heading", { name: "This is a website to:" })).toBeNull();
 
+  expect(document.title).toBe("Mix Master");
+
   // A usable profile allows the page to render.
   profileResponse.resolve({ display_name: "Night DJ" });
 
   expect(await screen.findByRole("heading", { name: "This is a website to:" })).toBeTruthy();
+  expect(document.title).toBe("About | Mix Master");
 });
 
 it("blocks About on profile failure while leaving navigation and logout accessible", async () => {

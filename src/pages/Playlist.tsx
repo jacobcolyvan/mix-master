@@ -1,6 +1,7 @@
 import { Alert } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
+import { usePageTitle } from "../app/usePageTitle";
 import KeySelect from "../atoms/KeySelect";
 import PlaylistDescription from "../atoms/PlaylistDescription";
 import SortBy from "../atoms/SortBy";
@@ -16,6 +17,7 @@ const Playlist = ({ username }: { username: string }) => {
   const tracksQuery = usePlaylistTracks(id, playlistQuery.data?.snapshot_id);
 
   const playlist = playlistQuery.data;
+  usePageTitle(playlist?.name || "Playlist");
   const ownerName = playlist?.owner.display_name;
   const showOwnerAttribution = Boolean(ownerName) && ownerName !== username;
 
