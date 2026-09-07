@@ -1,11 +1,11 @@
 import { Alert } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
-import { usePageTitle } from "../app/usePageTitle";
 import KeySelect from "../atoms/KeySelect";
 import PlaylistDescription from "../atoms/PlaylistDescription";
 import SortBy from "../atoms/SortBy";
 import Tracks from "../components/Tracks";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useViewSorting } from "../hooks/useViewSorting";
 import { usePlaylist, usePlaylistTracks } from "../queries/playlistQueries";
 

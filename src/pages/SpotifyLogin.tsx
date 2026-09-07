@@ -1,8 +1,8 @@
 import { Alert, Button } from "@mui/material";
 
-import { usePageTitle } from "../app/usePageTitle";
 import InfoOverview from "../atoms/info/InfoOverview";
 import { getLogoutMessage, login } from "../auth";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const SpotifyLogin = () => {
   usePageTitle();

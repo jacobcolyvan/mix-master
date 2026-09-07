@@ -2,10 +2,10 @@ import { Alert, Button, Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 
-import { useSignedIn } from "./app/useSignedIn";
 import Loading from "./atoms/Loading";
 import Navbar from "./atoms/Navbar";
 import { logout } from "./auth";
+import { useSignedIn } from "./hooks/useSignedIn";
 import About from "./pages/About";
 import Playlist from "./pages/Playlist";
 import RecommendedTracks from "./pages/RecommendedTracks";

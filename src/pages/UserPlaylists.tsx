@@ -1,10 +1,10 @@
 import { Alert } from "@mui/material";
 import { useMemo } from "react";
 
-import { usePageTitle } from "../app/usePageTitle";
 import Loading from "../atoms/Loading";
 import Offline from "../atoms/Offline";
 import PlaylistItems from "../atoms/PlaylistItems";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useUserPlaylists } from "../queries/playlistQueries";
 import { groupPlaylists } from "../utils/collectionTransforms";
 

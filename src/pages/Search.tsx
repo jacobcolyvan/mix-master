@@ -2,9 +2,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
-import { usePageTitle } from "../app/usePageTitle";
 import SearchOptions from "../components/SearchOptions";
 import SearchResults from "../components/SearchResults";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { searchQueryOptions } from "../queries/searchQueries";
 import {
   buildSearchUrl,

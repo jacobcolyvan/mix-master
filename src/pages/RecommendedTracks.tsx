@@ -1,7 +1,6 @@
 import { Alert } from "@mui/material";
 import { useHistory, useLocation } from "react-router-dom";
 
-import { usePageTitle } from "../app/usePageTitle";
 import KeySelect from "../atoms/KeySelect";
 import Loading from "../atoms/Loading";
 import Offline from "../atoms/Offline";
@@ -9,6 +8,7 @@ import SortBy from "../atoms/SortBy";
 import CurrentTrackRec from "../components/CurrentTrackRec";
 import RecTweaks from "../components/RecTweaks";
 import Tracks from "../components/Tracks";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useRecommendationTuning } from "../hooks/useRecommendationTuning";
 import { useRecommendedTracks, useSeedTrack } from "../queries/trackQueries";
 import { TrackSortByChoices } from "../types";

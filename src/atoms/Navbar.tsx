@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { useSignedIn } from "../app/useSignedIn";
+import { useSignedIn } from "../hooks/useSignedIn";
 
 interface NavButtonProps {
   activeNavItem: string;
