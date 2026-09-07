@@ -17,7 +17,7 @@ it("saves tuning and sorting in a link and restores them", () => {
   const search = serialiseRecommendationSearch(
     "seed & one",
     { attributes, matchKey: true },
-    "tempoThenKey"
+    { sort: "tempoThenKey", keyNotation: "standard" }
   );
   const restored = parseRecommendationSearch(search);
 
@@ -28,11 +28,13 @@ it("saves tuning and sorting in a link and restores them", () => {
     energy: "max:0.72",
     genre: "house",
     sort: "tempoThenKey",
+    keyNotation: "standard",
   });
   expect(restored.id).toBe("seed & one");
   expect(restored.applied.attributes.tempo).toEqual({ value: "126", maxOrMinFilter: "min" });
   expect(restored.applied.matchKey).toBe(true);
   expect(restored.sort).toBe("tempoThenKey");
+  expect(restored.keyNotation).toBe("standard");
   expect(
     serialiseRecommendationSearch("fresh", {
       attributes: emptyRecommendationAttributes(),

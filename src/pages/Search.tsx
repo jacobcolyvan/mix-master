@@ -36,7 +36,11 @@ const Search: React.FC = () => {
       client.fetchQuery(searchQueryOptions(query)).catch(() => {
         // SearchResults displays the query error; only handle the rejected promise here.
       });
-    } else if (target !== `${location.pathname}${location.search}`) {
+      const params = new URLSearchParams(location.search);
+      // Keep identical submissions in place unless view options need resetting.
+      if (!params.has("sort") && !params.has("keyNotation")) return;
+    }
+    if (target !== `${location.pathname}${location.search}`) {
       history.push(target);
     }
   };

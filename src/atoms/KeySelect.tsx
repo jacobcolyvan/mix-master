@@ -1,32 +1,26 @@
-import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
 
-import { selectKeyDisplayOption, setKeyDisplayOption } from "../slices/settingsSlice";
 import { KeyOptionTypes } from "../types";
 
-const KeySelect = () => {
-  const dispatch = useDispatch();
-  const keyDisplayOption = useSelector(selectKeyDisplayOption);
-
-  const handleKeySettingChange = (event: SelectChangeEvent<KeyOptionTypes>) => {
-    if (event?.target.value) dispatch(setKeyDisplayOption(event.target.value));
-  };
-
-  return (
-    <div className="key-select__div">
-      <Select
-        labelId="Key Select"
-        id="key-select"
-        value={keyDisplayOption}
-        onChange={handleKeySettingChange}
-        fullWidth
-        variant="outlined"
-      >
-        <MenuItem value={"camelot"}>Camelot Key</MenuItem>
-        <MenuItem value={"standard"}>Standard Key</MenuItem>
-      </Select>
-    </div>
-  );
+type KeySelectProps = {
+  value: KeyOptionTypes;
+  onChange: (value: KeyOptionTypes) => void;
 };
+
+const KeySelect = ({ value, onChange }: KeySelectProps) => (
+  <div className="key-select__div">
+    <Select
+      inputProps={{ "aria-label": "Key notation" }}
+      id="key-select"
+      value={value}
+      onChange={(event) => onChange(event.target.value as KeyOptionTypes)}
+      fullWidth
+      variant="outlined"
+    >
+      <MenuItem value="camelot">Camelot Key</MenuItem>
+      <MenuItem value="standard">Standard Key</MenuItem>
+    </Select>
+  </div>
+);
 
 export default KeySelect;

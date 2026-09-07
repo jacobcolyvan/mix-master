@@ -1,5 +1,4 @@
 import { Alert } from "@mui/material";
-import { useHistory, useLocation } from "react-router-dom";
 
 import KeySelect from "../atoms/KeySelect";
 import Loading from "../atoms/Loading";
@@ -10,12 +9,9 @@ import RecTweaks from "../components/RecTweaks";
 import Tracks from "../components/Tracks";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { useRecommendationTuning } from "../hooks/useRecommendationTuning";
+import { useViewOptions } from "../hooks/useViewOptions";
 import { useRecommendedTracks, useSeedTrack } from "../queries/trackQueries";
-import { TrackSortByChoices } from "../types";
-import {
-  serialiseRecommendationSearch,
-  setRecommendationSort,
-} from "../utils/recommendationTuning";
+import { serialiseRecommendationSearch } from "../utils/recommendationTuning";
 
 // Pending edits use Apply; unchanged tuning refreshes or retries the applied request.
 const getRecommendationActionLabel = (hasPendingEdits: boolean, hasRequestError: boolean) => {
@@ -26,8 +22,7 @@ const getRecommendationActionLabel = (hasPendingEdits: boolean, hasRequestError:
 
 const RecommendedTracks: React.FC = () => {
   usePageTitle("Recommendations");
-  const history = useHistory();
-  const location = useLocation();
+  const { sort, setSort, keyNotation, setKeyNotation } = useViewOptions();
   const tuning = useRecommendationTuning();
   const { id } = tuning;
 
@@ -67,20 +62,15 @@ const RecommendedTracks: React.FC = () => {
     else recommendationsQuery.refetch();
   };
 
-  // Sorting is ordinary navigation: replace this entry and discard unfinished edits.
-  const changeSort = (sort: TrackSortByChoices) => {
-    history.replace({ ...location, search: setRecommendationSort(location.search, sort) });
-  };
-
   // Carry applied tuning to the next seed, never unfinished edits.
   const recommendationLink = (seedId: string) =>
-    `/recommended/${serialiseRecommendationSearch(seedId, tuning.applied, tuning.sort)}`;
+    `/recommended/${serialiseRecommendationSearch(seedId, tuning.applied, { sort, keyNotation })}`;
 
   return (
     <div>
       <h2 className="recommended-page-title">Recommended Tracks</h2>
-      <KeySelect />
-      <SortBy value={tuning.sort} onChange={changeSort} />
+      <KeySelect value={keyNotation} onChange={setKeyNotation} />
+      <SortBy value={sort} onChange={setSort} />
 
       <RecTweaks
         value={tuning.draft}
@@ -98,9 +88,10 @@ const RecommendedTracks: React.FC = () => {
         </Alert>
       )}
       <br />
-      <CurrentTrackRec track={seedTrack} />
+      <CurrentTrackRec track={seedTrack} keyNotation={keyNotation} />
       <Tracks
-        sortOption={tuning.sort}
+        sortOption={sort}
+        keyNotation={keyNotation}
         recommendationLink={recommendationLink}
         tracks={recommendationsQuery.data ?? null}
         isPending={recommendationsQuery.isPending}

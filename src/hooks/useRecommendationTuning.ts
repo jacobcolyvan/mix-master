@@ -9,6 +9,7 @@ import {
   serialiseRecommendationSearch,
   validateRecommendationTuning,
 } from "../utils/recommendationTuning";
+import { changesOnlyViewOptions } from "../utils/viewOptions";
 
 export const useRecommendationTuning = () => {
   const history = useHistory();
@@ -16,10 +17,12 @@ export const useRecommendationTuning = () => {
   const appliedView = parseRecommendationSearch(location.search);
   const [draftState, setDraftState] = useState({ location, draft: appliedView.applied });
 
-  // Navigation discards unfinished edits, even if the destination has the same tuning.
+  // Only presentation replacements preserve edits; PUSH and POP always discard them.
   let draft = draftState.draft;
   if (draftState.location !== location) {
-    draft = appliedView.applied;
+    if (history.action !== "REPLACE" || !changesOnlyViewOptions(draftState.location, location)) {
+      draft = appliedView.applied;
+    }
     setDraftState({ location, draft });
   }
 
@@ -50,7 +53,7 @@ export const useRecommendationTuning = () => {
     if (!valid || !changed) return;
     history.push({
       ...location,
-      search: serialiseRecommendationSearch(appliedView.id, validatedDraft, appliedView.sort),
+      search: serialiseRecommendationSearch(appliedView.id, validatedDraft, appliedView),
     });
   };
 

@@ -5,7 +5,7 @@ import Loading from "../atoms/Loading";
 import Offline from "../atoms/Offline";
 import PlaylistItems from "../atoms/PlaylistItems";
 import SortBy from "../atoms/SortBy";
-import { useViewSorting } from "../hooks/useViewSorting";
+import { useViewOptions } from "../hooks/useViewOptions";
 import { useAlbumTracks, useSearchResults } from "../queries/searchQueries";
 import { Track } from "../types";
 import { SearchRoute } from "../utils/searchRoute";
@@ -27,7 +27,7 @@ const TrackResults: React.FC<TrackResultsProps> = ({
   isPaused,
   error,
 }) => {
-  const { sort, setSort } = useViewSorting();
+  const { sort, setSort, keyNotation, setKeyNotation } = useViewOptions();
   return (
     <>
       {albumName ? (
@@ -35,12 +35,13 @@ const TrackResults: React.FC<TrackResultsProps> = ({
       ) : (
         <h3 className="results-page-title">Track Results</h3>
       )}
-      <KeySelect />
+      <KeySelect value={keyNotation} onChange={setKeyNotation} />
       <br />
       <SortBy value={sort} onChange={setSort} />
       <br />
       <Tracks
         sortOption={sort}
+        keyNotation={keyNotation}
         tracks={tracks}
         isPending={isPending}
         isPaused={isPaused}

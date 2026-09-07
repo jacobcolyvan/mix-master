@@ -5,10 +5,8 @@ import "./stylesheets/components.scss";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
 
 import App from "./App";
-import { store } from "./app/store";
 import { bootstrap, logout, subscribe } from "./auth";
 import { startCacheLifecycle } from "./queries/cacheLifecycle";
 import { createCachePersister } from "./queries/persister";
@@ -47,11 +45,9 @@ const root = createRoot(container!);
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App ready={cacheLifecycle.ready} />
-      </ThemeProvider>
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App ready={cacheLifecycle.ready} />
+    </ThemeProvider>
   </QueryClientProvider>
 );

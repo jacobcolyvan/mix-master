@@ -1,17 +1,13 @@
-import { useSelector } from "react-redux";
-
 import TrackTooltip from "../atoms/TrackTooltip";
-import { selectKeyDisplayOption } from "../slices/settingsSlice";
-import { Track } from "../types";
+import { KeyOptionTypes, Track } from "../types";
 import { getArtistNames } from "../utils/commonFunctions";
 
 type CurrentTrackRecProps = {
   track: Track;
+  keyNotation: KeyOptionTypes;
 };
 
-const CurrentTrackRec: React.FC<CurrentTrackRecProps> = ({ track }) => {
-  const keyOption = useSelector(selectKeyDisplayOption);
-
+const CurrentTrackRec: React.FC<CurrentTrackRecProps> = ({ track, keyNotation }) => {
   const handleOnTrackClick = () => {
     navigator.clipboard.writeText(`${track.name} ${track.artists[0]}`);
   };
@@ -39,7 +35,7 @@ const CurrentTrackRec: React.FC<CurrentTrackRecProps> = ({ track }) => {
               <TrackTooltip track={track} />
             </td>
             <td className="table-data__attributes key-data">
-              {keyOption === "camelot" ? track.parsedKeys[0] : track.parsedKeys[1]}
+              {keyNotation === "camelot" ? track.parsedKeys[0] : track.parsedKeys[1]}
             </td>
             <td className="table-data__attributes table-data__attributes-energy">{track.energy}</td>
             <td className="table-data__attributes">{track.tempo}</td>

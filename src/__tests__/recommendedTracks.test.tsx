@@ -44,6 +44,47 @@ it("lets you edit while loading and apply when loading finishes", async () => {
   expect(requests[1]).toContain("min_tempo=126");
 });
 
+it("selector replacements preserve drafts, update seed notation and do not fetch", async () => {
+  const requests = mockSpotify(() => ({ tracks: [] }));
+  const { client } = createQueryTestContext();
+  client.setQueryData(
+    seedTrackKey("seed"),
+    trackFactory({ id: "seed", parsedKeys: ["8B", "C", ["9", "0"]] })
+  );
+  const { history, user } = renderWithProviders(<RecommendedTracks />, {
+    client,
+    path: "/recommended/?id=seed",
+  });
+  await screen.findByRole("button", { name: "Refresh recommendations" });
+  fireEvent.change(screen.getByRole("textbox", { name: /target tempo/ }), {
+    target: { value: "invalid" },
+  });
+
+  await user.click(screen.getByRole("combobox", { name: "Sort by" }));
+  await user.click(screen.getByRole("option", { name: "Sort by Tempo" }));
+  await user.click(screen.getByRole("combobox", { name: "Key notation" }));
+  await user.click(screen.getByRole("option", { name: "Standard Key" }));
+
+  expect((screen.getByRole("textbox", { name: /target tempo/ }) as HTMLInputElement).value).toBe(
+    "invalid"
+  );
+  expect(screen.getByText("Invalid range value")).toBeTruthy();
+  expect(screen.getByRole("cell", { name: "C" })).toBeTruthy();
+  expect(requests).toHaveLength(1);
+  expect(history.length).toBe(1);
+  fireEvent.change(screen.getByRole("textbox", { name: /target tempo/ }), {
+    target: { value: "126" },
+  });
+  await user.click(screen.getByRole("button", { name: "Apply changes" }));
+  await waitFor(() => expect(requests).toHaveLength(2));
+  expect(Object.fromEntries(new URLSearchParams(history.location.search))).toEqual({
+    id: "seed",
+    tempo: "target:126",
+    sort: "tempo",
+    keyNotation: "standard",
+  });
+});
+
 it("Reset clears invalid inputs but keeps key matching without fetching", async () => {
   const requests = mockSpotify(() => ({ tracks: [] }));
   const { client } = createQueryTestContext();
@@ -100,7 +141,7 @@ it("Retry repeats the failed request without changing the URL or history", async
   expect(history.length).toBe(1);
 });
 
-it("choosing another seed keeps saved tuning and sorting, not unfinished edits", async () => {
+it("choosing another seed keeps saved tuning and both view options, not unfinished edits", async () => {
   mockSpotify((url) => {
     if (url.pathname === "/v1/recommendations") return { tracks: [rawTrack({ id: "next" })] };
     if (url.pathname === "/v1/audio-features/") return { audio_features: [audioFeatures()] };
@@ -112,19 +153,20 @@ it("choosing another seed keeps saved tuning and sorting, not unfinished edits",
   client.setQueryData(seedTrackKey("next"), trackFactory({ id: "next" }));
   const { history, user } = renderWithProviders(<RecommendedTracks />, {
     client,
-    path: "/recommended/?id=seed&tempo=min:120&sort=tempo",
+    path: "/recommended/?id=seed&tempo=min:120&sort=tempo&keyNotation=standard",
   });
-  await screen.findByRole("cell", { name: "8B" });
+  await screen.findByRole("cell", { name: "C" });
 
   fireEvent.change(screen.getByRole("textbox", { name: /min tempo/ }), {
     target: { value: "unfinished" },
   });
-  await user.click(screen.getByRole("cell", { name: "8B" }));
+  await user.click(screen.getByRole("cell", { name: "C" }));
 
   expect(Object.fromEntries(new URLSearchParams(history.location.search))).toEqual({
     id: "next",
     tempo: "min:120",
     sort: "tempo",
+    keyNotation: "standard",
   });
   expect((screen.getByRole("textbox", { name: /min tempo/ }) as HTMLInputElement).value).toBe(
     "120"

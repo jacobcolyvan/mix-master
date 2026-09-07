@@ -173,6 +173,22 @@ describe("sortTracks", () => {
     expect(new Set(result.slice(0, 2))).toEqual(new Set(["X", "Z"]));
   });
 
+  it.each<TrackSortByChoices>([
+    "major/minor",
+    "tempoThenKey",
+    "durationThenKey",
+    "energyThenKey",
+    "valenceThenKey",
+  ])("keeps notation-dependent ordering for %s", (sort) => {
+    const input = [
+      trackFactory({ name: "A major", key: "9", mode: "1", tempo: "100" }),
+      trackFactory({ name: "B major", key: "11", mode: "1", tempo: "140" }),
+    ];
+
+    expect(names(sortTracks(input, sort, "camelot"))).toEqual(["B major", "A major"]);
+    expect(names(sortTracks(input, sort, "standard"))).toEqual(["A major", "B major"]);
+  });
+
   it("handles empty and single-element inputs", () => {
     expect(sortTracks([], "tempo", "camelot")).toEqual([]);
     const single = [trackFactory({ id: "solo", name: "Solo" })];

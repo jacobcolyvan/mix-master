@@ -1,6 +1,7 @@
-import { SeedAttributeDetails, SeedAttributes, TrackSortByChoices } from "../types";
+import { SeedAttributeDetails, SeedAttributes } from "../types";
 import { attributeChoices } from "./commonVariables";
 import genres from "./genres.json";
+import { parseViewOptions, setViewOptions, ViewOptions } from "./viewOptions";
 
 export type RecommendationTuning = {
   attributes: SeedAttributes;
@@ -62,20 +63,6 @@ export const validateRecommendationTuning = (draft: RecommendationTuning) => {
   };
 };
 
-const sortChoices: TrackSortByChoices[] = [
-  "default",
-  "duration",
-  "popularity",
-  "valence",
-  "tempo",
-  "energy",
-  "durationThenKey",
-  "major/minor",
-  "energyThenKey",
-  "tempoThenKey",
-  "valenceThenKey",
-];
-
 // Restore tuning from the URL, ignoring invalid values and using defaults where needed.
 // Reading a link never changes the URL or adds a browser history entry.
 export const parseRecommendationSearch = (search: string) => {
@@ -97,28 +84,14 @@ export const parseRecommendationSearch = (search: string) => {
     attributes,
     matchKey: params.get("matchKey") === "true",
   });
-  const requestedSort = params.get("sort") as TrackSortByChoices;
-  const sort: TrackSortByChoices = sortChoices.includes(requestedSort) ? requestedSort : "default";
-
-  return { id: params.get("id"), applied, sort };
-};
-
-// Change only sorting, leaving the seed, tuning and any other URL values untouched.
-export const setRecommendationSort = (search: string, sort: TrackSortByChoices) => {
-  const params = new URLSearchParams(search);
-  if (sort === "default") {
-    params.delete("sort");
-  } else {
-    params.set("sort", sort);
-  }
-  return `?${params.toString()}`;
+  return { id: params.get("id"), applied, ...parseViewOptions(search) };
 };
 
 // Build a shareable URL with valid tuning values, leaving out empty inputs and default options.
 export const serialiseRecommendationSearch = (
   id: string | null,
   tuning: RecommendationTuning,
-  sort: TrackSortByChoices = "default"
+  options: ViewOptions = { sort: "default", keyNotation: "camelot" }
 ) => {
   const { tuning: normalised } = validateRecommendationTuning(tuning);
   const params = new URLSearchParams();
@@ -132,7 +105,5 @@ export const serialiseRecommendationSearch = (
   }
 
   if (normalised.attributes.genre.value) params.set("genre", normalised.attributes.genre.value);
-  if (sortChoices.includes(sort) && sort !== "default") params.set("sort", sort);
-
-  return `?${params.toString()}`;
+  return setViewOptions(params.toString(), options);
 };

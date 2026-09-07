@@ -1,6 +1,6 @@
 ---
 name: testing
-description: Use when adding, restructuring, or reviewing tests in Mix Master, especially music-theory utilities, Spotify data mapping, auth, Redux behaviour, React components, and test data.
+description: Use when adding, restructuring, or reviewing tests in Mix Master, especially music-theory utilities, Spotify data mapping, auth, URL/history behaviour, React components, and test data.
 ---
 
 # Mix Master Testing
@@ -13,6 +13,12 @@ Optimise for reading each test top-to-bottom, with blank lines separating arrang
 
 Extract helpers only for repeated mechanical setup, not domain decisions. Briefly document non-obvious external substitutes and helper modules' ownership, defaults and import-time cleanup or other side effects.
 
+## Name the behaviour
+
+Name tests in plain English as observable behaviour requirements, making deliberate product decisions clear—for example, “changing key notation preserves unfinished recommendation edits”. Names should help readers understand app behaviour, not just identify code being exercised.
+
+This is a readability goal, not a coverage mandate: improve useful tests rather than adding, duplicating, or splitting tests solely to document decisions.
+
 ## Test data
 
 Use a factory when tests repeatedly need to construct the same typed entity or external response shape. A factory supplies predictable defaults, accepts explicit overrides, and returns fresh data. It must not infer relationships or hide the scenario being tested.
@@ -23,7 +29,7 @@ Keep one-off representative data local to its test. Do not create factories for 
 
 ## Choose the lowest useful level
 
-Test pure calculations and transformations directly. Use Redux, rendered components, or broader integration only when those boundaries are part of the behaviour being proved.
+Test pure calculations and transformations directly. Use rendered components or broader integration only when those boundaries are part of the behaviour being proved.
 
 Resource hook suites live in `src/__tests__/queries/`: use real hooks and TanStack QueryClients with external Spotify HTTP substitution, asserting hook output rather than DOM. Keep page, lifecycle, session and pure suites outside that folder.
 
@@ -37,7 +43,7 @@ Mock external boundaries when necessary. Avoid mocking internal collaborators wh
 
 ## Keep tests independent
 
-Give each test fresh mutable data, a fresh Redux store and a fresh QueryClient when needed. Rendering helpers must not start auth. Tests must not depend on execution order or shared mutable application state.
+Give each test fresh mutable data, fresh memory history and a fresh QueryClient when needed. Rendering helpers must not start auth. Tests must not depend on execution order or shared mutable application state.
 
 Author expected values independently from the production implementation.
 

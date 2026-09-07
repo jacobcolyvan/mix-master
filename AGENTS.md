@@ -24,10 +24,9 @@ Client-side environment variables must use the `VITE_` prefix and be read throug
 ## State ownership
 
 - **TanStack Query** (`src/queries/`) owns Spotify server data, including the current-user profile. Pages consume query hooks and handle loading, offline and error states.
-- **Redux Toolkit** (`src/slices/`) owns the key display preference in `settingsSlice`.
-- **URL/history** owns submitted searches, selected resource IDs, applied recommendation tuning and recommendation sorting. Keep drafts distinct from applied inputs; results belong to Query.
-- **Auth** (`src/auth/`) owns credentials and signed-in status. Tokens stay in auth's memory and `spotify_auth` cookie, never Redux or Query. `src/hooks/useSignedIn.ts` adapts the auth subscription for React.
-- **Local React state** owns search drafts in `Search.tsx`, transient UI state, startup readiness, recommendation tuning drafts (`src/hooks/useRecommendationTuning.ts`) and sorting in playlist/search views. Search drafts initialize/reset from the URL at navigation boundaries; edits do not submit. Recommendation Apply pushes history; sort changes replace history. All recommendation navigation, discards unfinished tuning drafts.
+- **URL/history** owns submitted searches, selected resource IDs, applied recommendation tuning, and sorting/key notation for playlists, search/album tracks and recommendations (`useViewOptions`). Default options are omitted from URLs. Fresh resource destinations start with defaults; recommendation Apply and next-seed navigation carry both options. Keep drafts distinct from applied inputs; results belong to Query.
+- **Auth** (`src/auth/`) owns credentials and signed-in status. Tokens stay in auth's memory and `spotify_auth` cookie, never Query. `src/hooks/useSignedIn.ts` adapts the auth subscription for React.
+- **Local React state** owns search drafts in `Search.tsx`, transient UI state, startup readiness, and recommendation tuning drafts (`src/hooks/useRecommendationTuning.ts`). Search drafts initialize/reset from the URL at navigation boundaries; edits do not submit. Recommendation Apply pushes history; sort and notation changes replace history. Only presentation-only REPLACE navigation preserves recommendation drafts; all other navigation (including Back/Forward and seed changes) discards them.
 
 Derive sorting/grouping from existing data rather than storing duplicate state. Shared pure collection transformations live in `src/utils/collectionTransforms.ts`.
 
@@ -63,8 +62,7 @@ Before changing key/tempo logic, read `src/utils/commonFunctions.ts` and `src/ut
 - `src/components/` — feature composites.
 - `src/atoms/` — UI primitives; `atoms/info/` contains About-page explainers.
 - `src/queries/` — resource hooks, cache policy and persistence lifecycle.
-- `src/auth/` — self-contained client-side Authorization Code + PKCE auth; no imports from slices or components.
-- `src/slices/` — shared client controls and preferences.
+- `src/auth/` — self-contained client-side Authorization Code + PKCE auth; no imports from components.
 - `src/utils/` — music theory, collection transformations and Spotify data helpers.
 - `src/types.ts` — shared application types.
 

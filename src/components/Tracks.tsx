@@ -2,13 +2,11 @@ import { Alert } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { useAppSelector } from "../app/store";
 import Loading from "../atoms/Loading";
 import Offline from "../atoms/Offline";
 import TrackTooltip from "../atoms/TrackTooltip";
 import { cacheSeedTrack } from "../queries/trackQueries";
-import { selectKeyDisplayOption } from "../slices/settingsSlice";
-import { Track, TrackSortByChoices } from "../types";
+import { KeyOptionTypes, Track, TrackSortByChoices } from "../types";
 import { sortTracks } from "../utils/collectionTransforms";
 import { getArtistNames } from "../utils/commonFunctions";
 import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from "../utils/commonVariables";
@@ -19,6 +17,7 @@ export type TracksProps = {
   isPaused?: boolean;
   error: Error | null;
   sortOption?: TrackSortByChoices;
+  keyNotation: KeyOptionTypes;
   recommendationLink?: (id: string) => string;
 };
 
@@ -29,11 +28,10 @@ const Tracks: React.FC<TracksProps> = ({
   error,
   sortOption = "default",
   recommendationLink,
+  keyNotation: keyOption,
 }) => {
   const history = useHistory();
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
-
-  const keyOption = useAppSelector(selectKeyDisplayOption);
 
   // Derive the display order from the canonical tracks array. Sorting from the
   // canonical array (rather than from a previously sorted copy) is what makes
