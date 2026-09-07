@@ -5,6 +5,7 @@ import Loading from "../atoms/Loading";
 import Offline from "../atoms/Offline";
 import PlaylistItems from "../atoms/PlaylistItems";
 import SortBy from "../atoms/SortBy";
+import { useViewSorting } from "../hooks/useViewSorting";
 import { useAlbumTracks, useSearchResults } from "../queries/searchQueries";
 import { Track } from "../types";
 import { SearchRoute } from "../utils/searchRoute";
@@ -25,20 +26,29 @@ const TrackResults: React.FC<TrackResultsProps> = ({
   isPending,
   isPaused,
   error,
-}) => (
-  <>
-    {albumName ? (
-      <h3 className="results-page-title">{albumName}</h3>
-    ) : (
-      <h3 className="results-page-title">Track Results</h3>
-    )}
-    <KeySelect />
-    <br />
-    <SortBy />
-    <br />
-    <Tracks tracks={tracks} isPending={isPending} isPaused={isPaused} error={error} />
-  </>
-);
+}) => {
+  const { sort, setSort } = useViewSorting();
+  return (
+    <>
+      {albumName ? (
+        <h3 className="results-page-title">{albumName}</h3>
+      ) : (
+        <h3 className="results-page-title">Track Results</h3>
+      )}
+      <KeySelect />
+      <br />
+      <SortBy value={sort} onChange={setSort} />
+      <br />
+      <Tracks
+        sortOption={sort}
+        tracks={tracks}
+        isPending={isPending}
+        isPaused={isPaused}
+        error={error}
+      />
+    </>
+  );
+};
 
 const PlaylistResults = ({ playlistsToRender }): JSX.Element => (
   <>

@@ -14,7 +14,7 @@ const emptyAttributes = (): SeedAttributes => ({
   popularity: { value: "", maxOrMinFilter: "target" },
   liveness: { value: "", maxOrMinFilter: "target" },
   energy: { value: "", maxOrMinFilter: "target" },
-  intrumentalness: { value: "", maxOrMinFilter: "target" },
+  instrumentalness: { value: "", maxOrMinFilter: "target" },
   valence: { value: "", maxOrMinFilter: "target" },
   danceability: { value: "", maxOrMinFilter: "target" },
   speechiness: { value: "", maxOrMinFilter: "target" },
@@ -50,7 +50,7 @@ it("returns null for unavailable seed analysis and leaves recommendations disabl
     if (url.pathname === "/v1/artists") return { artists: [{ genres: [] }] };
     throw new Error(`Unexpected Spotify request: ${url}`);
   });
-  const { wrapper } = createQueryTestContext();
+  const { wrapper, client } = createQueryTestContext();
   const attributes = emptyAttributes();
 
   const { result } = renderHook(
@@ -66,9 +66,17 @@ it("returns null for unavailable seed analysis and leaves recommendations disabl
   expect(result.current.seed.data).toBeNull();
   expect(result.current.recommendations.data).toBeUndefined();
   expect(requests.some((url) => url.startsWith("/v1/recommendations"))).toBe(false);
+
+  // Cache policy is configured even before a seed enables the request.
+  const recommendations = client
+    .getQueryCache()
+    .find({ queryKey: ["recommendations"], exact: true });
+
+  expect(recommendations?.options).toMatchObject({ staleTime: 60 * 60 * 1000 });
+  expect(recommendations?.gcTime).toBe(30 * 60 * 1000);
 });
 
-it("returns recommendations without key constraints when matching is off", async () => {
+it("returns tuned recommendations without key constraints when matching is off", async () => {
   const requests = mockSpotify((url) => {
     if (url.pathname === "/v1/recommendations") return { tracks: [rawTrack()] };
     if (url.pathname === "/v1/audio-features/") return { audio_features: [audioFeatures()] };
@@ -77,8 +85,11 @@ it("returns recommendations without key constraints when matching is off", async
   });
   const { wrapper } = createQueryTestContext();
   const seed = trackFactory({ id: "seed" });
+  const attributes = emptyAttributes();
+  attributes.energy = { value: "0.7", maxOrMinFilter: "min" };
+  attributes.genre.value = "house";
 
-  const { result } = renderHook(() => useRecommendedTracks(seed, emptyAttributes(), false), {
+  const { result } = renderHook(() => useRecommendedTracks(seed, attributes, false), {
     wrapper,
   });
 
@@ -88,7 +99,10 @@ it("returns recommendations without key constraints when matching is off", async
   const recommendations = requests
     .filter((request) => request.startsWith("/v1/recommendations"))
     .map((request) => Object.fromEntries(new URL(request, "https://api.spotify.com").searchParams));
-  expect(recommendations).toEqual([{ market: "AU", seed_tracks: "seed", limit: "40" }]);
+
+  expect(recommendations).toEqual([
+    { market: "AU", seed_tracks: "seed", limit: "40", min_energy: "0.7", seed_genres: "house" },
+  ]);
 });
 
 it("combines same-key and relative-key recommendations without duplicates", async () => {

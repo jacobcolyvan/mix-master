@@ -1,6 +1,7 @@
 import { spotifyApi } from "../auth";
 import { SeedAttributes, Track } from "../types";
 import { getKeyInfoArray } from "./commonFunctions";
+import { validateRecommendationTuning } from "./recommendationTuning";
 import { SearchQuery } from "./searchRoute";
 import { mapWithConcurrency, splitIntoChunks } from "./spotifyFetch";
 
@@ -140,29 +141,33 @@ export const generateRecommendedTrackUrl = (
   // if (trackSeed) url += `&seed_tracks=${ trackSeed.map(track => track.id).join(',') }`;
   // if (mode) url += `&target_mode=${mode}`
 
-  const baseUrl =
-    `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrackId}` +
-    (key ? `&target_key=${key}` : "") +
-    (mode ? `&target_mode=${mode}` : "") +
-    `&limit=${limit}`;
+  const { tuning } = validateRecommendationTuning({ attributes: seedAttributes, matchKey: false });
+  const params = new URLSearchParams({
+    market: "AU",
+    seed_tracks: recommendedTrackId,
+    limit: String(limit),
+  });
+  if (key !== undefined) params.set("target_key", key);
+  if (mode !== undefined) params.set("target_mode", mode);
 
-  const urlWithSeedAttributes = Object.keys(seedAttributes).reduce((url, param) => {
-    if (seedAttributes[param].value !== "") {
-      if (param === "genre") {
-        return url + `&seed_genres=${seedAttributes[param].value}`;
-      } else if (param === "duration") {
-        const durationInMs = parseInt(seedAttributes[param].value || "1") * 1000;
-        return url + `&${seedAttributes[param].maxOrMinFilter}_${param}=${durationInMs}`;
-      } else {
-        return (
-          url + `&${seedAttributes[param].maxOrMinFilter}_${param}=${seedAttributes[param].value}`
-        );
-      }
+  for (const [attributeName, criterion] of Object.entries(tuning.attributes)) {
+    if (criterion.value === "") continue;
+    if (attributeName === "genre") {
+      params.set("seed_genres", criterion.value);
+      continue;
     }
-    return url;
-  }, baseUrl);
 
-  return urlWithSeedAttributes;
+    let parameterName = attributeName;
+    let parameterValue = criterion.value;
+    // Tuning and URLs use seconds; Spotify's duration constraint uses milliseconds.
+    if (attributeName === "duration") {
+      parameterName = "duration_ms";
+      parameterValue = String(Number(criterion.value) * 1000);
+    }
+    params.set(`${criterion.maxOrMinFilter}_${parameterName}`, parameterValue);
+  }
+
+  return `recommendations?${params.toString()}`;
 };
 
 export const getTracksFromSpotify = async (url: string) => {

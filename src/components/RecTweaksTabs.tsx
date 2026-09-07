@@ -2,7 +2,7 @@ import { Tab, Tabs } from "@mui/material";
 
 import RecTweaksGenre from "../atoms/RecTweaksGenre";
 import RecTweaksInput from "../atoms/RecTweaksInput";
-import { AttributeChoiceDetails, SeedAttributes } from "../types";
+import { AttributeChoiceDetails, SeedAttributeDetails, SeedAttributes } from "../types";
 
 interface RecTweaksTabsProps {
   currentTab: number;
@@ -12,6 +12,8 @@ interface RecTweaksTabsProps {
   ) => void;
   attributeChoices: AttributeChoiceDetails[];
   attributes: SeedAttributes;
+  errors: Partial<Record<keyof SeedAttributes, string>>;
+  onChange: (name: keyof SeedAttributes, value: SeedAttributeDetails) => void;
 }
 
 const RecTweaksTabs: React.FC<RecTweaksTabsProps> = ({
@@ -19,6 +21,8 @@ const RecTweaksTabs: React.FC<RecTweaksTabsProps> = ({
   handleTabChange,
   attributeChoices,
   attributes,
+  errors,
+  onChange,
 }) => {
   return (
     <>
@@ -47,7 +51,12 @@ const RecTweaksTabs: React.FC<RecTweaksTabsProps> = ({
           key={index}
           className="rec-tweaks__tab-input"
         >
-          <RecTweaksInput inputItem={inputItem} paramValue={attributes[inputItem.input_name]} />
+          <RecTweaksInput
+            inputItem={inputItem}
+            paramValue={attributes[inputItem.input_name]}
+            error={errors[inputItem.input_name]}
+            onChange={(value) => onChange(inputItem.input_name, value)}
+          />
         </div>
       ))}
 
@@ -58,7 +67,11 @@ const RecTweaksTabs: React.FC<RecTweaksTabsProps> = ({
         key={attributeChoices.length}
         className="rec-tweaks__tab-input"
       >
-        <RecTweaksGenre genre={attributes["genre"]} />
+        <RecTweaksGenre
+          value={attributes.genre.value}
+          error={errors.genre}
+          onChange={(value) => onChange("genre", { value, maxOrMinFilter: "target" })}
+        />
       </div>
     </>
   );

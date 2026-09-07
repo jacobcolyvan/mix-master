@@ -1,52 +1,35 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
 
-import { useAppDispatch } from "../app/store";
-import { saveSeedAttribute } from "../slices/controlsSlice";
 import { SeedAttributes } from "../types";
 
 interface RecTweaksParamsProps {
   attributes: SeedAttributes;
+  onRemove: (name: keyof SeedAttributes) => void;
 }
 
-const RecTweaksParams: React.FC<RecTweaksParamsProps> = ({ attributes }) => {
-  const dispatch = useAppDispatch();
-
-  const getListItemText = (
-    attribute: string,
-    maxOrMin: string | undefined,
-    value: number | undefined
-  ): string => {
-    return `– ${maxOrMin || ""} ${attribute}: ${value || ""}`;
-  };
-
-  return (
-    <div className="currently-selected-params-div">
-      <label>Currently selected inputs are:</label>
-      <ul>
-        {Object.keys(attributes).map(
-          (attribute) =>
-            attributes[attribute].value && (
-              <li key={`currently-selected-attribute-li__${attribute}`}>
-                {getListItemText(
-                  attribute,
-                  attributes[attribute].maxOrMinFilter,
-                  attributes[attribute].value
-                )}
-                <IconButton
-                  aria-label="close"
-                  onClick={() => dispatch(saveSeedAttribute(attribute, false))}
-                  size="small"
-                  className="close-icon"
-                >
-                  <CloseIcon />
-                </IconButton>
-              </li>
-            )
-        )}
-      </ul>
-    </div>
-  );
-};
+const RecTweaksParams: React.FC<RecTweaksParamsProps> = ({ attributes, onRemove }) => (
+  <div className="currently-selected-params-div">
+    <label>Currently selected inputs are:</label>
+    <ul>
+      {(Object.keys(attributes) as (keyof SeedAttributes)[]).map(
+        (name) =>
+          attributes[name].value !== "" && (
+            <li key={name}>
+              {`– ${name === "genre" ? "" : attributes[name].maxOrMinFilter} ${name}: ${attributes[name].value}`}
+              <IconButton
+                aria-label={`Remove ${name}`}
+                onClick={() => onRemove(name)}
+                size="small"
+                className="close-icon"
+              >
+                <CloseIcon />
+              </IconButton>
+            </li>
+          )
+      )}
+    </ul>
+  </div>
+);
 
 export default RecTweaksParams;

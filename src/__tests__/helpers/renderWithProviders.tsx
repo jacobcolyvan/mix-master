@@ -11,7 +11,6 @@ import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
 import { afterEach } from "vitest";
 
-import controlsSlice from "../../slices/controlsSlice";
 import settingsSlice from "../../slices/settingsSlice";
 
 afterEach(cleanup);
@@ -20,7 +19,7 @@ export const renderWithProviders = (
   element: ReactElement,
   { path = "/", client }: { path?: string; client?: QueryClient } = {}
 ) => {
-  const store = configureStore({ reducer: { controlsSlice, settingsSlice } });
+  const store = configureStore({ reducer: { settingsSlice } });
   const history = createMemoryHistory({ initialEntries: [path] });
 
   const wrapper = ({ children }: PropsWithChildren) => {

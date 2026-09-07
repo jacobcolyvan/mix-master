@@ -7,9 +7,8 @@ import Loading from "../atoms/Loading";
 import Offline from "../atoms/Offline";
 import TrackTooltip from "../atoms/TrackTooltip";
 import { cacheSeedTrack } from "../queries/trackQueries";
-import { selectSortTracksBy } from "../slices/controlsSlice";
 import { selectKeyDisplayOption } from "../slices/settingsSlice";
-import { Track } from "../types";
+import { Track, TrackSortByChoices } from "../types";
 import { sortTracks } from "../utils/collectionTransforms";
 import { getArtistNames } from "../utils/commonFunctions";
 import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from "../utils/commonVariables";
@@ -19,13 +18,21 @@ export type TracksProps = {
   isPending: boolean;
   isPaused?: boolean;
   error: Error | null;
+  sortOption?: TrackSortByChoices;
+  recommendationLink?: (id: string) => string;
 };
 
-const Tracks: React.FC<TracksProps> = ({ tracks, isPending, isPaused, error }) => {
+const Tracks: React.FC<TracksProps> = ({
+  tracks,
+  isPending,
+  isPaused,
+  error,
+  sortOption = "default",
+  recommendationLink,
+}) => {
   const history = useHistory();
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
 
-  const sortOption = useAppSelector(selectSortTracksBy);
   const keyOption = useAppSelector(selectKeyDisplayOption);
 
   // Derive the display order from the canonical tracks array. Sorting from the
@@ -38,7 +45,10 @@ const Tracks: React.FC<TracksProps> = ({ tracks, isPending, isPaused, error }) =
 
   const handleTrackRecommendedClick = (track: Track) => {
     cacheSeedTrack(track);
-    history.push(`/recommended/?id=${encodeURIComponent(track.id)}`);
+    const recommendationUrl = recommendationLink
+      ? recommendationLink(track.id)
+      : `/recommended/?id=${encodeURIComponent(track.id)}`;
+    history.push(recommendationUrl);
   };
 
   const handleTrackClick = (track: Track) => {

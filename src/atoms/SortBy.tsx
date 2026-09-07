@@ -1,26 +1,21 @@
-import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
 
-import { selectSortTracksBy, setSortTracksBy } from "../slices/controlsSlice";
 import { TrackSortByChoices } from "../types";
 
-const SortBy = () => {
-  const dispatch = useDispatch();
-  const sortOption = useSelector(selectSortTracksBy);
-
-  const sortOptionChange = (event: SelectChangeEvent<TrackSortByChoices>) => {
-    if (event?.target.value) {
-      dispatch(setSortTracksBy(event.target.value));
-    }
-  };
-
+const SortBy = ({
+  value,
+  onChange,
+}: {
+  value: TrackSortByChoices;
+  onChange: (value: TrackSortByChoices) => void;
+}) => {
   return (
     <div>
       <Select
-        labelId="Sort By:"
+        inputProps={{ "aria-label": "Sort by" }}
         id="sort-by-select"
-        value={sortOption}
-        onChange={sortOptionChange}
+        value={value}
+        onChange={(event) => onChange(event.target.value as TrackSortByChoices)}
         fullWidth
         variant="outlined"
       >

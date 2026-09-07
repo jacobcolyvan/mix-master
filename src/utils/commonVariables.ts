@@ -71,7 +71,7 @@ export const attributeChoices: AttributeChoiceDetails[] = [
     validateField: (value) => !isNaN(value) && value > 0 && value < 1,
   },
   {
-    input_name: "intrumentalness",
+    input_name: "instrumentalness",
     extra_text: false,
     range_limit: 1,
     validateField: (value) => !isNaN(value) && value > 0 && value < 1,

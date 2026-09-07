@@ -9,46 +9,45 @@ import {
 } from "../utils/requestUtils";
 import { EPHEMERAL_GC_TIME, queryClient } from "./queryClient";
 
+const recommendationRequestUrls = (
+  seedTrack: Track | null | undefined,
+  seedAttributes: SeedAttributes,
+  matchKey: boolean
+) => {
+  if (!seedTrack) return [];
+  if (!matchKey) return [generateRecommendedTrackUrl(seedTrack.id, seedAttributes, 40)];
+
+  // Each request targets one key/mode: blend same-key and relative major/minor tracks
+  // for harmonic compatibility, favouring the seed's own key with a 25/15 split.
+  const sameKeyUrl = generateRecommendedTrackUrl(
+    seedTrack.id,
+    seedAttributes,
+    25,
+    seedTrack.key,
+    seedTrack.mode
+  );
+  const relativeKeyUrl = generateRecommendedTrackUrl(
+    seedTrack.id,
+    seedAttributes,
+    15,
+    ...seedTrack.parsedKeys[2]
+  );
+  return [sameKeyUrl, relativeKeyUrl];
+};
+
 export const useRecommendedTracks = (
   seedTrack: Track | null | undefined,
   seedAttributes: SeedAttributes,
   matchRecsToSeedTrackKey: boolean
-) =>
-  useQuery({
-    queryKey: ["recommendations", seedTrack?.id, seedAttributes, matchRecsToSeedTrackKey] as const,
+) => {
+  const urls = recommendationRequestUrls(seedTrack, seedAttributes, matchRecsToSeedTrackKey);
+  return useQuery({
+    queryKey: ["recommendations", ...urls] as const,
     enabled: !!seedTrack,
     staleTime: 60 * 60 * 1000,
     gcTime: EPHEMERAL_GC_TIME,
     queryFn: async (): Promise<Track[]> => {
-      const track = seedTrack!;
-      let rawTracks: any[] = [];
-
-      if (matchRecsToSeedTrackKey) {
-        const sameKeyUrl = generateRecommendedTrackUrl(
-          track.id,
-          seedAttributes,
-          25,
-          track.key,
-          track.mode
-        );
-        const relativeKeyUrl = generateRecommendedTrackUrl(
-          track.id,
-          seedAttributes,
-          15,
-          track.parsedKeys[2][0],
-          track.parsedKeys[2][1]
-        );
-
-        const [sameKeyTracks, relativeKeyTracks] = await Promise.all([
-          getTracksFromSpotify(sameKeyUrl),
-          getTracksFromSpotify(relativeKeyUrl),
-        ]);
-        rawTracks = [...sameKeyTracks, ...relativeKeyTracks];
-      } else {
-        rawTracks = await getTracksFromSpotify(
-          `recommendations?market=AU&seed_tracks=${track.id}&limit=40`
-        );
-      }
+      const rawTracks: any[] = (await Promise.all(urls.map(getTracksFromSpotify))).flat();
 
       // remove duplicates (result of multiple calls)
       const filteredRawTracks = rawTracks.reduce((accumulator, current) => {
@@ -59,6 +58,7 @@ export const useRecommendedTracks = (
       return getTrackAndArtistFeatures(filteredRawTracks);
     },
   });
+};
 
 export const seedTrackKey = (id: string) => ["track", id] as const;
 

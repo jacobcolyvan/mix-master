@@ -79,7 +79,7 @@ export type Album = {
 };
 
 export type SeedAttributeDetails = {
-  value: string | false;
+  value: string;
   maxOrMinFilter: "max" | "min" | "target";
 };
 
@@ -90,7 +90,7 @@ export type SeedAttributes = {
   popularity: SeedAttributeDetails;
   liveness: SeedAttributeDetails;
   energy: SeedAttributeDetails;
-  intrumentalness: SeedAttributeDetails;
+  instrumentalness: SeedAttributeDetails;
   valence: SeedAttributeDetails;
   danceability: SeedAttributeDetails;
   speechiness: SeedAttributeDetails;
@@ -109,7 +109,7 @@ export type CurrentSearchQueryOptions = {
 export type CurrentSearchQueryOptionsKeys = keyof CurrentSearchQueryOptions;
 
 export type AttributeChoiceDetails = {
-  input_name: string;
+  input_name: Exclude<keyof SeedAttributes, "genre">;
   extra_text: boolean | string;
   range_limit: number;
   validateField: (value: number) => boolean;

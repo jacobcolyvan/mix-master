@@ -1,30 +1,34 @@
 import { Button, FormControlLabel, Switch } from "@mui/material";
 import { useState } from "react";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
 import RecTweaksParams from "../atoms/RecTweaksParams";
-import { invertMatchRecsToSeedTrackKey } from "../slices/controlsSlice";
+import { SeedAttributeDetails, SeedAttributes } from "../types";
 import { attributeChoices } from "../utils/commonVariables";
+import { RecommendationTuning } from "../utils/recommendationTuning";
 import RecTweaksTabs from "./RecTweaksTabs";
 
 interface RecTweakProps {
-  onRefresh: () => void;
+  value: RecommendationTuning;
+  errors: Partial<Record<keyof SeedAttributes, string>>;
+  onAttributeChange: (name: keyof SeedAttributes, value: SeedAttributeDetails) => void;
+  onMatchKeyChange: (value: boolean) => void;
+  onReset: () => void;
+  onAction: () => void;
+  actionLabel: string;
+  actionDisabled: boolean;
 }
 
-const RecTweaks: React.FC<RecTweakProps> = ({ onRefresh }) => {
-  const dispatch = useAppDispatch();
-  const { matchRecsToSeedTrackKey, seedAttributes } = useAppSelector(
-    (state) => state.controlsSlice
-  );
+const RecTweaks: React.FC<RecTweakProps> = ({
+  value,
+  errors,
+  onAttributeChange,
+  onMatchKeyChange,
+  onReset,
+  onAction,
+  actionLabel,
+  actionDisabled,
+}) => {
   const [currentTab, setCurrentTab] = useState(0);
-
-  const handleTabChange = (
-    _: React.ChangeEvent<object>,
-    newValue: React.SetStateAction<number>
-  ): void => {
-    setCurrentTab(newValue);
-  };
-
   return (
     <div className="rec-tweaks__div">
       <h4>Tweak the recommendations below:</h4>
@@ -32,8 +36,8 @@ const RecTweaks: React.FC<RecTweakProps> = ({ onRefresh }) => {
       <FormControlLabel
         control={
           <Switch
-            checked={matchRecsToSeedTrackKey}
-            onChange={() => dispatch(invertMatchRecsToSeedTrackKey())}
+            checked={value.matchKey}
+            onChange={(_, checked) => onMatchKeyChange(checked)}
             name="match-key__switch"
           />
         }
@@ -42,19 +46,35 @@ const RecTweaks: React.FC<RecTweakProps> = ({ onRefresh }) => {
       />
       <RecTweaksTabs
         currentTab={currentTab}
-        handleTabChange={handleTabChange}
+        handleTabChange={(_, tab) => setCurrentTab(tab)}
         attributeChoices={attributeChoices}
-        attributes={seedAttributes}
+        attributes={value.attributes}
+        errors={errors}
+        onChange={onAttributeChange}
       />
-      <Button
-        variant="outlined"
-        color="primary"
-        onClick={onRefresh}
-        className="button rec-tweaks__button"
-      >
-        Refresh Recommendations
-      </Button>
-      <RecTweaksParams attributes={seedAttributes} />
+      <div className="rec-tweaks__actions">
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={onAction}
+          disabled={actionDisabled}
+          className="button rec-tweaks__button"
+        >
+          {actionLabel}
+        </Button>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={onReset}
+          className="button rec-tweaks__button"
+        >
+          Reset tuning
+        </Button>
+      </div>
+      <RecTweaksParams
+        attributes={value.attributes}
+        onRemove={(name) => onAttributeChange(name, { value: "", maxOrMinFilter: "target" })}
+      />
     </div>
   );
 };
