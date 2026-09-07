@@ -2,13 +2,11 @@ import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import controlsSlice from "../slices/controlsSlice";
-import itemsSlice from "../slices/itemsSlice";
 import settingsSlice from "../slices/settingsSlice";
 
 export const store = configureStore({
   reducer: {
     controlsSlice,
-    itemsSlice,
     settingsSlice,
   },
 });

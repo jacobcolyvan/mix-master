@@ -1,37 +1,51 @@
-import { History } from "history";
-import { useLayoutEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { Alert } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
+import { useAppSelector } from "../app/store";
 import KeySelect from "../atoms/KeySelect";
+import Loading from "../atoms/Loading";
+import Offline from "../atoms/Offline";
 import SortBy from "../atoms/SortBy";
 import CurrentTrackRec from "../components/CurrentTrackRec";
 import RecTweaks from "../components/RecTweaks";
 import Tracks from "../components/Tracks";
-import { getRecommendedTracks, invalidateTracksRequest } from "../slices/itemsSlice";
-import { Track } from "../types";
+import { useRecommendedTracks, useSeedTrack } from "../queries/trackQueries";
 
 const RecommendedTracks: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const history: History = useHistory();
+  const location = useLocation();
+  const id = new URLSearchParams(location.search).get("id");
+
   const { matchRecsToSeedTrackKey, seedAttributes } = useAppSelector(
     (state) => state.controlsSlice
   );
 
-  // Type the location state properly
-  const locationState = history.location.state as { recommendedTrack?: Track } | undefined;
-  const recommendedTrack = locationState?.recommendedTrack;
+  const seedQuery = useSeedTrack(id);
+  const seedTrack = seedQuery.data;
+  const recommendationsQuery = useRecommendedTracks(
+    seedTrack,
+    seedAttributes,
+    matchRecsToSeedTrackKey
+  );
 
-  useLayoutEffect(() => {
-    if (recommendedTrack) {
-      dispatch(getRecommendedTracks(recommendedTrack));
+  if (!id) {
+    return <Alert severity="info">No track selected.</Alert>;
+  }
+
+  if (!seedTrack) {
+    if (seedQuery.isPaused) {
+      return <Offline />;
     }
 
-    // Ignore a response that finishes after these recommendations are superseded or unmounted.
-    return () => {
-      dispatch(invalidateTracksRequest());
-    };
-  }, [dispatch, recommendedTrack, matchRecsToSeedTrackKey, seedAttributes]);
+    if (seedQuery.isPending) {
+      return <Loading />;
+    }
+
+    if (seedQuery.isError) {
+      return <Alert severity="error">Unable to load that track from Spotify.</Alert>;
+    }
+
+    return <Alert severity="info">Spotify has no audio analysis for that track.</Alert>;
+  }
 
   return (
     <div>
@@ -39,14 +53,15 @@ const RecommendedTracks: React.FC = () => {
       <KeySelect />
       <SortBy />
 
-      {recommendedTrack && (
-        <>
-          <RecTweaks recommendedTrack={recommendedTrack} />
-          <br />
-          <CurrentTrackRec track={recommendedTrack} />
-        </>
-      )}
-      <Tracks />
+      <RecTweaks onRefresh={recommendationsQuery.refetch} />
+      <br />
+      <CurrentTrackRec track={seedTrack} />
+      <Tracks
+        tracks={recommendationsQuery.data ?? null}
+        isPending={recommendationsQuery.isPending}
+        isPaused={recommendationsQuery.isPaused}
+        error={recommendationsQuery.error}
+      />
     </div>
   );
 };

@@ -2,15 +2,11 @@ import parse from "html-react-parser";
 import React from "react";
 import { useHistory } from "react-router-dom";
 
-import { useAppDispatch } from "../app/store";
-import { goToPlaylist } from "../slices/itemsSlice";
-
 interface PlaylistDescriptionProps {
   description: string;
 }
 
 const PlaylistDescription: React.FC<PlaylistDescriptionProps> = ({ description }) => {
-  const dispatch = useAppDispatch();
   const history = useHistory();
 
   const getParsedDescription = () => {
@@ -25,7 +21,7 @@ const PlaylistDescription: React.FC<PlaylistDescriptionProps> = ({ description }
           return (
             <span
               onClick={() => {
-                dispatch(goToPlaylist(history, domNode.attribs.href));
+                history.push(`/playlist?id=${encodeURIComponent(domNode.attribs.href)}`);
               }}
             >
               {[...domNode.children][0].data}

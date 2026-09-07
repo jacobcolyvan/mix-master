@@ -4,16 +4,14 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/store";
 import RecTweaksParams from "../atoms/RecTweaksParams";
 import { invertMatchRecsToSeedTrackKey } from "../slices/controlsSlice";
-import { getRecommendedTracks } from "../slices/itemsSlice";
-import { Track } from "../types";
 import { attributeChoices } from "../utils/commonVariables";
 import RecTweaksTabs from "./RecTweaksTabs";
 
 interface RecTweakProps {
-  recommendedTrack: Track;
+  onRefresh: () => void;
 }
 
-const RecTweaks: React.FC<RecTweakProps> = ({ recommendedTrack }) => {
+const RecTweaks: React.FC<RecTweakProps> = ({ onRefresh }) => {
   const dispatch = useAppDispatch();
   const { matchRecsToSeedTrackKey, seedAttributes } = useAppSelector(
     (state) => state.controlsSlice
@@ -51,7 +49,7 @@ const RecTweaks: React.FC<RecTweakProps> = ({ recommendedTrack }) => {
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => dispatch(getRecommendedTracks(recommendedTrack))}
+        onClick={onRefresh}
         className="button rec-tweaks__button"
       >
         Refresh Recommendations

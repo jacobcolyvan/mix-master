@@ -1,4 +1,16 @@
-import type { Playlist, Track } from "../types";
+// Fresh minimal Spotify payloads and app Track/Playlist fixtures, with no import-time hooks.
+// Overrides are shallow; related IDs, keys and owner fields are not derived.
+// Keep scenario-defining values explicit in each test.
+import type { Playlist, Track } from "../../types";
+
+export const rawTrack = (overrides: { id?: string; name?: string } = {}) => ({
+  id: "track-one",
+  name: "Midnight Signal",
+  artists: [{ id: "artist-one", name: "Night Artist" }],
+  ...overrides,
+});
+
+export const audioFeatures = () => ({ key: 0, mode: 1, tempo: 124, energy: 0.72 });
 
 export const trackFactory = (overrides: Partial<Track> = {}): Track => ({
   id: "default-track",

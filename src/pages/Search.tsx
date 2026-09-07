@@ -1,49 +1,67 @@
-import { useLayoutEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "../app/store";
-import Loading from "../atoms/Loading";
 import SearchOptions from "../components/SearchOptions";
 import SearchResults from "../components/SearchResults";
-import { resetSearchState, setCurrentSearchQueries } from "../slices/controlsSlice";
-import { getAlbumTracks, getSearchResults, invalidateTracksRequest } from "../slices/itemsSlice";
-import { parseSearchRoute, searchFormFromQuery } from "../utils/searchRoute";
+import { searchQueryOptions } from "../queries/searchQueries";
+import {
+  resetSearchQueries,
+  selectCurrentSearchQueries,
+  setCurrentSearchQueries,
+} from "../slices/controlsSlice";
+import {
+  buildSearchUrl,
+  parseSearchRoute,
+  searchFormFromQuery,
+  searchQueryFromForm,
+} from "../utils/searchRoute";
 
 const Search: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const history = useHistory();
   const location = useLocation();
+  const client = useQueryClient();
+  const route = useMemo(() => parseSearchRoute(location.search), [location.search]);
+  const dispatch = useAppDispatch();
+  const searchDraft = useAppSelector(selectCurrentSearchQueries);
 
-  const { isSearching, hasCurrentSearchResults } = useAppSelector((state) => state.controlsSlice);
-
-  useLayoutEffect(() => {
-    const route = parseSearchRoute(location.search);
-
-    dispatch(resetSearchState());
-
-    if (route?.kind === "albumTracks") {
-      dispatch(getAlbumTracks(route.albumId));
-    } else if (route) {
+  useEffect(() => {
+    if (route && route.kind !== "albumTracks") {
       dispatch(setCurrentSearchQueries(searchFormFromQuery(route)));
-      dispatch(getSearchResults(route));
+    } else {
+      dispatch(resetSearchQueries());
     }
+  }, [dispatch, route, location.key]);
 
-    return () => {
-      dispatch(invalidateTracksRequest());
-    };
-  }, [dispatch, location.key, location.search]);
+  const submit = () => {
+    const query = searchQueryFromForm(searchDraft);
+    const target = query ? buildSearchUrl(query) : "/search";
+
+    if (query && route && route.kind !== "albumTracks" && target === buildSearchUrl(route)) {
+      // fetchQuery reuses fresh success and retries stale or failed results.
+      client.fetchQuery(searchQueryOptions(query)).catch(() => {
+        // SearchResults displays the query error; only handle the rejected promise here.
+      });
+    } else if (target !== `${location.pathname}${location.search}`) {
+      history.push(target);
+    }
+  };
 
   return (
     <div>
       <h1 className="search-page-title">Search</h1>
-      <SearchOptions />
-
-      {hasCurrentSearchResults && (
+      <SearchOptions
+        value={searchDraft}
+        onChange={(value) => dispatch(setCurrentSearchQueries(value))}
+        onSubmit={submit}
+      />
+      {route && (
         <div>
           <hr className="search-page-results__hr" />
-          <SearchResults />
+          <SearchResults route={route} />
         </div>
       )}
-      {isSearching && <Loading />}
     </div>
   );
 };

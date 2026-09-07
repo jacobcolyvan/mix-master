@@ -6,7 +6,7 @@ import {
   getKeyInfoArray,
   standardKeySort,
 } from "../utils/commonFunctions";
-import { trackFactory } from "../utils/testFixtures";
+import { trackFactory } from "./helpers/testFixtures";
 
 describe("getArtistNames", () => {
   it("returns the artist name when there is one artist", () => {

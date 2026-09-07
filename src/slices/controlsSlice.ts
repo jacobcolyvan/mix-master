@@ -1,26 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { AppThunk, RootState } from "../app/store";
-import {
-  CurrentSearchQueryOptions,
-  CurrentSearchQueryOptionsKeys,
-  SearchResultsType,
-  SeedAttributes,
-  TrackSortByChoices,
-} from "../types";
-import { setTracks } from "./itemsSlice";
+import { CurrentSearchQueryOptions, SeedAttributes, TrackSortByChoices } from "../types";
 
 export interface ControlsState {
   matchRecsToSeedTrackKey: boolean;
   currentSearchQueries: CurrentSearchQueryOptions;
-  searchResultValues: SearchResultsType;
-  hasCurrentSearchResults: boolean;
   // RecommendedTracks Page
   seedAttributes: SeedAttributes;
   activeSeedAttributes: string[]; // active seedAttributes keys
   sortTracksBy: TrackSortByChoices; // currently sortOption
-  albumName: string | null;
-  isSearching: boolean;
 }
 
 const initialState: ControlsState = {
@@ -32,12 +21,6 @@ const initialState: ControlsState = {
     playlistSearchQuery: "",
     trackSearchQuery: "",
   },
-  searchResultValues: {
-    albumResults: null, // these have been changed
-    playlistResults: null,
-    trackResults: null,
-  },
-  hasCurrentSearchResults: false,
   seedAttributes: {
     tempo: {
       value: "",
@@ -86,8 +69,6 @@ const initialState: ControlsState = {
   },
   activeSeedAttributes: [],
   sortTracksBy: "default",
-  albumName: "",
-  isSearching: false,
 };
 
 // For filter and search controls/params
@@ -95,17 +76,14 @@ const controlsSlice = createSlice({
   name: "controlsSlice",
   initialState,
   reducers: {
-    setSeedAttributes: (state, action: PayloadAction<SeedAttributes>) => {
-      state.seedAttributes = action.payload;
-    },
     setCurrentSearchQueries: (state, action: PayloadAction<CurrentSearchQueryOptions>) => {
       state.currentSearchQueries = action.payload;
     },
-    setHasCurrentSearchResults: (state, action: PayloadAction<boolean>) => {
-      state.hasCurrentSearchResults = action.payload;
+    resetSearchQueries: (state) => {
+      state.currentSearchQueries = initialState.currentSearchQueries;
     },
-    setSearchResultValues: (state, action: PayloadAction<SearchResultsType>) => {
-      state.searchResultValues = action.payload;
+    setSeedAttributes: (state, action: PayloadAction<SeedAttributes>) => {
+      state.seedAttributes = action.payload;
     },
     setSortTracksBy: (state, action: PayloadAction<TrackSortByChoices>) => {
       state.sortTracksBy = action.payload;
@@ -113,48 +91,27 @@ const controlsSlice = createSlice({
     invertMatchRecsToSeedTrackKey: (state) => {
       state.matchRecsToSeedTrackKey = !state.matchRecsToSeedTrackKey;
     },
-    setAlbumName: (state, action: PayloadAction<string | null>) => {
-      state.albumName = action.payload;
-    },
-    setIsSearching: (state, action: PayloadAction<boolean>) => {
-      state.isSearching = action.payload;
-    },
   },
 });
 export default controlsSlice.reducer;
 
 export const {
   invertMatchRecsToSeedTrackKey,
-  setSeedAttributes,
-  setHasCurrentSearchResults,
+  resetSearchQueries,
   setCurrentSearchQueries,
-  setSearchResultValues,
+  setSeedAttributes,
   setSortTracksBy,
-  setAlbumName,
-  setIsSearching,
 } = controlsSlice.actions;
 
 // --------------------------
 // Selectors
 
 export const selectCurrentSearchQueries = (state: RootState): CurrentSearchQueryOptions => {
-  return state?.controlsSlice.currentSearchQueries;
-};
-
-export const selectAlbumName = (state: RootState): string | null => {
-  return state?.controlsSlice.albumName;
-};
-
-export const selectSearchResultValues = (state: RootState): SearchResultsType => {
-  return state?.controlsSlice.searchResultValues;
+  return state.controlsSlice.currentSearchQueries;
 };
 
 export const selectSortTracksBy = (state: RootState): TrackSortByChoices => {
   return state?.controlsSlice.sortTracksBy;
-};
-
-export const selectIsSearching = (state: RootState): boolean => {
-  return state?.controlsSlice.isSearching;
 };
 
 export const selectSeedAttributes = (state: RootState): SeedAttributes => {
@@ -186,54 +143,6 @@ export const saveSeedAttribute = (
       setSeedAttributes({
         ...seedAttributes,
         [attributeName]: { value: updatedValue, maxOrMinFilter: updatedMaxOrMinFilter },
-      })
-    );
-  };
-};
-
-export const saveSearchQueryChange = (
-  key: CurrentSearchQueryOptionsKeys,
-  value: string | unknown
-): AppThunk => {
-  return (dispatch, getState) => {
-    dispatch(setHasCurrentSearchResults(false));
-    dispatch(
-      setSearchResultValues({
-        albumResults: null,
-        playlistResults: null, // was '' *shrug*
-        trackResults: null,
-      })
-    );
-
-    if (typeof value !== "string") return;
-
-    const currentSearchQueries = selectCurrentSearchQueries(getState());
-    dispatch(setCurrentSearchQueries({ ...currentSearchQueries, [key]: value }));
-  };
-};
-
-export const resetSearchState = (resetSearchQueries = true): AppThunk => {
-  return (dispatch, _) => {
-    dispatch(setHasCurrentSearchResults(false));
-    dispatch(
-      setSearchResultValues({
-        albumResults: null, // these have been changed
-        playlistResults: null,
-        trackResults: null,
-      })
-    );
-    dispatch(setAlbumName(null));
-    dispatch(setIsSearching(false));
-    dispatch(setTracks(null));
-
-    if (!resetSearchQueries) return;
-    dispatch(
-      setCurrentSearchQueries({
-        searchType: "track",
-        albumSearchQuery: "",
-        artistSearchQuery: "",
-        playlistSearchQuery: "",
-        trackSearchQuery: "",
       })
     );
   };

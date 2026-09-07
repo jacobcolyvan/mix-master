@@ -1,10 +1,10 @@
-import { useEffect, useMemo } from "react";
+import { Alert } from "@mui/material";
+import { useMemo } from "react";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
 import Loading from "../atoms/Loading";
+import Offline from "../atoms/Offline";
 import PlaylistItems from "../atoms/PlaylistItems";
-import { getUserPlaylists } from "../slices/itemsSlice";
-import { selectUsername } from "../slices/settingsSlice";
+import { useUserPlaylists } from "../queries/playlistQueries";
 import { groupPlaylists } from "../utils/collectionTransforms";
 
 const CreatedPlaylists = ({ createdPlaylists }) => {
@@ -35,22 +35,22 @@ const FollowedPlaylists = ({ followedPlaylists }) => {
   );
 };
 
-const UserPlaylists: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const userPlaylists = useAppSelector((state) => state.itemsSlice.userPlaylists);
-  const username = useAppSelector(selectUsername);
+const UserPlaylists = ({ username }: { username: string }) => {
+  const { data: userPlaylists, isError, isPending, isPaused } = useUserPlaylists();
 
-  useEffect(() => {
-    dispatch(getUserPlaylists());
-  }, []);
-
-  // Null until the fetch lands, which is what drives the Loading gate below.
   const sortedPlaylists = useMemo(
     () => (userPlaylists ? groupPlaylists(userPlaylists, username) : null),
     [userPlaylists, username]
   );
 
-  return sortedPlaylists ? (
+  if (isError && !userPlaylists) {
+    return <Alert severity="error">Unable to load playlists from Spotify. Please try again.</Alert>;
+  }
+
+  if (!userPlaylists && isPaused) return <Offline />;
+  if (isPending || !sortedPlaylists) return <Loading />;
+
+  return (
     <div>
       <div className="playlists-title__div">
         <h2>Playlists</h2>
@@ -72,15 +72,11 @@ const UserPlaylists: React.FC = () => {
         </p>
       </div>
 
-      {typeof sortedPlaylists === "object" && (
-        <div>
-          <CreatedPlaylists createdPlaylists={sortedPlaylists.created} />
-          <FollowedPlaylists followedPlaylists={sortedPlaylists.followed} />
-        </div>
-      )}
+      <div>
+        <CreatedPlaylists createdPlaylists={sortedPlaylists.created} />
+        <FollowedPlaylists followedPlaylists={sortedPlaylists.followed} />
+      </div>
     </div>
-  ) : (
-    <Loading />
   );
 };
 

@@ -1,7 +1,5 @@
 import { useHistory } from "react-router-dom";
 
-import { useAppDispatch } from "../app/store";
-import { pushPlaylistToHistory } from "../slices/itemsSlice";
 import { Playlist } from "../types";
 
 interface Props {
@@ -9,11 +7,10 @@ interface Props {
 }
 
 const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
-  const dispatch = useAppDispatch();
   const history = useHistory();
 
-  const dispatchPlaylistHistory = (playlist: Playlist) => {
-    dispatch(pushPlaylistToHistory(history, playlist));
+  const openPlaylist = (playlist: Playlist) => {
+    history.push(`/playlist?id=${encodeURIComponent(playlist.id)}`);
   };
 
   return (
@@ -26,7 +23,7 @@ const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
             <li
               className="playlist-list__li"
               key={`track${index}`}
-              onClick={() => dispatchPlaylistHistory(playlist)}
+              onClick={() => openPlaylist(playlist)}
             >
               <div>
                 <div className="playlist-name">{playlist.name}</div>

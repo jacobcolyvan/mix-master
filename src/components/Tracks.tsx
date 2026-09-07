@@ -2,24 +2,29 @@ import { Alert } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
+import { useAppSelector } from "../app/store";
 import Loading from "../atoms/Loading";
+import Offline from "../atoms/Offline";
 import TrackTooltip from "../atoms/TrackTooltip";
+import { cacheSeedTrack } from "../queries/trackQueries";
 import { selectSortTracksBy } from "../slices/controlsSlice";
-import { goToRecommendedTrack, selectTracks, selectTracksError } from "../slices/itemsSlice";
 import { selectKeyDisplayOption } from "../slices/settingsSlice";
 import { Track } from "../types";
 import { sortTracks } from "../utils/collectionTransforms";
 import { getArtistNames } from "../utils/commonFunctions";
 import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from "../utils/commonVariables";
 
-const Tracks: React.FC = () => {
-  const dispatch = useAppDispatch();
+export type TracksProps = {
+  tracks: Track[] | null;
+  isPending: boolean;
+  isPaused?: boolean;
+  error: Error | null;
+};
+
+const Tracks: React.FC<TracksProps> = ({ tracks, isPending, isPaused, error }) => {
   const history = useHistory();
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
 
-  const tracks = useAppSelector(selectTracks);
-  const tracksError = useAppSelector(selectTracksError);
   const sortOption = useAppSelector(selectSortTracksBy);
   const keyOption = useAppSelector(selectKeyDisplayOption);
 
@@ -32,7 +37,8 @@ const Tracks: React.FC = () => {
   );
 
   const handleTrackRecommendedClick = (track: Track) => {
-    dispatch(goToRecommendedTrack(history, track));
+    cacheSeedTrack(track);
+    history.push(`/recommended/?id=${encodeURIComponent(track.id)}`);
   };
 
   const handleTrackClick = (track: Track) => {
@@ -92,11 +98,17 @@ const Tracks: React.FC = () => {
     );
   };
 
-  if (tracksError) {
-    return <Alert severity="error">{tracksError}</Alert>;
+  if (!tracks && isPaused) return <Offline />;
+
+  if (error && !tracks) {
+    return <Alert severity="error">Unable to load tracks from Spotify. Please try again.</Alert>;
   }
 
-  return sortedTracks ? (
+  if (isPending || !sortedTracks) {
+    return <Loading />;
+  }
+
+  return (
     <table className="tracks-table">
       <thead>
         <tr>
@@ -109,8 +121,6 @@ const Tracks: React.FC = () => {
 
       {renderSortedTracksBody()}
     </table>
-  ) : (
-    <Loading />
   );
 };
 

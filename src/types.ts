@@ -34,6 +34,10 @@ export type Track = {
   parsedKeys: ParsedKeys;
 };
 
+export type CurrentUser = {
+  display_name: string | null;
+};
+
 // Playlist response object
 export type Playlist = {
   collaborative: boolean;
@@ -103,12 +107,6 @@ export type CurrentSearchQueryOptions = {
 };
 
 export type CurrentSearchQueryOptionsKeys = keyof CurrentSearchQueryOptions;
-
-export type SearchResultsType = {
-  albumResults: Album[] | null;
-  trackResults: Track[] | null;
-  playlistResults: Playlist[] | null;
-};
 
 export type AttributeChoiceDetails = {
   input_name: string;

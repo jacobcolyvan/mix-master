@@ -1,5 +1,5 @@
 const SPOTIFY_PAGE_SIZE = 50;
-const MAX_CONCURRENT_PAGE_REQUESTS = 8;
+const MAX_CONCURRENT_PAGE_REQUESTS = 6;
 
 export const splitIntoChunks = <T>(items: T[], chunkSize: number): T[][] => {
   const chunks: T[][] = [];

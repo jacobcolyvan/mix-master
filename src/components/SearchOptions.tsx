@@ -1,120 +1,74 @@
-import { Button, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { useHistory } from "react-router-dom";
+import { Button, MenuItem, Select } from "@mui/material";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
 import SearchBar from "../atoms/SearchBar";
-import { saveSearchQueryChange, selectCurrentSearchQueries } from "../slices/controlsSlice";
 import { CurrentSearchQueryOptions } from "../types";
-import { buildSearchUrl, searchQueryFromForm } from "../utils/searchRoute";
 
-const PlaylistSearch = ({ getResults, playlistSearchQuery }) => (
-  <SearchBar
-    label="Playlist"
-    param={playlistSearchQuery}
-    paramName="playlistSearchQuery"
-    getResults={getResults}
-  />
-);
+interface SearchOptionsProps {
+  value: CurrentSearchQueryOptions;
+  onChange: (value: CurrentSearchQueryOptions) => void;
+  onSubmit: () => void;
+}
 
-const AlbumSearch = ({ getResults, albumSearchQuery, artistSearchQuery: _artistSearchQuery }) => (
-  <SearchBar
-    label="Album"
-    param={albumSearchQuery}
-    paramName="albumSearchQuery"
-    getResults={getResults}
-  />
-);
-
-const ArtistSearch = ({ getResults, artistSearchQuery }) => (
-  <SearchBar
-    label="Artist"
-    param={artistSearchQuery}
-    paramName="artistSearchQuery"
-    getResults={getResults}
-  />
-);
-
-const TrackSearch = ({ getResults, trackSearchQuery, artistSearchQuery: _artistSearchQuery }) => (
-  <SearchBar
-    label="Track"
-    param={trackSearchQuery}
-    paramName="trackSearchQuery"
-    getResults={getResults}
-  />
-);
-
-const SearchOptions: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const history = useHistory();
-
-  const currentSearchQueries = useAppSelector(selectCurrentSearchQueries);
-  const { playlistSearchQuery, albumSearchQuery, trackSearchQuery, artistSearchQuery } =
-    currentSearchQueries;
-
-  const submitSearch = () => {
-    const query = searchQueryFromForm(currentSearchQueries);
-    const target = query ? buildSearchUrl(query) : "/search";
-    const currentUrl = `${history.location.pathname}${history.location.search}`;
-
-    if (target === currentUrl) {
-      history.replace(target);
-    } else {
-      history.push(target);
-    }
-  };
+const SearchOptions: React.FC<SearchOptionsProps> = ({ value, onChange, onSubmit }) => {
+  const change = (key: keyof CurrentSearchQueryOptions) => (text: string) =>
+    onChange({ ...value, [key]: text });
 
   return (
-    <div className="search-options__div">
+    <form
+      className="search-options__div"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit();
+      }}
+    >
       <Select
-        labelId="Search Type"
+        inputProps={{ "aria-label": "Search type" }}
         id="search-type"
-        value={currentSearchQueries.searchType}
-        onChange={(event: SelectChangeEvent<CurrentSearchQueryOptions["searchType"]>) =>
-          dispatch(saveSearchQueryChange("searchType", event.target.value))
-        }
+        value={value.searchType}
+        onChange={(event) => change("searchType")(event.target.value)}
         fullWidth
         variant="outlined"
       >
-        <MenuItem value={"track"}>Tracks</MenuItem>
-        <MenuItem value={"album"}>Albums</MenuItem>
-        <MenuItem value={"playlist"}>Playlists</MenuItem>
+        <MenuItem value="track">Tracks</MenuItem>
+        <MenuItem value="album">Albums</MenuItem>
+        <MenuItem value="playlist">Playlists</MenuItem>
       </Select>
-
       <div className="searchbar__div">
-        {currentSearchQueries.searchType === "playlist" && (
-          <PlaylistSearch getResults={submitSearch} playlistSearchQuery={playlistSearchQuery} />
+        {value.searchType === "playlist" && (
+          <SearchBar
+            label="Playlist"
+            value={value.playlistSearchQuery}
+            onChange={change("playlistSearchQuery")}
+          />
         )}
-        {currentSearchQueries.searchType === "album" && (
+        {value.searchType === "album" && (
           <>
-            <ArtistSearch getResults={submitSearch} artistSearchQuery={artistSearchQuery} />
-            <AlbumSearch
-              getResults={submitSearch}
-              albumSearchQuery={albumSearchQuery}
-              artistSearchQuery={artistSearchQuery}
+            <SearchBar
+              label="Artist"
+              value={value.artistSearchQuery}
+              onChange={change("artistSearchQuery")}
+            />
+            <SearchBar
+              label="Album"
+              value={value.albumSearchQuery}
+              onChange={change("albumSearchQuery")}
             />
           </>
         )}
-        {currentSearchQueries.searchType === "track" && (
-          <TrackSearch
-            getResults={submitSearch}
-            trackSearchQuery={trackSearchQuery}
-            artistSearchQuery={artistSearchQuery}
+        {value.searchType === "track" && (
+          <SearchBar
+            label="Track"
+            value={value.trackSearchQuery}
+            onChange={change("trackSearchQuery")}
           />
         )}
       </div>
-
       <div className="search-button__div">
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={submitSearch}
-          className="button"
-          fullWidth
-        >
+        <Button variant="outlined" color="primary" type="submit" className="button" fullWidth>
           Search
         </Button>
       </div>
-    </div>
+    </form>
   );
 };
 

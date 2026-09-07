@@ -1,13 +1,14 @@
 import { useHistory } from "react-router-dom";
 
-import { useAppSelector } from "../app/store";
-import { selectSearchResultValues } from "../slices/controlsSlice";
 import { Album } from "../types";
 import { buildSearchUrl } from "../utils/searchRoute";
 
-const Albums: React.FC = () => {
+interface AlbumsProps {
+  albums: Album[];
+}
+
+const Albums: React.FC<AlbumsProps> = ({ albums }) => {
   const history = useHistory();
-  const { albumResults } = useAppSelector(selectSearchResultValues);
 
   const handleOnAlbumClick = (album: Album) => {
     history.push(buildSearchUrl({ kind: "albumTracks", albumId: album.id }));
@@ -55,8 +56,8 @@ const Albums: React.FC = () => {
   return (
     <div>
       <h3 className="album-page-title">Album Results</h3>
-      {Array.isArray(albumResults) && albumResults.length > 0 ? (
-        <ul>{albumResults.map((album, index) => renderAlbum(album, index))}</ul>
+      {albums.length > 0 ? (
+        <ul>{albums.map((album, index) => renderAlbum(album, index))}</ul>
       ) : (
         <p>No albums found.</p>
       )}

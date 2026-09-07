@@ -6,6 +6,7 @@
 .pnp.js
 .eslintcache
 tsconfig.tsbuildinfo
+.pnpm-store/
 
 # testing
 /coverage
