@@ -24,10 +24,10 @@ Client-side environment variables must use the `VITE_` prefix and be read throug
 ## State ownership
 
 - **TanStack Query** (`src/queries/`) owns Spotify server data, including the current-user profile. Pages consume query hooks and handle loading, offline and error states.
-- **Redux Toolkit** (`src/slices/`) owns shared client controls: `settingsSlice` holds the key display preference; `controlsSlice` holds search drafts, recommendation tuning and sorting. The slices do not import each other.
+- **Redux Toolkit** (`src/slices/`) owns shared client controls: `settingsSlice` holds the key display preference; `controlsSlice` holds recommendation tuning and sorting. The slices do not import each other.
 - **URL/history** owns submitted searches and selected resource IDs. Keep search drafts distinct from submitted searches; results belong to Query.
 - **Auth** (`src/auth/`) owns credentials and signed-in status. Tokens stay in auth's memory and `spotify_auth` cookie, never Redux or Query. `src/app/useSignedIn.ts` adapts the auth subscription for React.
-- **Local React state** owns transient UI state and startup readiness.
+- **Local React state** owns search drafts in `Search.tsx`, transient UI state and startup readiness. Search drafts initialize/reset from the URL at navigation boundaries; edits do not submit.
 
 Derive sorting/grouping from existing data rather than storing duplicate state. Shared pure collection transformations live in `src/utils/collectionTransforms.ts`.
 

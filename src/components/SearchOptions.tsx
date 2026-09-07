@@ -41,19 +41,20 @@ const SearchOptions: React.FC<SearchOptionsProps> = ({ value, onChange, onSubmit
             onChange={change("playlistSearchQuery")}
           />
         )}
+        {/* Track and Album searches share one Artist draft, retained when switching modes. */}
+        {(value.searchType === "track" || value.searchType === "album") && (
+          <SearchBar
+            label="Artist"
+            value={value.artistSearchQuery}
+            onChange={change("artistSearchQuery")}
+          />
+        )}
         {value.searchType === "album" && (
-          <>
-            <SearchBar
-              label="Artist"
-              value={value.artistSearchQuery}
-              onChange={change("artistSearchQuery")}
-            />
-            <SearchBar
-              label="Album"
-              value={value.albumSearchQuery}
-              onChange={change("albumSearchQuery")}
-            />
-          </>
+          <SearchBar
+            label="Album"
+            value={value.albumSearchQuery}
+            onChange={change("albumSearchQuery")}
+          />
         )}
         {value.searchType === "track" && (
           <SearchBar

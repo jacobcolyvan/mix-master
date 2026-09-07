@@ -5,6 +5,7 @@ import {
   buildSearchUrl,
   parseSearchRoute,
   searchFormFromQuery,
+  searchFormFromRoute,
   searchQueryFromForm,
   type SearchRoute,
 } from "../utils/searchRoute";
@@ -97,6 +98,31 @@ describe("searchFormFromQuery", () => {
         playlistSearchQuery: "Deep House",
       })
     );
+  });
+});
+
+describe("searchFormFromRoute", () => {
+  it("restores the submitted search fields", () => {
+    const route: SearchRoute = { kind: "album", album: "Rounds", artist: "Four Tet" };
+
+    const form = searchFormFromRoute(route);
+
+    expect(form).toEqual(
+      searchQueriesFactory({
+        searchType: "album",
+        albumSearchQuery: "Rounds",
+        artistSearchQuery: "Four Tet",
+      })
+    );
+  });
+
+  it.each<{ route: SearchRoute | null; description: string }>([
+    { route: null, description: "a missing or invalid search" },
+    { route: { kind: "albumTracks", albumId: "album-one" }, description: "album details" },
+  ])("returns an empty Track draft for $description", ({ route }) => {
+    const form = searchFormFromRoute(route);
+
+    expect(form).toEqual(searchQueriesFactory());
   });
 });
 

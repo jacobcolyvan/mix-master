@@ -1,11 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { AppThunk, RootState } from "../app/store";
-import { CurrentSearchQueryOptions, SeedAttributes, TrackSortByChoices } from "../types";
+import { SeedAttributes, TrackSortByChoices } from "../types";
 
 export interface ControlsState {
   matchRecsToSeedTrackKey: boolean;
-  currentSearchQueries: CurrentSearchQueryOptions;
   // RecommendedTracks Page
   seedAttributes: SeedAttributes;
   activeSeedAttributes: string[]; // active seedAttributes keys
@@ -14,13 +13,6 @@ export interface ControlsState {
 
 const initialState: ControlsState = {
   matchRecsToSeedTrackKey: false,
-  currentSearchQueries: {
-    searchType: "track",
-    albumSearchQuery: "",
-    artistSearchQuery: "", // previously just artist
-    playlistSearchQuery: "",
-    trackSearchQuery: "",
-  },
   seedAttributes: {
     tempo: {
       value: "",
@@ -71,17 +63,11 @@ const initialState: ControlsState = {
   sortTracksBy: "default",
 };
 
-// For filter and search controls/params
+// For recommendation and sorting controls
 const controlsSlice = createSlice({
   name: "controlsSlice",
   initialState,
   reducers: {
-    setCurrentSearchQueries: (state, action: PayloadAction<CurrentSearchQueryOptions>) => {
-      state.currentSearchQueries = action.payload;
-    },
-    resetSearchQueries: (state) => {
-      state.currentSearchQueries = initialState.currentSearchQueries;
-    },
     setSeedAttributes: (state, action: PayloadAction<SeedAttributes>) => {
       state.seedAttributes = action.payload;
     },
@@ -97,18 +83,13 @@ export default controlsSlice.reducer;
 
 export const {
   invertMatchRecsToSeedTrackKey,
-  resetSearchQueries,
-  setCurrentSearchQueries,
+
   setSeedAttributes,
   setSortTracksBy,
 } = controlsSlice.actions;
 
 // --------------------------
 // Selectors
-
-export const selectCurrentSearchQueries = (state: RootState): CurrentSearchQueryOptions => {
-  return state.controlsSlice.currentSearchQueries;
-};
 
 export const selectSortTracksBy = (state: RootState): TrackSortByChoices => {
   return state?.controlsSlice.sortTracksBy;

@@ -1,20 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
 import SearchOptions from "../components/SearchOptions";
 import SearchResults from "../components/SearchResults";
 import { searchQueryOptions } from "../queries/searchQueries";
 import {
-  resetSearchQueries,
-  selectCurrentSearchQueries,
-  setCurrentSearchQueries,
-} from "../slices/controlsSlice";
-import {
   buildSearchUrl,
   parseSearchRoute,
-  searchFormFromQuery,
+  searchFormFromRoute,
   searchQueryFromForm,
 } from "../utils/searchRoute";
 
@@ -23,20 +17,17 @@ const Search: React.FC = () => {
   const location = useLocation();
   const client = useQueryClient();
   const route = useMemo(() => parseSearchRoute(location.search), [location.search]);
-  const dispatch = useAppDispatch();
-  const searchDraft = useAppSelector(selectCurrentSearchQueries);
+  const [searchDraft, setSearchDraft] = useState(() => searchFormFromRoute(route));
 
   useEffect(() => {
-    if (route && route.kind !== "albumTracks") {
-      dispatch(setCurrentSearchQueries(searchFormFromQuery(route)));
-    } else {
-      dispatch(resetSearchQueries());
-    }
-  }, [dispatch, route, location.key]);
+    // A new history entry discards edits even when its URL is unchanged.
+    setSearchDraft(searchFormFromRoute(route));
+  }, [route, location.key]);
 
   const submit = () => {
     const query = searchQueryFromForm(searchDraft);
     const target = query ? buildSearchUrl(query) : "/search";
+    setSearchDraft(searchFormFromRoute(query));
 
     if (query && route && route.kind !== "albumTracks" && target === buildSearchUrl(route)) {
       // fetchQuery reuses fresh success and retries stale or failed results.
@@ -51,11 +42,7 @@ const Search: React.FC = () => {
   return (
     <div>
       <h1 className="search-page-title">Search</h1>
-      <SearchOptions
-        value={searchDraft}
-        onChange={(value) => dispatch(setCurrentSearchQueries(value))}
-        onSubmit={submit}
-      />
+      <SearchOptions value={searchDraft} onChange={setSearchDraft} onSubmit={submit} />
       {route && (
         <div>
           <hr className="search-page-results__hr" />

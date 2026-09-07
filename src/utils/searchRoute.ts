@@ -82,6 +82,15 @@ export const searchFormFromQuery = (query: SearchQuery): CurrentSearchQueryOptio
   }
 };
 
+export const searchFormFromRoute = (route: SearchRoute | null): CurrentSearchQueryOptions => {
+  // Bare, invalid and album-detail URLs have no submitted search to restore.
+  if (!route || route.kind === "albumTracks") {
+    return searchFormFromQuery({ kind: "track", track: "", artist: "" });
+  }
+
+  return searchFormFromQuery(route);
+};
+
 export const buildSearchUrl = (route: SearchRoute): string => {
   const params = new URLSearchParams();
 
