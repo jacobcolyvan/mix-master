@@ -2,91 +2,76 @@
 
 ## What this is
 
-Mix Master is a client-side-only React SPA that uses the Spotify Web API to help DJs and producers build playlists with smooth key/tempo transitions (Circle of Fifths / Camelot Wheel). There is **no backend** — all Spotify auth and data fetching happen in the browser, so user data never leaves it. Deployed on Netlify (https://mix-master.netlify.app/).
+Mix Master is a client-side React SPA that uses the Spotify Web API to help DJs and producers build playlists with smooth key/tempo transitions (Circle of Fifths / Camelot Wheel). There is **no backend**: auth and Spotify requests happen in the browser. Deployed on Netlify (https://mix-master.netlify.app/).
+
+Fetched media and minimal profile data are cached locally in **IndexedDB**, surviving reloads and browser restarts. Credentials are separate from the query cache. Logout clears the in-memory cache and attempts to delete persisted data; storage failures can prevent a disk wipe.
 
 ## Commands
 
-Package manager is **pnpm** (enforced via `preinstall: only-allow pnpm`); Node 22 (`.nvmrc`). Do not use npm/yarn.
+Use **pnpm** and **Node 22** (`.nvmrc`).
 
-- `pnpm dev` / `pnpm start` — Vite dev server on **port 3000** (auto-opens browser)
-- `pnpm build` — production build to `build/` (not `dist/`)
-- `pnpm preview` — serve the production build
-- `pnpm check` — lint + prettier + tsc.
-- `pnpm test` — `vitest run`. Does not lint or type-check.
-- `pnpm fix` — auto-fix lint + format
-- `pnpm lint:check` / `pnpm lint:fix` — ESLint only
-- `pnpm format:check` / `pnpm format:fix` — Prettier only
-- `pnpm ts:check` — `tsc --noEmit` type-check only
+- `pnpm dev` / `pnpm start` — Vite on **port 3000**; auto-opens the browser.
+- `pnpm build` — production output in **`build/`**, not `dist/`.
+- `pnpm preview` — serve the production build.
+- `pnpm check` — ESLint, Prettier and TypeScript checks.
+- `pnpm test` — Vitest; does not lint or type-check.
+- `pnpm fix` — auto-fix lint and formatting.
 
-The pre-commit gate is **both** `pnpm check` and `pnpm test` — neither covers the other.
+Run **both `pnpm check` and `pnpm test`** before handing off code changes; neither covers the other.
 
-Tests run on **Vitest**. Test files live beside the code they cover as `*.test.ts`, currently all under `src/utils/`. There is no jsdom or component-testing setup — these are plain unit tests of pure functions.
+Client-side environment variables must use the `VITE_` prefix and be read through `import.meta.env.VITE_*`.
 
-## Environment variables
+## State ownership
 
-Vite env vars, **`VITE_`-prefixed** (read via `import.meta.env.VITE_*`):
+- **TanStack Query** (`src/queries/`) owns Spotify server data, including the current-user profile. Pages consume query hooks and handle loading, offline and error states.
+- **Redux Toolkit** (`src/slices/`) owns shared client controls: `settingsSlice` holds the key display preference; `controlsSlice` holds search drafts, recommendation tuning and sorting. The slices do not import each other.
+- **URL/history** owns submitted searches and selected resource IDs. Keep search drafts distinct from submitted searches; results belong to Query.
+- **Auth** (`src/auth/`) owns credentials and signed-in status. Tokens stay in auth's memory and `spotify_auth` cookie, never Redux or Query. `src/app/useSignedIn.ts` adapts the auth subscription for React.
+- **Local React state** owns transient UI state and startup readiness.
 
-- `VITE_SPOTIFY_CLIENT_ID`
-- `VITE_SPOTIFY_CALLBACK_URI`
+Derive sorting/grouping from existing data rather than storing duplicate state. Shared pure collection transformations live in `src/utils/collectionTransforms.ts`.
 
-Copy `.env.example` to `.env` and fill in your Spotify client ID (register an app at https://developer.spotify.com).
-
-## Setup
-
-### Remote/cloud environment
-
-If setting up in a remote or cloud development environment, do not rely on local symlinks from another checkout. From the repository root:
-
-1. Use Node 22 (`.nvmrc`).
-2. Install dependencies with `pnpm install`.
-3. Copy `.env.example` to `.env`.
-4. Run `pnpm check` before handing off changes.
-5. Start the app only when needed with `pnpm dev`.
-
-### Secondary local git worktree
-
-If setting up a secondary local git worktree that has access to the main checkout, run:
-
-```sh
-./setup_worktree.sh
-```
-
-The script symlinks shared local-only paths from the main worktree (`.zed/`, `.docs/`, `.env`) and then runs `pnpm install`.
-
-## Architecture
-
-### State: three Redux Toolkit slices (`src/slices/`)
-
-State management is the spine of the app. All async Spotify work lives in **thunks at the bottom of each slice file**, not in components. Components dispatch thunks and read via typed selectors (`useAppSelector`/`useAppDispatch` from `src/app/store.ts`).
-
-- **`settingsSlice`** — mirrors auth token/user/key-display. Holds `spotifyToken`, `username`, `keyDisplayOption` (`"camelot"` | standard), and `sessionReady` (bootstrap finished). Token source of truth is `src/auth/`; Redux is updated via `subscribe()` in `index.tsx`.
-- **`itemsSlice`** — async Spotify data only: `userPlaylists`, `tracks`, `tracksError`. This is where the heavy data-fetching thunks live: `getUserPlaylists`, `getTracks`, `getAlbumTracks`, `getSearchResults`, `getRecommendedTracks`. Each `Track[]` here is the canonical fetch result and is never re-ordered in place — display ordering is derived in the component (see "Derived state" below). Also holds the navigation thunks (`goToRecommendedTrack`, `pushPlaylistToHistory`, `goToPlaylist`), the stale-response guard `invalidateTracksRequest`, and `resetItemStates`.
-- **`controlsSlice`** — UI filter/search controls: current search queries, search results, `seedAttributes` (recommendation tuning), `sortTracksBy`, `matchRecsToSeedTrackKey`. Several thunks here are marked `// TODO: delete this` / "half works" (browser-history sync) — they are known-flaky; don't rely on them.
-
-Cross-slice imports between `itemsSlice` and `controlsSlice` are normal here and intentionally circular-ish — `itemsSlice` dispatches `controlsSlice`'s search/loading setters, and `controlsSlice`'s `resetSearchState` dispatches `setTracks`. `itemsSlice` no longer imports `settingsSlice` at all: key display and username are read where they are used, not inside thunks. `settingsSlice` imports neither of the others.
-
-### Auth flow (Authorization Code + PKCE, client-side)
-
-Auth lives in **`src/auth/`** (`session.ts`, `oauth.ts`, `storage.ts`, `reasons.ts`) — self-contained, no imports from slices or components. `login()` redirects to Spotify; on callback `bootstrap()` exchanges `?code=` for tokens and stores them in a `spotify_auth` JSON cookie (access + refresh). `spotifyApi` is the authenticated axios client with 401 → refresh → retry and 429 → honour `Retry-After` once (capped at 60s). Redux mirrors the in-memory token via `subscribe()` in `index.tsx`. `App.tsx` shows `Loading` until `sessionReady`, then gates routes on token presence: no token → `SpotifyLogin`; token → app routes.
+## Important boundaries
 
 ### Spotify requests
 
-All authenticated HTTP goes through **`spotifyApi`** from `src/auth/` — an axios instance bound to `https://api.spotify.com/v1/` with bearer header and token refresh. Slice thunks import `spotifyApi` directly. Paginated playlist fetches read `total` from the first page (`limit=50`, `offset=0`), then fetch remaining pages in bounded batches (8 concurrent `Promise.all` calls per batch, batches sequential, items concatenated in offset order). Playlist-track pagination still loops sequentially with `offset`/`limit=50`. `getTrackAndArtistFeatures()` in `utils/requestUtils.ts` is the key enrichment step: it batches `audio-features` + `artists` lookups and maps raw Spotify items into the app's `Track` shape via `createTrackObject()`.
+All authenticated HTTP goes through **`spotifyApi`** from `src/auth/`. It handles token refresh on 401 and honours `Retry-After` on 429. Query retries are disabled deliberately: another retry layer would multiply requests against a rate-limited API.
 
-### Music theory core (`utils/commonFunctions.ts` + `commonVariables.ts`)
+Reuse `fetchOffsetPages` in `src/utils/spotifyFetch.ts` for pagination and `getTrackAndArtistFeatures` in `src/utils/requestUtils.ts` for track enrichment instead of duplicating those flows.
 
-This is the domain heart. `commonVariables.ts` holds the key dictionaries: `keyDict` (pitch class → note name), `camelotMajorKeyDict`/`camelotMinorKeyDict` (Spotify key index → Camelot wheel number). `getKeyInfoArray()` returns `[camelotKey, standardKey, inverseKey]` for a track — the `inverseKey` (relative major/minor, ±9/±3 semitones) is what drives the "also match the relative scale" recommendation logic in `getRecommendedTracks`. `camelotKeySort`/`standardKeySort` implement the actual harmonic ordering. When touching anything key/tempo-related, read these two files first.
+### Startup and persistence
 
-### UI layering (atomic design)
+`src/index.tsx` starts `src/queries/cacheLifecycle.ts` once, outside React rendering. The lifecycle coordinates auth bootstrap, cache restoration, persistence and logout. `App` observes its `ready` promise before mounting pages; React effects must not start another lifecycle.
 
-- `src/pages/` — route components (`UserPlaylists`, `Playlist`, `Search`, `RecommendedTracks`, `About`, `SpotifyLogin`); they dispatch thunks and own data fetching
-- `src/components/` — feature composites (`SearchOptions`, `SearchResults`, `Tracks`, `Albums`, `RecTweaks*`, `CurrentTrackRec`)
-- `src/atoms/` — UI primitives (`Navbar`, `SortBy`, `KeySelect`, `TrackTooltip`, etc.) and `atoms/info/` (the About-page explainer sections)
+After lifecycle readiness, a single signed-in `App` boundary fetches and validates the profile before mounting any signed-in page; the lifecycle does not fetch profiles.
 
-Styling is **global SCSS**, imported once in `src/index.tsx` (`global.scss`, `pages.scss`, `components.scss`) — not CSS modules. MUI components are themed alongside. Routing is **React Router v5** (`Switch`/`Redirect`/`useHistory`), not v6 — keep to v5 APIs.
+`src/queries/persister.ts` owns IndexedDB storage and queued writes. Keep persistence shutdown coordinated through the lifecycle. Bump `CACHE_SCHEMA_VERSION` when persisted shapes or keys change, and keep persisted queries' `gcTime >= maxAge`. Search and recommendations are not persisted. Query-specific keys and cache timings live in `src/queries/`.
 
-## Conventions
+Cross-tab support is **logout notification only** through BroadcastChannel. It is not durable cross-tab invalidation, live cache synchronisation or account-per-tab isolation; suspended tabs and cross-tab write races are not fully covered.
 
-- ESLint flat config enforces: `eqeqeq` (always `===`), `no-var`, and `simple-import-sort` for both imports and exports — import order is auto-fixable, so run `pnpm fix` before committing. `@typescript-eslint/no-explicit-any` is **off** (lots of `any` on raw Spotify payloads is accepted). Unused vars allowed only when prefixed `_`.
-- TypeScript is `strict` but with `noImplicitAny: false` and `noEmitOnError: true`.
-- Shared types live in `src/types.ts`.
+Playlist tracks are cached by Spotify snapshot ID. Snapshots track membership/order, not enrichment changes; freshness must still be bounded separately.
+
+### UI and domain conventions
+
+Routing is **React Router v5** (`Switch`, `Redirect`, `useHistory`), not v6. Styling is **global SCSS**, imported in `src/index.tsx`, alongside MUI theming—not CSS modules.
+
+Before changing key/tempo logic, read `src/utils/commonFunctions.ts` and `src/utils/commonVariables.ts`. They contain the Camelot/standard key mappings, relative major/minor logic and harmonic sorting.
+
+## Code map
+
+- `src/pages/` — route components and page-level data consumption.
+- `src/components/` — feature composites.
+- `src/atoms/` — UI primitives; `atoms/info/` contains About-page explainers.
+- `src/queries/` — resource hooks, cache policy and persistence lifecycle.
+- `src/auth/` — self-contained client-side Authorization Code + PKCE auth; no imports from slices or components.
+- `src/slices/` — shared client controls and preferences.
+- `src/utils/` — music theory, collection transformations and Spotify data helpers.
+- `src/types.ts` — shared application types.
+
+Follow existing TypeScript conventions. ESLint enforces import sorting; use the configured lint/format tools rather than maintaining ordering manually.
+
+## Testing
+
+Vitest tests live in `src/__tests__/`; resource-hook suites are in `src/__tests__/queries/`, and shared helpers/fixtures in `src/__tests__/helpers/`.
+
+Read `.agents/skills/testing/SKILL.md` before adding, changing or reviewing tests. It defines test boundaries, helper conventions and readability rules.

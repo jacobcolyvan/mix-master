@@ -29,11 +29,15 @@ It is built with React, and styled using SCSS/Material-UI. Requests are done usi
 <hr>
 <h4>Setup</h4>
 
-To build your own setup, run `pnpm install` after cloning, and create a copy of `.env.example` as `.env` in the root directory with your own Spotify Client ID and callback URI. For local dev, use `http://127.0.0.1:3000/` as the redirect URI (register this exact URL in the Spotify dashboard — `localhost` is not accepted for PKCE callbacks).
+Use Node 22 (`.nvmrc`) and pnpm. To build your own setup, run `pnpm install` after cloning, and create a copy of `.env.example` as `.env` in the root directory with your own Spotify Client ID and callback URI. For local dev, use `http://127.0.0.1:3000/` as the redirect URI (register this exact URL in the Spotify dashboard — `localhost` is not accepted for PKCE callbacks).
 
 <br>
 
 Your Spotify Client ID can be found by <a href='https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app'>registering your app</a>.
+
+> **Spotify API deprecation notice:** This app depends on Spotify's deprecated Audio Features endpoint for key and tempo data, as well as the Recommendations endpoint. Since <a href="https://developer.spotify.com/blog/2024-11-27-changes-to-the-web-api">Spotify's Web API changes of November 27, 2024</a>, these endpoints are unavailable to newly registered apps and existing apps in development mode without a pending extension request. Running your own instance therefore requires a client ID for an app that already has eligible extended-mode access; the access is associated with the Spotify app, not with an individual access token.
+
+For a secondary local worktree with access to the main checkout, run `./setup_worktree.sh` after creating the worktree. It symlinks `.zed/`, `.docs/` and `.env` from the main checkout, then installs dependencies.
 
 <hr>
 

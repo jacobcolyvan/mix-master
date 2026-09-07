@@ -7,6 +7,12 @@ description: Use when adding, restructuring, or reviewing tests in Mix Master, e
 
 Optimise for useful confidence and local clarity. Start with the simplest test that proves the behaviour, and add shared infrastructure only when real repetition justifies it.
 
+## Read top-to-bottom
+
+Optimise for reading each test top-to-bottom, with blank lines separating arrange, action and assertions. Parameterise only identical setup, action and assertions with varying data; do not branch on scenario or state labels. Prefer some duplication over a scenario harness.
+
+Extract helpers only for repeated mechanical setup, not domain decisions. Briefly document non-obvious external substitutes and helper modules' ownership, defaults and import-time cleanup or other side effects.
+
 ## Test data
 
 Use a factory when tests repeatedly need to construct the same typed entity or external response shape. A factory supplies predictable defaults, accepts explicit overrides, and returns fresh data. It must not infer relationships or hide the scenario being tested.
@@ -19,7 +25,9 @@ Keep one-off representative data local to its test. Do not create factories for 
 
 Test pure calculations and transformations directly. Use Redux, rendered components, or broader integration only when those boundaries are part of the behaviour being proved.
 
-Higher-level tests should verify wiring and user-visible outcomes rather than repeat every lower-level case.
+Resource hook suites live in `src/__tests__/queries/`: use real hooks and TanStack QueryClients with external Spotify HTTP substitution, asserting hook output rather than DOM. Keep page, lifecycle, session and pure suites outside that folder.
+
+Higher-level tests should verify wiring and user-visible outcomes rather than duplicate lower-level coverage. Avoid incidental presentation assertions unrelated to the behaviour under test.
 
 ## Prefer observable behaviour
 
@@ -29,10 +37,10 @@ Mock external boundaries when necessary. Avoid mocking internal collaborators wh
 
 ## Keep tests independent
 
-Give each test fresh mutable data and a fresh Redux store when one is needed. Tests must not depend on execution order or shared mutable application state.
+Give each test fresh mutable data, a fresh Redux store and a fresh QueryClient when needed. Rendering helpers must not start auth. Tests must not depend on execution order or shared mutable application state.
 
 Author expected values independently from the production implementation.
 
 ## Validation
 
-Run the narrowest relevant test command first, then run `pnpm check`. Use only `pnpm` and the test runner configured in `package.json`.
+Run the narrowest relevant test command first, then run `pnpm check` and `pnpm test`. Use only `pnpm` and the test runner configured in `package.json`.
