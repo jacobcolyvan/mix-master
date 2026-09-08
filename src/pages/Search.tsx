@@ -1,35 +1,60 @@
-import { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
-import Loading from "../atoms/Loading";
 import SearchOptions from "../components/SearchOptions";
 import SearchResults from "../components/SearchResults";
-import { updateSearchStateFromBrowserState } from "../slices/controlsSlice";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { searchQueryOptions } from "../queries/searchQueries";
+import {
+  buildSearchUrl,
+  parseSearchRoute,
+  searchFormFromRoute,
+  searchQueryFromForm,
+} from "../utils/searchRoute";
 
 const Search: React.FC = () => {
-  const dispatch = useAppDispatch();
+  usePageTitle("Search");
   const history = useHistory();
+  const location = useLocation();
+  const client = useQueryClient();
+  const route = useMemo(() => parseSearchRoute(location.search), [location.search]);
+  const [searchDraft, setSearchDraft] = useState(() => searchFormFromRoute(route));
 
-  const { isSearching, hasCurrentSearchResults } = useAppSelector((state) => state.controlsSlice);
-
-  // Refresh state on search re-render
   useEffect(() => {
-    dispatch(updateSearchStateFromBrowserState(history));
-  }, [history.location.state]);
+    // A new history entry discards edits even when its URL is unchanged.
+    setSearchDraft(searchFormFromRoute(route));
+  }, [route, location.key]);
+
+  const submit = () => {
+    const query = searchQueryFromForm(searchDraft);
+    const target = query ? buildSearchUrl(query) : "/search";
+    setSearchDraft(searchFormFromRoute(query));
+
+    if (query && route && route.kind !== "albumTracks" && target === buildSearchUrl(route)) {
+      // fetchQuery reuses fresh success and retries stale or failed results.
+      client.fetchQuery(searchQueryOptions(query)).catch(() => {
+        // SearchResults displays the query error; only handle the rejected promise here.
+      });
+      const params = new URLSearchParams(location.search);
+      // Keep identical submissions in place unless view options need resetting.
+      if (!params.has("sort") && !params.has("keyNotation")) return;
+    }
+    if (target !== `${location.pathname}${location.search}`) {
+      history.push(target);
+    }
+  };
 
   return (
     <div>
       <h1 className="search-page-title">Search</h1>
-      <SearchOptions />
-
-      {hasCurrentSearchResults && (
+      <SearchOptions value={searchDraft} onChange={setSearchDraft} onSubmit={submit} />
+      {route && (
         <div>
           <hr className="search-page-results__hr" />
-          <SearchResults />
+          <SearchResults route={route} />
         </div>
       )}
-      {isSearching && <Loading />}
     </div>
   );
 };

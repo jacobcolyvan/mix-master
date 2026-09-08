@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import { resetItemStates } from "../slices/itemsSlice";
-import { selectSpotifyToken } from "../slices/settingsSlice";
+import { useSignedIn } from "../hooks/useSignedIn";
 
 interface NavButtonProps {
   activeNavItem: string;
@@ -34,17 +32,14 @@ const NavButton: React.FC<NavButtonProps> = ({
 
 const Navbar = () => {
   const history = useHistory();
-  const dispatch = useDispatch();
 
-  const spotifyToken = useSelector(selectSpotifyToken);
+  const signedIn = useSignedIn();
 
   const [activeNavItem, setActiveNavItem] = useState("/");
 
   const loadPage = (link: string) => {
     setActiveNavItem(link);
     history.push(link);
-
-    dispatch(resetItemStates());
   };
 
   const navItems = [
@@ -57,7 +52,7 @@ const Navbar = () => {
     <header className="navbar">
       <h1 onClick={() => loadPage("/")}>Mix Master</h1>
 
-      {spotifyToken && (
+      {signedIn && (
         <div className="nav-buttons">
           {navItems.map(({ target, label, extraClass }) => (
             <NavButton

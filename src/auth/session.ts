@@ -1,7 +1,5 @@
-// The auth source of truth. Self-contained: imports only the OAuth helpers and
-// the storage layer — nothing from app/ or slices/ — so it sits at the bottom of
-// the dependency graph and breaks the old store <-> slice cycle. Redux merely
-// mirrors the token via subscribe() (see index.tsx).
+// Credentials live only here and in the auth cookie. This module stays independent
+// of React, Redux and Query; consumers observe session changes via subscribe().
 
 import {
   buildAuthorizeUrl,
@@ -13,7 +11,7 @@ import {
 import { LogoutReason } from "./reasons";
 import {
   clearAuthStorage,
-  getInitialAuthState,
+  getInitialAccessToken,
   isAccessTokenValid,
   readAuthCookie,
   writeAuthCookie,
@@ -30,11 +28,11 @@ const setLogoutReasonInUrl = (reason: LogoutReason) => {
 
 const hadActiveSession = () => !!accessToken || !!readAuthCookie();
 
-// In-memory access token, seeded synchronously at module load so the common
-// (already-logged-in) path renders without a Loading flash.
-let accessToken = getInitialAuthState().spotifyToken;
+// Seed the in-memory token from a still-valid cookie before async bootstrap.
+let accessToken = getInitialAccessToken();
+let logoutGeneration = 0;
 
-// Tiny observer so consumers (Redux) can mirror token changes for re-render.
+export const isSignedIn = (): boolean => !!accessToken;
 type Listener = (token: string) => void;
 const listeners = new Set<Listener>();
 
@@ -65,6 +63,7 @@ let refreshPromise: Promise<string | null> | null = null;
 export const refresh = (): Promise<string | null> => {
   if (refreshPromise) return refreshPromise;
 
+  const generation = logoutGeneration;
   refreshPromise = (async () => {
     const refreshToken = readAuthCookie()?.refreshToken;
     if (!refreshToken) {
@@ -73,6 +72,7 @@ export const refresh = (): Promise<string | null> => {
     }
 
     const tokens = await refreshAccessToken(refreshToken);
+    if (generation !== logoutGeneration) return null;
     if (!tokens) {
       logout("session_expired");
       return null;
@@ -88,11 +88,13 @@ export const refresh = (): Promise<string | null> => {
 };
 
 export const bootstrap = async (): Promise<void> => {
+  const generation = logoutGeneration;
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
 
   if (code) {
     const tokens = await exchangeCodeForToken(code, params.get("state"));
+    if (generation !== logoutGeneration) return;
     // Strip the ?code= regardless of outcome so a reload never reuses a dead code.
     window.history.replaceState({}, "", window.location.pathname);
     if (tokens) {
@@ -119,10 +121,11 @@ export const login = async () => {
   window.location.href = await buildAuthorizeUrl();
 };
 
-// UI-agnostic: clears auth state only. Username/UI concerns are handled by the
-// subscribe listener in index.tsx. Logouts with a reason set ?reason= on / for
+// Clears auth state and notifies subscribers. A reason sets ?reason= on / for
 // the login screen to read.
 export const logout = (reason?: LogoutReason) => {
+  // A late refresh or code exchange must not sign this tab back in.
+  logoutGeneration += 1;
   if (reason && hadActiveSession()) {
     setLogoutReasonInUrl(reason);
   }

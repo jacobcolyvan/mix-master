@@ -1,42 +1,57 @@
-import { useEffect } from "react";
+import { Alert } from "@mui/material";
+import { useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
 import Loading from "../atoms/Loading";
+import Offline from "../atoms/Offline";
 import TrackTooltip from "../atoms/TrackTooltip";
-import { selectSortTracksBy } from "../slices/controlsSlice";
-import {
-  copyNameAndSaveAsCurrentTrack,
-  goToRecommendedTrack,
-  selectSortedTracks,
-  selectTracks,
-  sortTracksByAudioFeatures,
-} from "../slices/itemsSlice";
-import { selectKeyDisplayOption } from "../slices/settingsSlice";
-import { Track } from "../types";
+import { cacheSeedTrack } from "../queries/trackQueries";
+import { KeyOptionTypes, Track, TrackSortByChoices } from "../types";
+import { sortTracks } from "../utils/collectionTransforms";
 import { getArtistNames } from "../utils/commonFunctions";
 import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from "../utils/commonVariables";
 
-const Tracks: React.FC = () => {
-  const dispatch = useAppDispatch();
+export type TracksProps = {
+  tracks: Track[] | null;
+  isPending: boolean;
+  isPaused?: boolean;
+  error: Error | null;
+  sortOption?: TrackSortByChoices;
+  keyNotation: KeyOptionTypes;
+  recommendationLink?: (id: string) => string;
+};
+
+const Tracks: React.FC<TracksProps> = ({
+  tracks,
+  isPending,
+  isPaused,
+  error,
+  sortOption = "default",
+  recommendationLink,
+  keyNotation: keyOption,
+}) => {
   const history = useHistory();
+  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
 
-  const tracks = useAppSelector(selectTracks);
-  const sortedTracks = useAppSelector(selectSortedTracks);
-  const sortOption = useAppSelector(selectSortTracksBy);
-  const keyOption = useAppSelector(selectKeyDisplayOption);
-
-  // Sort tracks on tracks, sortOption, and keyOption change
-  useEffect(() => {
-    dispatch(sortTracksByAudioFeatures());
-  }, [tracks, sortOption, keyOption]);
+  // Derive the display order from the canonical tracks array. Sorting from the
+  // canonical array (rather than from a previously sorted copy) is what makes
+  // "Original Order" actually restore the original order.
+  const sortedTracks = useMemo(
+    () => (tracks ? sortTracks(tracks, sortOption, keyOption) : null),
+    [tracks, sortOption, keyOption]
+  );
 
   const handleTrackRecommendedClick = (track: Track) => {
-    dispatch(goToRecommendedTrack(history, track));
+    cacheSeedTrack(track);
+    const recommendationUrl = recommendationLink
+      ? recommendationLink(track.id)
+      : `/recommended/?id=${encodeURIComponent(track.id)}`;
+    history.push(recommendationUrl);
   };
 
   const handleTrackClick = (track: Track) => {
-    dispatch(copyNameAndSaveAsCurrentTrack(track.name, track.artists[0], `track-${track.id}`));
+    navigator.clipboard.writeText(`${track.name} ${track.artists[0]}`);
+    setSelectedTrack(track);
   };
 
   const getKeyLabel = (keyOption: string, track: Track) => {
@@ -59,8 +74,9 @@ const Tracks: React.FC = () => {
           sortedTracks.map((track: Track, index: number) => (
             <tr key={`track${index}`} className={`track-name-tr`}>
               <td
-                className="table-data__name table-data__name-hover"
-                id={`track-${track.id}`}
+                className={`table-data__name table-data__name-hover${
+                  selectedTrack === track ? " currently-selected" : ""
+                }`}
                 onClick={() => handleTrackClick(track)}
               >
                 <span>
@@ -90,7 +106,17 @@ const Tracks: React.FC = () => {
     );
   };
 
-  return sortedTracks ? (
+  if (!tracks && isPaused) return <Offline />;
+
+  if (error && !tracks) {
+    return <Alert severity="error">Unable to load tracks from Spotify. Please try again.</Alert>;
+  }
+
+  if (isPending || !sortedTracks) {
+    return <Loading />;
+  }
+
+  return (
     <table className="tracks-table">
       <thead>
         <tr>
@@ -103,8 +129,6 @@ const Tracks: React.FC = () => {
 
       {renderSortedTracksBody()}
     </table>
-  ) : (
-    <Loading />
   );
 };
 

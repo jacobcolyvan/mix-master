@@ -1,4 +1,4 @@
-import { Track } from "../types";
+import { ParsedKeys, Track } from "../types";
 import { camelotMajorKeyDict, camelotMinorKeyDict, keyDict } from "./commonVariables";
 
 export const getArtistNames = (artistNameArray: string[]) => {
@@ -53,7 +53,7 @@ export const standardKeySort = (tempTracks: Track[]): Track[] => {
   return sortedTracks;
 };
 
-export const getKeyInfoArray = (trackKey, trackMode): any[] => {
+export const getKeyInfoArray = (trackKey, trackMode): ParsedKeys => {
   const camelotKey =
     trackMode === "1" ? camelotMajorKeyDict[trackKey] + "B" : camelotMinorKeyDict[trackKey] + "A";
 
@@ -61,7 +61,7 @@ export const getKeyInfoArray = (trackKey, trackMode): any[] => {
 
   // 9 is the number of semitones between the major and minor key, while
   // 3 is the number of semitones between the minor and major key
-  const inverseKey =
+  const inverseKey: ParsedKeys[2] =
     trackMode === "1"
       ? [String((parseInt(trackKey) + 9) % 12), "0"]
       : [String((parseInt(trackKey) + 3) % 12), "1"];

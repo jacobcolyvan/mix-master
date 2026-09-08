@@ -1,4 +1,4 @@
-@import "./variables";
+@use "./variables" as *;
 
 .playlist-page-title,
 .album-page-title,
@@ -143,9 +143,16 @@
     }
   }
 
+  .rec-tweaks__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.6rem 1rem 2rem;
+  }
+
   .rec-tweaks__button {
     font-size: 0.85rem;
-    margin: 0.6rem 1rem 2rem 1rem;
   }
 
   h4 {

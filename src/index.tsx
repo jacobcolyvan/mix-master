@@ -3,13 +3,14 @@ import "./stylesheets/pages.scss";
 import "./stylesheets/components.scss";
 
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
 
 import App from "./App";
-import { store } from "./app/store";
-import { bootstrap, subscribe } from "./auth";
-import { setSessionReady, setSpotifyToken, setUsername } from "./slices/settingsSlice";
+import { bootstrap, logout, subscribe } from "./auth";
+import { startCacheLifecycle } from "./queries/cacheLifecycle";
+import { createCachePersister } from "./queries/persister";
+import { queryClient } from "./queries/queryClient";
 
 const theme = createTheme({
   palette: {
@@ -27,23 +28,26 @@ const theme = createTheme({
   },
 });
 
-// The single auth wiring point: mirror token changes into Redux (so components
-// re-render on login/logout), then run bootstrap once at module load.
-subscribe((token) => {
-  store.dispatch(setSpotifyToken(token));
-  // clear username on logout (UI concern)
-  if (!token) store.dispatch(setUsername(""));
+const cacheLifecycle = startCacheLifecycle({
+  client: queryClient,
+  persister: createCachePersister(),
+  auth: { bootstrap, subscribe, logout },
 });
-bootstrap().finally(() => store.dispatch(setSessionReady(true)));
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    cacheLifecycle.dispose();
+  });
+}
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
 root.render(
-  <Provider store={store}>
+  <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <App ready={cacheLifecycle.ready} />
     </ThemeProvider>
-  </Provider>
+  </QueryClientProvider>
 );

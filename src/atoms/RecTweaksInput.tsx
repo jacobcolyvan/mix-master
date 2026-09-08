@@ -1,74 +1,29 @@
 import { FormControlLabel, Radio, RadioGroup, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
 
-import { useAppDispatch } from "../app/store";
-import { saveSeedAttribute } from "../slices/controlsSlice";
-import { AttributeChoiceDetails } from "../types";
+import { AttributeChoiceDetails, SeedAttributeDetails } from "../types";
 
 interface InputProps {
-  paramValue: any;
+  paramValue: SeedAttributeDetails;
   inputItem: AttributeChoiceDetails;
+  error?: string;
+  onChange: (value: SeedAttributeDetails) => void;
 }
 
-const RecTweaksInput: React.FC<InputProps> = ({ paramValue, inputItem }) => {
-  const dispatch = useAppDispatch();
-
-  const { input_name, extra_text, range_limit, validateField } = inputItem;
-
-  const [validationError, setValidationError] = useState(false);
-  const [maxOrMin, setMaxOrMin] = useState(paramValue?.maxOrMin || "target");
-  const [inputValue, setInputValue] = useState(paramValue?.value);
-  const [inputLabel, setInputLabel] = useState(getMaxOrMinInputLabel(maxOrMin));
-
-  function getMaxOrMinInputLabel(value: string): string {
-    return `${value} ${input_name} (0 – ${range_limit}${extra_text || ""})`;
-  }
-
-  // Handle updates from outside the component
-  useEffect(() => {
-    setInputValue(paramValue && paramValue.value);
-  }, [paramValue]);
-
-  // Validate input value on change, update state and dispatch actions
-  const handleValueUpdate = (value: string) => {
-    const valueIsValid = validateField(parseFloat(value));
-
-    if (valueIsValid) {
-      dispatch(saveSeedAttribute(input_name, value, maxOrMin));
-      setValidationError(false);
-    } else {
-      // Avoid empty inputs raising validation error
-      if (value === "0") {
-        setValidationError(true);
-      } else {
-        setValidationError(false);
-      }
-      dispatch(saveSeedAttribute(input_name, false));
-    }
-  };
-
-  useEffect(() => {
-    handleValueUpdate(inputValue);
-  }, [inputValue]);
-
-  const handleRadioChange = (event: React.ChangeEvent<{ [key: string]: any }>) => {
-    const newValue = event.target.value;
-    setMaxOrMin(newValue);
-    setInputLabel(getMaxOrMinInputLabel(newValue));
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<{ [key: string]: any }>) => {
-    setInputValue(event.target.value);
-  };
-
+const RecTweaksInput: React.FC<InputProps> = ({ paramValue, inputItem, error, onChange }) => {
+  const { input_name, extra_text, range_limit } = inputItem;
   return (
     <div className="rec-tweaks-input__div">
       <RadioGroup
-        aria-label="maxOrMinValueGroup"
+        aria-label={`${input_name} constraint`}
         className="rec-tweaks__radio-group"
-        name="maxOrMinValueGroup"
-        value={maxOrMin}
-        onChange={handleRadioChange}
+        name={`${input_name}-constraint`}
+        value={paramValue.maxOrMinFilter}
+        onChange={(event) =>
+          onChange({
+            ...paramValue,
+            maxOrMinFilter: event.target.value as SeedAttributeDetails["maxOrMinFilter"],
+          })
+        }
       >
         <FormControlLabel value="target" control={<Radio color="primary" />} label="Target" />
         <FormControlLabel value="min" control={<Radio color="primary" />} label="Min" />
@@ -77,13 +32,14 @@ const RecTweaksInput: React.FC<InputProps> = ({ paramValue, inputItem }) => {
 
       <TextField
         fullWidth
-        label={inputLabel}
-        value={inputValue}
-        type="number"
+        label={`${paramValue.maxOrMinFilter} ${input_name} (0 – ${range_limit}${extra_text || ""})`}
+        value={paramValue.value}
+        type="text"
+        slotProps={{ htmlInput: { inputMode: "decimal" } }}
         className="rec-tweaks__textfield"
-        onChange={handleInputChange}
-        error={validationError}
-        helperText={validationError ? "Invalid range value" : false}
+        onChange={(event) => onChange({ ...paramValue, value: event.target.value })}
+        error={!!error}
+        helperText={error}
       />
     </div>
   );

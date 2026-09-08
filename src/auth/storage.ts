@@ -65,18 +65,7 @@ export const isAccessTokenValid = (stored: StoredAuth | null): stored is StoredA
   return !!stored?.accessToken && Date.now() < stored.expiresAt - TOKEN_EXPIRY_BUFFER_MS;
 };
 
-// Synchronous startup state so the common (already-logged-in) path renders
-// without a Loading flash. Async bootstrap is only needed when returning from
-// Spotify (?code=) or when an expired access token must be silently refreshed.
-export const getInitialAuthState = (): { spotifyToken: string; sessionReady: boolean } => {
+export const getInitialAccessToken = (): string => {
   const stored = readAuthCookie();
-  const hasRefresh = !!stored?.refreshToken;
-  const hasValidAccess = isAccessTokenValid(stored);
-  const hasCode = new URLSearchParams(window.location.search).has("code");
-  const pendingAuth = hasCode || (!hasValidAccess && hasRefresh);
-
-  return {
-    spotifyToken: hasValidAccess ? stored.accessToken : "",
-    sessionReady: !pendingAuth,
-  };
+  return isAccessTokenValid(stored) ? stored.accessToken : "";
 };

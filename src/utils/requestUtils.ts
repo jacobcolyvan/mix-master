@@ -1,30 +1,48 @@
 import { spotifyApi } from "../auth";
-import { CurrentSearchQueryOptions, SeedAttributes, Track } from "../types";
+import { SeedAttributes, Track } from "../types";
 import { getKeyInfoArray } from "./commonFunctions";
+import { validateRecommendationTuning } from "./recommendationTuning";
+import { SearchQuery } from "./searchRoute";
+import { mapWithConcurrency, splitIntoChunks } from "./spotifyFetch";
 
-export const createSearchRequestUrl = (currentSearchQueries: CurrentSearchQueryOptions) => {
-  // if all search queries are empty, return null
-  if (!Object.values(currentSearchQueries).some((query) => query.length)) {
-    return null;
+const AUDIO_FEATURES_REQUEST_LIMIT = 100;
+const ARTISTS_REQUEST_LIMIT = 50;
+const MAX_CONCURRENT_METADATA_GROUPS = 4;
+
+export const createSpotifySearchUrl = (route: SearchQuery): string => {
+  const params = new URLSearchParams({ limit: "50" });
+
+  // Spotify combines field filters in one space-separated `q` parameter.
+  switch (route.kind) {
+    case "track": {
+      const query = [
+        route.track && `track:${route.track}`,
+        route.artist && `artist:${route.artist}`,
+      ]
+        .filter(Boolean)
+        .join(" ");
+      params.set("q", query);
+      params.set("type", "track");
+      break;
+    }
+    case "album": {
+      const query = [
+        route.album && `album:${route.album}`,
+        route.artist && `artist:${route.artist}`,
+      ]
+        .filter(Boolean)
+        .join(" ");
+      params.set("q", query);
+      params.set("type", "album");
+      break;
+    }
+    case "playlist":
+      params.set("q", route.playlist);
+      params.set("type", "playlist");
+      break;
   }
 
-  const baseSearchUrl = "https://api.spotify.com/v1/search?q=";
-  const { searchType, albumSearchQuery, artistSearchQuery, trackSearchQuery, playlistSearchQuery } =
-    currentSearchQueries;
-
-  const encodedAlbumQuery = albumSearchQuery ? `album%3A$${encodeURI(albumSearchQuery)}%20` : "";
-  const encodedArtistQuery = artistSearchQuery
-    ? `artist%3A$${encodeURI(artistSearchQuery)}%20`
-    : "";
-  const encodedTrackQuery = trackSearchQuery ? `track%3A$${encodeURI(trackSearchQuery)}%20` : "";
-
-  if (searchType === "album") {
-    return `${baseSearchUrl}${encodedAlbumQuery}${encodedArtistQuery}&type=album&limit=50`;
-  } else if (searchType === "track") {
-    return `${baseSearchUrl}${encodedTrackQuery}${encodedArtistQuery}&type=track&limit=50`;
-  } else {
-    return `${baseSearchUrl}${encodeURI(playlistSearchQuery)}&type=playlist&limit=50`;
-  }
+  return `search?${params.toString()}`;
 };
 
 export const millisToMinutesAndSeconds = (millis: number) => {
@@ -78,32 +96,37 @@ export const createTrackObject = (item, trackFeature, artistFeature): Track => {
   };
 };
 
-export const getTrackAndArtistFeatures = async (rawTracks: any[]) => {
-  const trackIds: string[] = [];
-  const artistIds: string[] = [];
+const enrichTrackGroup = async (rawTrackGroup: any[]): Promise<Track[]> => {
+  const tracks = rawTrackGroup.map((item) => item.track || item);
+  const trackIds = tracks.map((track) => track.id);
+  const artistIds = tracks.map((track) => track.artists[0].id);
+  const artistIdChunks = splitIntoChunks(artistIds, ARTISTS_REQUEST_LIMIT);
 
-  rawTracks.forEach((item: { [key: string]: any }) => {
-    const track = item.track || item;
+  const [trackFeaturesResponse, ...artistResponses] = await Promise.all([
+    spotifyApi.get(`audio-features/?ids=${trackIds.join(",")}`),
+    ...artistIdChunks.map((ids) => spotifyApi.get(`artists?ids=${ids.join(",")}`)),
+  ]);
 
-    trackIds.push(track.id);
-    artistIds.push(track.artists[0].id);
-  });
+  const trackFeatures = trackFeaturesResponse.data.audio_features as (any | null)[];
+  const artistFeatures = artistResponses.flatMap((response) => response.data.artists);
 
-  const trackFeaturesResponse = await spotifyApi.get(`audio-features/?ids=${trackIds.join(",")}`);
-  const artistFeaturesResponse = await spotifyApi.get(`artists?ids=${artistIds.join(",")}`);
-
-  const trackFeatures = [...trackFeaturesResponse.data.audio_features];
-  const artistFeatures = [...artistFeaturesResponse.data.artists];
-
-  const splicedTracks: Track[] = rawTracks.reduce((acc, item, index) => {
+  return rawTrackGroup.reduce((enrichedTracks, item, index) => {
     if (trackFeatures[index] !== null) {
-      const trackObject = createTrackObject(item, trackFeatures[index], artistFeatures[index]);
-      acc.push(trackObject);
+      enrichedTracks.push(createTrackObject(item, trackFeatures[index], artistFeatures[index]));
     }
-    return acc;
-  }, []);
+    return enrichedTracks;
+  }, [] as Track[]);
+};
 
-  return splicedTracks;
+export const getTrackAndArtistFeatures = async (rawTracks: any[]): Promise<Track[]> => {
+  const trackGroups = splitIntoChunks(rawTracks, AUDIO_FEATURES_REQUEST_LIMIT);
+  const enrichedTrackGroups = await mapWithConcurrency(
+    trackGroups,
+    MAX_CONCURRENT_METADATA_GROUPS,
+    enrichTrackGroup
+  );
+
+  return enrichedTrackGroups.flat();
 };
 
 export const generateRecommendedTrackUrl = (
@@ -118,27 +141,33 @@ export const generateRecommendedTrackUrl = (
   // if (trackSeed) url += `&seed_tracks=${ trackSeed.map(track => track.id).join(',') }`;
   // if (mode) url += `&target_mode=${mode}`
 
-  const baseUrl =
-    `https://api.spotify.com/v1/recommendations?market=AU&seed_tracks=${recommendedTrackId}` +
-    (key ? `&target_key=${key}` : "") +
-    (mode ? `&target_mode=${mode}` : "") +
-    `&limit=${limit}`;
+  const { tuning } = validateRecommendationTuning({ attributes: seedAttributes, matchKey: false });
+  const params = new URLSearchParams({
+    market: "AU",
+    seed_tracks: recommendedTrackId,
+    limit: String(limit),
+  });
+  if (key !== undefined) params.set("target_key", key);
+  if (mode !== undefined) params.set("target_mode", mode);
 
-  const urlWithSeedAttributes = Object.keys(seedAttributes).reduce((url, param) => {
-    if (seedAttributes[param].value !== "") {
-      if (param === "genre") {
-        return url + `&seed_genres=${seedAttributes[param].value}`;
-      } else if (param === "duration") {
-        const durationInMs = parseInt(seedAttributes[param].value || "1") * 1000;
-        return url + `&${seedAttributes[param].maxOrMinFilter}_${param}=${durationInMs}`;
-      } else {
-        return url + `&${seedAttributes[param].maxOrMin}_${param}=${seedAttributes[param].value}`;
-      }
+  for (const [attributeName, criterion] of Object.entries(tuning.attributes)) {
+    if (criterion.value === "") continue;
+    if (attributeName === "genre") {
+      params.set("seed_genres", criterion.value);
+      continue;
     }
-    return url;
-  }, baseUrl);
 
-  return urlWithSeedAttributes;
+    let parameterName = attributeName;
+    let parameterValue = criterion.value;
+    // Tuning and URLs use seconds; Spotify's duration constraint uses milliseconds.
+    if (attributeName === "duration") {
+      parameterName = "duration_ms";
+      parameterValue = String(Number(criterion.value) * 1000);
+    }
+    params.set(`${criterion.maxOrMinFilter}_${parameterName}`, parameterValue);
+  }
+
+  return `recommendations?${params.toString()}`;
 };
 
 export const getTracksFromSpotify = async (url: string) => {

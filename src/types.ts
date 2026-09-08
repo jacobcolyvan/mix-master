@@ -1,3 +1,9 @@
+export type ParsedKeys = [
+  camelotKey: string,
+  standardKey: string,
+  inverseKey: [key: string, mode: "0" | "1"],
+];
+
 export type Track = {
   id: string;
   name: string;
@@ -25,38 +31,55 @@ export type Track = {
   loudness: string; // -60-0db
   speechiness: string; // 0-1;
   valence: string; // 0-1;
-  parsedKeys: any[];
+  parsedKeys: ParsedKeys;
+};
+
+export type CurrentUser = {
+  display_name: string | null;
 };
 
 // Playlist response object
 export type Playlist = {
   collaborative: boolean;
-  description: string;
-  external_urls: { [key: string]: any };
+  description: string | null;
+  external_urls: Record<string, string>;
   href: string;
   id: string;
-  images: { [key: string]: any }[];
+  images: { url: string }[];
   name: string;
-  owner: { [key: string]: any };
+  owner: { display_name: string | null };
   primary_color: string | null;
-  public: boolean;
+  public: boolean | null;
   snapshot_id: string;
   tracks: { href: string; total: number };
-  type: string;
+  type: "playlist";
   uri: string;
 };
 
 export type SortedPlaylists = {
   created: Playlist[];
   followed: Playlist[];
-  generated: Playlist[];
 };
 
-// TODO: make this more strict
-export type Album = { [key: string]: any };
+// Album response object
+export type Album = {
+  album_type: "album" | "single" | "compilation";
+  total_tracks: number;
+  available_markets: string[];
+  external_urls: Record<string, string>;
+  href: string;
+  id: string;
+  images: { url: string }[];
+  name: string;
+  release_date: string;
+  release_date_precision: "year" | "month" | "day";
+  type: "album";
+  uri: string;
+  artists: { name: string }[];
+};
 
 export type SeedAttributeDetails = {
-  value: string | false;
+  value: string;
   maxOrMinFilter: "max" | "min" | "target";
 };
 
@@ -67,7 +90,7 @@ export type SeedAttributes = {
   popularity: SeedAttributeDetails;
   liveness: SeedAttributeDetails;
   energy: SeedAttributeDetails;
-  intrumentalness: SeedAttributeDetails;
+  instrumentalness: SeedAttributeDetails;
   valence: SeedAttributeDetails;
   danceability: SeedAttributeDetails;
   speechiness: SeedAttributeDetails;
@@ -83,22 +106,10 @@ export type CurrentSearchQueryOptions = {
   trackSearchQuery: string;
 };
 
-//  not sure why keyof wouldn't work here
-export type CurrentSearchQueryOptionsKeys =
-  | "searchType"
-  | "albumSearchQuery"
-  | "artistSearchQuery"
-  | "playlistSearchQuery"
-  | "trackSearchQuery";
-
-export type SearchResultsType = {
-  albumResults: Album[] | null;
-  trackResults: Track[] | null;
-  playlistResults: Playlist[] | null;
-};
+export type CurrentSearchQueryOptionsKeys = keyof CurrentSearchQueryOptions;
 
 export type AttributeChoiceDetails = {
-  input_name: string;
+  input_name: Exclude<keyof SeedAttributes, "genre">;
   extra_text: boolean | string;
   range_limit: number;
   validateField: (value: number) => boolean;

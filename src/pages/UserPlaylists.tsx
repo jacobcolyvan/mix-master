@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { Alert } from "@mui/material";
+import { useMemo } from "react";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
 import Loading from "../atoms/Loading";
+import Offline from "../atoms/Offline";
 import PlaylistItems from "../atoms/PlaylistItems";
-import { getUserPlaylists } from "../slices/itemsSlice";
-import { getUsername } from "../slices/settingsSlice";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { useUserPlaylists } from "../queries/playlistQueries";
+import { groupPlaylists } from "../utils/collectionTransforms";
 
 const CreatedPlaylists = ({ createdPlaylists }) => {
   return (
@@ -34,33 +36,23 @@ const FollowedPlaylists = ({ followedPlaylists }) => {
   );
 };
 
-const GeneratedPlaylists = ({ generatedPlaylists }) => {
-  return (
-    <>
-      {generatedPlaylists.length > 0 && (
-        <div className="playlist-list__header" id="generated-playlists">
-          <h3>Generated</h3>
-        </div>
-      )}
-      <PlaylistItems playlistsToRender={generatedPlaylists} />
-      <br />
-    </>
+const UserPlaylists = ({ username }: { username: string }) => {
+  usePageTitle("Playlists");
+  const { data: userPlaylists, isError, isPending, isPaused } = useUserPlaylists();
+
+  const sortedPlaylists = useMemo(
+    () => (userPlaylists ? groupPlaylists(userPlaylists, username) : null),
+    [userPlaylists, username]
   );
-};
 
-const UserPlaylists: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { sortedPlaylists } = useAppSelector((state) => state.itemsSlice);
-  const dispatchPlaylists = async () => {
-    await dispatch(getUsername());
-    dispatch(getUserPlaylists());
-  };
+  if (isError && !userPlaylists) {
+    return <Alert severity="error">Unable to load playlists from Spotify. Please try again.</Alert>;
+  }
 
-  useEffect(() => {
-    dispatchPlaylists();
-  }, []);
+  if (!userPlaylists && isPaused) return <Offline />;
+  if (isPending || !sortedPlaylists) return <Loading />;
 
-  return sortedPlaylists ? (
+  return (
     <div>
       <div className="playlists-title__div">
         <h2>Playlists</h2>
@@ -82,16 +74,11 @@ const UserPlaylists: React.FC = () => {
         </p>
       </div>
 
-      {typeof sortedPlaylists === "object" && (
-        <div>
-          <CreatedPlaylists createdPlaylists={sortedPlaylists.created} />
-          <FollowedPlaylists followedPlaylists={sortedPlaylists.followed} />
-          <GeneratedPlaylists generatedPlaylists={sortedPlaylists.generated} />
-        </div>
-      )}
+      <div>
+        <CreatedPlaylists createdPlaylists={sortedPlaylists.created} />
+        <FollowedPlaylists followedPlaylists={sortedPlaylists.followed} />
+      </div>
     </div>
-  ) : (
-    <Loading />
   );
 };
 

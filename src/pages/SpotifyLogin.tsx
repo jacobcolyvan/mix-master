@@ -2,8 +2,10 @@ import { Alert, Button } from "@mui/material";
 
 import InfoOverview from "../atoms/info/InfoOverview";
 import { getLogoutMessage, login } from "../auth";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const SpotifyLogin = () => {
+  usePageTitle();
   const logoutMessage = getLogoutMessage();
 
   return (

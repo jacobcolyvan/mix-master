@@ -1,4 +1,4 @@
-import CamelotWheel from "../../media/camelot-wheel.jpg";
+import CamelotWheel from "../../assets/camelot-wheel.jpg";
 
 const InfoCamelot = () => {
   return (

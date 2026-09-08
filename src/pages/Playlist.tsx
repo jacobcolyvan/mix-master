@@ -1,43 +1,49 @@
-import { History } from "history";
-import { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { Alert } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
 import KeySelect from "../atoms/KeySelect";
 import PlaylistDescription from "../atoms/PlaylistDescription";
 import SortBy from "../atoms/SortBy";
 import Tracks from "../components/Tracks";
-import { getTracks } from "../slices/itemsSlice";
-import { selectUsername } from "../slices/settingsSlice";
-import { Playlist as PlaylistType } from "../types";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { useViewOptions } from "../hooks/useViewOptions";
+import { usePlaylist, usePlaylistTracks } from "../queries/playlistQueries";
 
-const Playlist: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const history: History = useHistory();
-  const username = useAppSelector(selectUsername);
+const Playlist = ({ username }: { username: string }) => {
+  const location = useLocation();
 
-  // Type the location state properly
-  const locationState = history.location.state as { playlist?: PlaylistType } | undefined;
-  const playlist = locationState?.playlist;
+  const id = new URLSearchParams(location.search).get("id");
+  const { sort, setSort, keyNotation, setKeyNotation } = useViewOptions();
 
-  useEffect(() => {
-    if (playlist) {
-      dispatch(getTracks(playlist));
-    }
-  }, [dispatch, playlist]);
+  const playlistQuery = usePlaylist(id);
+  const tracksQuery = usePlaylistTracks(id, playlistQuery.data?.snapshot_id);
+
+  const playlist = playlistQuery.data;
+  usePageTitle(playlist?.name || "Playlist");
+  const ownerName = playlist?.owner.display_name;
+  const showOwnerAttribution = Boolean(ownerName) && ownerName !== username;
+
+  if (!id) {
+    return <Alert severity="info">No playlist selected.</Alert>; // defensive
+  }
 
   return (
     <div>
-      <KeySelect />
-      <SortBy />
+      <KeySelect value={keyNotation} onChange={setKeyNotation} />
+      <SortBy value={sort} onChange={setSort} />
 
       {playlist && <h3 className="playlist-page-title">{playlist.name}</h3>}
       {playlist?.description && <PlaylistDescription description={playlist.description} />}
-      {playlist?.owner.display_name !== username && (
-        <p className="playlist-page-description">({playlist?.owner.display_name}).</p>
-      )}
+      {showOwnerAttribution && <p className="playlist-page-description">({ownerName}).</p>}
 
-      <Tracks />
+      <Tracks
+        sortOption={sort}
+        keyNotation={keyNotation}
+        tracks={tracksQuery.data ?? null}
+        isPending={playlistQuery.isPending || tracksQuery.isPending}
+        isPaused={playlistQuery.isPaused || tracksQuery.isPaused}
+        error={playlistQuery.error ?? tracksQuery.error}
+      />
     </div>
   );
 };

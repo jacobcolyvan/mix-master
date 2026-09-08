@@ -1,7 +1,5 @@
 import { useHistory } from "react-router-dom";
 
-import { useAppDispatch } from "../app/store";
-import { pushPlaylistToHistory } from "../slices/itemsSlice";
 import { Playlist } from "../types";
 
 interface Props {
@@ -9,30 +7,40 @@ interface Props {
 }
 
 const PlaylistItems: React.FC<Props> = ({ playlistsToRender }) => {
-  const dispatch = useAppDispatch();
   const history = useHistory();
 
-  const dispatchPlaylistHistory = (playlist: Playlist) => {
-    dispatch(pushPlaylistToHistory(history, playlist));
+  const openPlaylist = (playlist: Playlist) => {
+    history.push(`/playlist?id=${encodeURIComponent(playlist.id)}`);
   };
 
   return (
     <ul>
       {Array.isArray(playlistsToRender) &&
-        playlistsToRender.map((playlist, index) => (
-          <li
-            className="playlist-list__li"
-            key={`track${index}`}
-            onClick={() => dispatchPlaylistHistory(playlist)}
-          >
-            <div>
-              <div className="playlist-name">{playlist.name}</div>
-              {playlist.images[0] && (
-                <img src={playlist.images[0].url} alt={`playlist img`} width="60" height="60" />
-              )}
-            </div>
-          </li>
-        ))}
+        playlistsToRender.map((playlist, index) => {
+          const cover = playlist.images.at(-1);
+
+          return (
+            <li
+              className="playlist-list__li"
+              key={`track${index}`}
+              onClick={() => openPlaylist(playlist)}
+            >
+              <div>
+                <div className="playlist-name">{playlist.name}</div>
+                {cover?.url && (
+                  <img
+                    src={cover.url}
+                    alt={`"${playlist.name}" cover`}
+                    width="60"
+                    height="60"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
+            </li>
+          );
+        })}
     </ul>
   );
 };
