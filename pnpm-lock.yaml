@@ -1301,6 +1301,12 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  "@standard-schema/spec@1.1.0":
+    resolution:
+      {
+        integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==,
+      }
+
   "@tanstack/query-core@5.102.8":
     resolution:
       {
@@ -4841,6 +4847,8 @@ snapshots:
 
   "@rollup/rollup-win32-x64-msvc@4.45.1":
     optional: true
+
+  "@standard-schema/spec@1.1.0": {}
 
   "@tanstack/query-core@5.102.8": {}
 
