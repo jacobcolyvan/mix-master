@@ -24,7 +24,6 @@ tsconfig.tsbuildinfo
 .docs/
 .delete/
 
-
 # symlinked file refs
 .docs
 .zed
